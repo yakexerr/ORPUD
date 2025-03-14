@@ -23,4 +23,8 @@ Task Management System — это платформа для управления
 ```sh
 git clone https://https://github.com/yakexerr/ORPUD
 cd task-management
-
+```
+## 🌠 Запуск проекта для разработки
+`python3 -m venv venv` - создание виртуального окружения
+`venv\Scripts\activate` - войти в виртуальное окружение
+`pip install -r requirements.txt` - установка зависимостей
