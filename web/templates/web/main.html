@@ -1,0 +1,13 @@
+<!-- комментарий -->
+<!--  -->
+{% extends 'web/base.html' %}
+{% block content %}
+    <h1> Hello World! </h1> <!-- тэг для заголовка  -->
+
+    {% if not user.is_anonymous %}
+        <p>Вы авторизованы как <b>{{ user.username }}</b></p>
+    {% endif %}
+
+    <a href="https://ya.ru"> Yandex</a> <!-- тег для ссылки -->
+    {{year}}
+{% endblock %}
