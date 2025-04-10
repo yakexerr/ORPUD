@@ -2,15 +2,21 @@ from datetime import datetime
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
-from web.forms import RegistrationForm, AuthForm
-from django.contrib.auth import get_user_model, authenticate, login
+from django.template.context_processors import request
+
+from web.forms import RegistrationForm, AuthForm, TimeSlotForm
+from django.contrib.auth import get_user_model, authenticate, login, logout
+
+from web.models import TimeSlot
 
 User = get_user_model()
 
 def main_view(request):
-    year = datetime.now().year
+    # year = datetime.now().year
+    timeslots = TimeSlot.objects.all()
     return render(request, 'web/main.html', {
-        "year" : year,
+        # "year" : year,
+        "timeslots" : timeslots,
     })
 
 def registration_view(request):
@@ -46,5 +52,36 @@ def auth_view(request):
                 login(request, user)
                 #переброс на главную
                 return redirect("main")
-
     return render(request, 'web/auth.html', {"form": form})
+
+def logout_view(request):
+    logout(request)
+    return redirect("main")
+
+# @login_required # зачита от неавторизованности
+def time_slot_add_view(request):
+    if request.method == "POST":
+        form = TimeSlotForm(data=request.POST, files=request.FILES, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    else:
+        form = TimeSlotForm(initial={"user": request.user})
+
+    return render(request, 'web/time_slot_form.html', {"form": form})
+
+
+def time_slot_edit_view(request, id=None):
+    timeslot = None
+    if id is not None:
+        timeslot = TimeSlot.objects.get(id=id)
+
+    if request.method == "POST":
+        form = TimeSlotForm(data=request.POST, files=request.FILES, instance=timeslot, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    else:
+        form = TimeSlotForm(instance=timeslot, initial={"user": request.user})
+
+    return render(request, 'web/time_slot_form.html', {"form": form})

@@ -67,12 +67,18 @@ class Assignment(models.Model):
         return f"{self.employee.full_name} assigned to {self.task.title}"
 
 
+class TimeSlotTag(models.Model):
+    title = models.CharField(max_length=256, verbose_name="Название")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+
 class TimeSlot(models.Model):
-    title = models.CharField(max_length=256)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    is_realtime = models.BooleanField(default=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=256, verbose_name="Название")
+    start_date = models.DateTimeField(verbose_name="Время начала")
+    end_date = models.DateTimeField(verbose_name="Время окончания")
+    is_realtime = models.BooleanField(default=False, verbose_name="В реально времени")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    tags = models.ManyToManyField(TimeSlotTag, verbose_name="Теги")
+    image = models.ImageField(upload_to='time_slots/', null=True, blank=True, verbose_name="Изображение")
 
     def __str__(self):
         return f"{self.title} ({self.start_date} - {self.end_date})"

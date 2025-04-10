@@ -2,12 +2,15 @@
 <!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
-    <h1> Hello World! </h1> <!-- тэг для заголовка  -->
-
-    {% if not user.is_anonymous %}
-        <p>Вы авторизованы как <b>{{ user.username }}</b></p>
-    {% endif %}
-
-    <a href="https://ya.ru"> Yandex</a> <!-- тег для ссылки -->
+    <ul> <!-- маркированный список -->
+        {% for timeslot in timeslots %}
+            <li> <!-- list item -->
+                <b>{{ timeslot.title }}</b>
+                {{ timeslot.start_date}} - {{ timeslot.end_date }}
+                {% if timeslot.is_realtime %} <small>(realtime)</small> {% endif %}
+                <a href="{% url 'time_slots_edit' timeslot.id %}">изменить</a>
+            </li>
+        {% endfor %}
+    </ul>
     {{year}}
 {% endblock %}
