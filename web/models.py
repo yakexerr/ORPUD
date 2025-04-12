@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -71,18 +72,29 @@ class TimeSlotTag(models.Model):
     title = models.CharField(max_length=256, verbose_name="Название")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
 
+    # чтоб теги были с нормальными названиями, а не системными
+    def __str__(self):
+        return self.title
+
 class TimeSlot(models.Model):
     title = models.CharField(max_length=256, verbose_name="Название")
-    start_date = models.DateTimeField(verbose_name="Время начала")
-    end_date = models.DateTimeField(verbose_name="Время окончания")
+    # default указываем, чтоб за начальное время можно было указать текущее
+    start_date = models.DateTimeField(verbose_name="Время начала", default=timezone.now)
+    # null указали ,чтобы конечное время можно было оставлять пустым (blank тоже)
+    end_date = models.DateTimeField(verbose_name="Время окончания", null=True, blank=True)
     is_realtime = models.BooleanField(default=False, verbose_name="В реально времени")
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
-    tags = models.ManyToManyField(TimeSlotTag, verbose_name="Теги")
+    # blank=True указали, чтоб можно было теги тоже не выбирать
+    tags = models.ManyToManyField(TimeSlotTag, verbose_name="Теги", blank=True)
     image = models.ImageField(upload_to='time_slots/', null=True, blank=True, verbose_name="Изображение")
 
     def __str__(self):
         return f"{self.title} ({self.start_date} - {self.end_date})"
 
+
+class Holiday(models.Model):
+    date = models.DateField(verbose_name='Дата')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
 
 
 class Project(models.Model):
