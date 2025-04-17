@@ -74,14 +74,30 @@ WSGI_APPLICATION = 'tasktracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+import os
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DJANGO_DB_NAME'),
+        'USER': os.environ.get('DJANGO_DB_USER'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD'),
+        'HOST': os.environ.get('DJANGO_DB_HOST'),
+        'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
+        'CONN_MAX_AGE': 600,
+        'OPTIONS': {
+            'isolation_level': psycopg.IsolationLevel.READ_COMMITTED,
+        },
+    }
+}
 
+'''
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'laba2_db',
         'USER': 'laba2_user',
         'PASSWORD': '123',
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
         'CONN_MAX_AGE': 600,  # ← ВОТ ТАК ПРАВИЛЬНО
         'OPTIONS': {
@@ -89,6 +105,7 @@ DATABASES = {
         },
     }
 }
+'''
 
 
 
