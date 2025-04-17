@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import psycopg
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -74,14 +75,13 @@ WSGI_APPLICATION = 'tasktracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-import os
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DJANGO_DB_NAME'),
-        'USER': os.environ.get('DJANGO_DB_USER'),
-        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD'),
-        'HOST': os.environ.get('DJANGO_DB_HOST'),
+        'NAME': os.environ.get('DJANGO_DB_NAME', 'laba2_db'),
+        'USER': os.environ.get('DJANGO_DB_USER', 'laba2_user'),
+        'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD', '123'),
+        'HOST': os.environ.get('DJANGO_DB_HOST', 'localhost'),
         'PORT': os.environ.get('DJANGO_DB_PORT', '5432'),
         'CONN_MAX_AGE': 600,
         'OPTIONS': {
@@ -89,23 +89,6 @@ DATABASES = {
         },
     }
 }
-
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'laba2_db',
-        'USER': 'laba2_user',
-        'PASSWORD': '123',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'CONN_MAX_AGE': 600,  # ← ВОТ ТАК ПРАВИЛЬНО
-        'OPTIONS': {
-            'isolation_level': psycopg.IsolationLevel.READ_COMMITTED,
-        },
-    }
-}
-'''
 
 
 
