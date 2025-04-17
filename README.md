@@ -168,7 +168,6 @@ git merge <название-текущей-ветки>
 ## 🚀 3. Пуш ветки `master` в `origin/master`
 
 ```bash
-git checkout master
 git push origin master
 ```
 
