@@ -3,30 +3,5 @@
 {% extends 'web/base.html' %}
 {% block content %}
 <!-- TODO: Исправить в соответствии с макетом и models.py -->
-<!--    <b>Добавить тайм-слот</b>-->
-<!--    &lt;!&ndash; в action указываем ссылку на страницу создания, чтоб не отправляло на ту же страницу &ndash;&gt;-->
-<!--    <form action="{% url 'time_slots_add' %}" method="post">-->
-<!--        {% csrf_token %}-->
-<!--        {{form.as_p}}-->
-<!--        <button>Сохранить</button>-->
-<!--        &lt;!&ndash; делаем так, чтоб создать можно было в ральном времени &ndash;&gt;-->
-<!--        <button value="realtime">Начать</button>-->
-
-
-
-<!--    <ul> &lt;!&ndash; маркированный список &ndash;&gt;-->
-<!--        {% for timeslot in timeslots %}-->
-<!--            <li> &lt;!&ndash; list item &ndash;&gt;-->
-
-<!--                <b>{{ timeslot.title }}</b>-->
-<!--                {% if timeslot.is_realtime %} <small>(realtime)</small> {% endif %}-->
-<!--                <br>&lt;!&ndash; br значит на следующей строке &ndash;&gt;-->
-<!--                <small>-->
-<!--                    {{ timeslot.start_date}} - {{ timeslot.end_date }}-->
-<!--                    <a href="{% url 'time_slots_edit' timeslot.id %}">изменить</a>-->
-<!--                </small>-->
-<!--            </li>-->
-<!--        {% endfor %}-->
-<!--    </ul>-->
     {{year}}
 {% endblock %}
