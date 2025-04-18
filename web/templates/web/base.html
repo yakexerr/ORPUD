@@ -43,7 +43,7 @@
         {% if request.path == '/feedback/' %}<span class="dash">—</span>{% endif %}
         <a href="/feedback/">Обратная связь</a>
     </li>
-    </ul>
+
     <div class="logout-container">
     <div class="username-box">
         <span class="username-label">Пользователь:</span>
@@ -51,6 +51,7 @@
     </div>
     <a href="{% url 'logout' %}" class="logout-button">Выход</a>
     </div>
+    </ul>
 
 
 </nav>

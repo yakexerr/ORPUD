@@ -1,3 +1,8 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 /* Стили навигации */
 .sidebar {
   width: 250px;
@@ -5,7 +10,10 @@
   padding: 40px 20px;
   border-right: 1px solid #ddd;
   height: 100vh;
+  box-sizing: border-box;  /* учитывает padding внутри height */
+  overflow: hidden;        /* прячет лишнее, если всё же что-то вылезет */
 }
+
 
 .logo {
   text-align: center;
@@ -13,10 +21,10 @@
 }
 
 .logo img {
-  height: 200px;
+  height: 100px;
   width: 100%; /* или фиксированная ширина */
   object-fit: cover; /* обрезает изображение, сохраняя пропорции */
-  object-position: top; /* если нужно обрезать снизу */
+  object-position: center 50%; /* если нужно обрезать снизу */
 }
 
 .menu {
