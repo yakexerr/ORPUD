@@ -50,7 +50,7 @@ docker-compose build
 Затем запустите контейнеры:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
 Контейнеры для Django и PostgreSQL будут запущены и будут доступны по следующим адресам:
