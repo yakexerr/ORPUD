@@ -1,17 +1,27 @@
 <!-- комментарий -->
 <!--  -->
+
 {% extends 'web/base.html' %}
 {% block content %}
-    <b>Добавить тайм-слот</b>
-    <!-- в action указываем ссылку на страницу создания, чтоб не отправляло на ту же страницу -->
-    <form action="{% url 'time_slots_add' %}" method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button>Сохранить</button>
-        <!-- делаем так, чтоб создать можно было в ральном времени -->
-        <button value="realtime">Начать</button>
+    <!-- делаем так, чтоб вместо добавления вверху текущий таймслот выводился -->
+    {% if current_timeslot %}
+        <b>Текущий слот:</b> {{ current_slot.title }}
+        <small>начат в {{ current_timeslot.start_date }}</small>
+        <!-- делаем форму, которая будем его завершать -->
+        <form action="{% url 'time_slot_stop' current_timeslot.id %}" method="post">
+            {% csrf_token %}
+            <button>Закончить</button>
+        </form>
 
-
+    {% else %}
+        <b>Добавить тайм-слот</b>
+        <!-- в action указываем ссылку на страницу создания, чтоб не отправляло на ту же страницу -->
+        <form action="{% url 'time_slots_add' %}" method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button>Сохранить</button>
+        </form>
+    {% endif %}
 
     <ul> <!-- маркированный список -->
         {% for timeslot in timeslots %}
@@ -21,11 +31,28 @@
                 {% if timeslot.is_realtime %} <small>(realtime)</small> {% endif %}
                 <br><!-- br значит на следующей строке -->
                 <small>
-                    {{ timeslot.start_date}} - {{ timeslot.end_date }}
+                    <!-- тут проверочка, чтоб не отображалось None (добавлено после логики отображения realtime) -->
+                    {{ timeslot.start_date}} {% if timeslot.end_date  %} - {{ timeslot.end_date }} {% endif %}
                     <a href="{% url 'time_slots_edit' timeslot.id %}">изменить</a>
+                    <a href="{% url 'time_slot_delete' timeslot.id %}">удалить</a>
                 </small>
             </li>
         {% endfor %}
     </ul>
+
+    <!-- для страниц -->
+    <nav>
+        {% if timeslots.has_previous %} <!-- если в таймсдлотах есть предидущие элементы -->
+            <a href="?page=1">в начало</a><!-- вывод ссылки на превую страницу -->
+            <a href="?page={{ timeslots.previous_page_number }}">предыдущая страница</a>
+        {% endif %}
+
+        страница {{ timeslots.number }} из {{ timeslots.paginator.num_pages }}
+
+        {% if timeslots.has_next %} <!-- если в таймсдлотах есть предидущие элементы -->
+            <a href="?page={{ timeslots.next_page_number }}">следующая страница</a>
+            <a href="?page={{ timeslots.paginator.num_pages }}">в конец</a><!-- вывод ссылки на превую страницу -->
+        {% endif %}
+    </nav>
     {{year}}
 {% endblock %}

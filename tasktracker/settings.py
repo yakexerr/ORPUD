@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "web"
+    'web',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "tasktracker.debug.SqlPrintingMiddleware" # то что в файле дебаг добавили (указали точный путь)
 ]
 
 ROOT_URLCONF = 'tasktracker.urls'
@@ -136,5 +137,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = 'media/'
-
 MEDIA_URL = 'media/'
+
+LOGIN_URL = 'auth'
+LOGIN_REDIRECT_URL = 'main'
