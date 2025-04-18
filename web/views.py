@@ -7,7 +7,7 @@ from django.template.context_processors import request
 from web.forms import RegistrationForm, AuthForm, TimeSlotForm, TimeSlotTagForm, HolidayForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
-from web.models import TimeSlot, TimeSlotTag, Holiday
+# from web.models import TimeSlot, TimeSlotTag, Holiday
 
 User = get_user_model()
 
