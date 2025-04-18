@@ -15,9 +15,6 @@
                 <a href="{% url 'auth' %}">Авторизация</a>
             </div>
         {% else %}
-            <a href="{% url 'time_slots_add' %}">Создать тайм-слот</a> <!-- тег для ссылки -->
-            <a href="{% url 'tags' %}">Теги</a> <!-- тег для ссылки -->
-            <a href="{% url 'holidays' %}">Выходные</a> <!-- тег для ссылки -->
             <div style="text-align: right">
                 {% if not user.is_anonymous %}
                     Вы авторизованы как <b>{{user.username}}</b>

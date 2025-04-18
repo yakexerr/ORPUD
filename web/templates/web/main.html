@@ -2,30 +2,7 @@
 <!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
-    <b>Добавить тайм-слот</b>
-    <!-- в action указываем ссылку на страницу создания, чтоб не отправляло на ту же страницу -->
-    <form action="{% url 'time_slots_add' %}" method="post">
-        {% csrf_token %}
-        {{form.as_p}}
-        <button>Сохранить</button>
-        <!-- делаем так, чтоб создать можно было в ральном времени -->
-        <button value="realtime">Начать</button>
+    <b>Главная</b>
 
-
-
-    <ul> <!-- маркированный список -->
-        {% for timeslot in timeslots %}
-            <li> <!-- list item -->
-
-                <b>{{ timeslot.title }}</b>
-                {% if timeslot.is_realtime %} <small>(realtime)</small> {% endif %}
-                <br><!-- br значит на следующей строке -->
-                <small>
-                    {{ timeslot.start_date}} - {{ timeslot.end_date }}
-                    <a href="{% url 'time_slots_edit' timeslot.id %}">изменить</a>
-                </small>
-            </li>
-        {% endfor %}
-    </ul>
     {{year}}
 {% endblock %}
