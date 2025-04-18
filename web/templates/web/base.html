@@ -1,13 +1,14 @@
 <!-- комментарий -->
 <!--  -->
 <!DOCTYPE html>
+{% load static %}
 <html>
 <head>
     <title>Task tracker</title> <!-- это то что наверху в иконке пишется -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <script src="{% static 'js/script.js' %}" defer></script>
 </head>
 <body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}" defer></script>
     <h1><a href="{% url 'main' %}">Task tracker</a></h1> <!-- тэг для заголовка  -->
     <nav>
         <a href="{% url 'main' %}">Главная</a>
@@ -30,13 +31,34 @@
         <img src="#" alt="Task tracker">
     </div>
     <ul class="menu">
-        <li class="active"><span class="dash">—</span> Главная</li>
-        <li><a href="#">Проект</a></li>
-        <li><a href="#">Профиль</a></li>
-        <li><a href="#">Отчёт по сотрудникам</a></li>
-        <li><a href="#">Отчёт по проектам</a></li>
-        <li><a href="#">Календарный график</a></li>
-        <li><a href="#">Обратная связь</a></li>
+    <li class="{% if request.path == '/' %}active{% endif %}">
+        {% if request.path == '/' %}<span class="dash">—</span>{% endif %}
+        <a href="/">Главная</a>
+    </li>
+    <li class="{% if request.path == '/project/' %}active{% endif %}">
+        {% if request.path == '/project/' %}<span class="dash">—</span>{% endif %}
+        <a href="/project/">Проект</a>
+    </li>
+    <li class="{% if request.path == '/profile/' %}active{% endif %}">
+        {% if request.path == '/profile/' %}<span class="dash">—</span>{% endif %}
+        <a href="/profile/">Профиль</a>
+    </li>
+    <li class="{% if request.path == '/employees/' %}active{% endif %}">
+        {% if request.path == '/employees/' %}<span class="dash">—</span>{% endif %}
+        <a href="/employees/">Отчёт по сотрудникам</a>
+    </li>
+    <li class="{% if request.path == '/projects/' %}active{% endif %}">
+        {% if request.path == '/projects/' %}<span class="dash">—</span>{% endif %}
+        <a href="/projects/">Отчёт по проектам</a>
+    </li>
+    <li class="{% if request.path == '/calendar/' %}active{% endif %}">
+        {% if request.path == '/calendar/' %}<span class="dash">—</span>{% endif %}
+        <a href="/calendar/">Календарный график</a>
+    </li>
+    <li class="{% if request.path == '/feedback/' %}active{% endif %}">
+        {% if request.path == '/feedback/' %}<span class="dash">—</span>{% endif %}
+        <a href="/feedback/">Обратная связь</a>
+    </li>
     </ul>
 </nav>
     <hr>
