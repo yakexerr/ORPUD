@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
 
 from web.forms import RegistrationForm, AuthForm#, TimeSlotForm, TimeSlotTagForm, HolidayForm
@@ -11,7 +12,7 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 
 User = get_user_model()
 
-
+@login_required
 def main_view(request):
     # order_by для того, чтобы сортировать (у нас по дате), а символ "-" - идёт в обратном порядке
     # TODO: Удалить или исправить

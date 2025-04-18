@@ -9,26 +9,10 @@
 <body>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/script.js' %}" defer></script>
-    <h1><a href="{% url 'main' %}">Task tracker</a></h1> <!-- тэг для заголовка  -->
-    <nav>
-        <a href="{% url 'main' %}">Главная</a>
-        {% if user.is_anonymous %}
-            <div style="text-align: right">
-                <a href="{% url 'registration' %}">Регистрация</a>
-                <a href="{% url 'auth' %}">Авторизация</a>
-            </div>
-        {% else %}
-            <div style="text-align: right">
-                {% if not user.is_anonymous %}
-                    Вы авторизованы как <b>{{user.username}}</b>
-                {% endif %}
-                <a href="{% url 'logout' %}">Выход</a>
-            </div>
-        {% endif %}
-    </nav>
+    {% if not user.is_anonymous %}
     <nav class="sidebar" id="sidebar">
     <div class="logo">
-        <img src="#" alt="Task tracker">
+        <img src="{% static 'img/logo.png' %}" alt="Task tracker">
     </div>
     <ul class="menu">
     <li class="{% if request.path == '/' %}active{% endif %}">
@@ -60,8 +44,17 @@
         <a href="/feedback/">Обратная связь</a>
     </li>
     </ul>
+    <div class="logout-container">
+    <div class="username-box">
+        <span class="username-label">Пользователь:</span>
+        <span class="username">{{ user.username }}</span>
+    </div>
+    <a href="{% url 'logout' %}" class="logout-button">Выход</a>
+    </div>
+
+
 </nav>
-    <hr>
+    {% endif %}
     {% block content %}{% endblock %}
 
 </body>
