@@ -15,6 +15,10 @@
                 <a href="{% url 'auth' %}">Авторизация</a>
             </div>
         {% else %}
+<!--        TODO: Исправить в соотсетствии с макетом и models.py -->
+<!--            <a href="{% url 'time_slots_add' %}">Создать тайм-слот</a> &lt;!&ndash; тег для ссылки &ndash;&gt;-->
+<!--            <a href="{% url 'tags' %}">Теги</a> &lt;!&ndash; тег для ссылки &ndash;&gt;-->
+<!--            <a href="{% url 'holidays' %}">Выходные</a> &lt;!&ndash; тег для ссылки &ndash;&gt;-->
             <div style="text-align: right">
                 {% if not user.is_anonymous %}
                     Вы авторизованы как <b>{{user.username}}</b>
