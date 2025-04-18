@@ -20,7 +20,7 @@ Task Management System — это платформа для управления
 ## 📦 Установка и запуск
 ### Клонирование репозитория
 ```sh
-git clone https://https://github.com/yakexerr/ORPUD
+git clone https://github.com/yakexerr/ORPUD.git
 cd task-management
 ```
 ## 🌠 Запуск проекта для разработки
