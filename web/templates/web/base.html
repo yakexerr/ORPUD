@@ -4,6 +4,8 @@
 <html>
 <head>
     <title>Task tracker</title> <!-- это то что наверху в иконке пишется -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/script.js' %}" defer></script>
 </head>
 <body>
     <h1><a href="{% url 'main' %}">Task tracker</a></h1> <!-- тэг для заголовка  -->
@@ -23,6 +25,20 @@
             </div>
         {% endif %}
     </nav>
+    <nav class="sidebar" id="sidebar">
+    <div class="logo">
+        <img src="#" alt="Task tracker">
+    </div>
+    <ul class="menu">
+        <li class="active"><span class="dash">—</span> Главная</li>
+        <li><a href="#">Проект</a></li>
+        <li><a href="#">Профиль</a></li>
+        <li><a href="#">Отчёт по сотрудникам</a></li>
+        <li><a href="#">Отчёт по проектам</a></li>
+        <li><a href="#">Календарный график</a></li>
+        <li><a href="#">Обратная связь</a></li>
+    </ul>
+</nav>
     <hr>
     {% block content %}{% endblock %}
 
