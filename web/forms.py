@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from web.models import TimeSlot, TimeSlotTag, Holiday
+# from web.models import TimeSlot, TimeSlotTag, Holiday
 
 User = get_user_model()
 class RegistrationForm(forms.ModelForm):
