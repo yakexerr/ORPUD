@@ -1,8 +1,12 @@
-html, body {
+html {
   margin: 0;
   padding: 0;
 }
-
+body {
+  margin: 0;
+  padding: 0;
+  display: flex; /* позволяет расположить блоки в ряд */
+}
 /* Стили навигации */
 .sidebar {
   width: 250px;
@@ -129,3 +133,9 @@ html, body {
     background-color: #e67600;
 }
 
+/* Стили блока контента */
+
+.main-content {
+  flex: 1; /* занимает всё оставшееся пространство */
+  padding: 20px;
+}

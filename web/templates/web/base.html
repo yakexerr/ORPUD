@@ -27,13 +27,13 @@
         {% if request.path == '/profile/' %}<span class="dash">—</span>{% endif %}
         <a href="/profile/">Профиль</a>
     </li>
-    <li class="{% if request.path == '/employees/' %}active{% endif %}">
-        {% if request.path == '/employees/' %}<span class="dash">—</span>{% endif %}
-        <a href="/employees/">Отчёт по сотрудникам</a>
+    <li class="{% if request.path == '/employees_dashboard/' %}active{% endif %}">
+        {% if request.path == '/employees_dashboard/' %}<span class="dash">—</span>{% endif %}
+        <a href="/employees_dashboard/">Отчёт по сотрудникам</a>
     </li>
-    <li class="{% if request.path == '/projects/' %}active{% endif %}">
-        {% if request.path == '/projects/' %}<span class="dash">—</span>{% endif %}
-        <a href="/projects/">Отчёт по проектам</a>
+    <li class="{% if request.path == '/projects_dashboard/' %}active{% endif %}">
+        {% if request.path == '/projects_dashboard/' %}<span class="dash">—</span>{% endif %}
+        <a href="/projects_dashboard/">Отчёт по проектам</a>
     </li>
     <li class="{% if request.path == '/calendar/' %}active{% endif %}">
         {% if request.path == '/calendar/' %}<span class="dash">—</span>{% endif %}
@@ -56,7 +56,11 @@
 
 </nav>
     {% endif %}
+
+  <main class="main-content">
     {% block content %}{% endblock %}
+  </main>
+
 
 </body>
 

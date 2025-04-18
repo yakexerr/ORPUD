@@ -65,9 +65,38 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
+@login_required
+def project_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/project.html', {})
+
+
+@login_required
+def profile_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/profile.html', {})
+
+@login_required
+def employees_dashboard_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/employees_dashboard.html', {})
+
+@login_required
+def projects_dashboard_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/projects_dashboard.html', {})
+
+@login_required
+def calendar_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/calendar.html', {})
+
+@login_required
+def feedback_view(request):
+    # TODO: Реализовать
+    return render(request, 'web/feedback.html', {})
+
 # TODO: Переделать формочки под models.py
-
-
 # # @login_required # зачита от неавторизованности
 # def time_slot_add_view(request):
 #     if request.method == "POST":
