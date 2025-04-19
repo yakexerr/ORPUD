@@ -81,50 +81,63 @@ body {
 }
 
 /* Стили главного меню */
-.page-title {
-    font-size: 32px;
-    margin-bottom: 20px;
-    font-weight: bold;
+.dashboard-section {
+    background-color: #f2f4f7; /* светло-серый фон, светлее чем карточки */
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
-    font-size: 24px;
-    margin: 30px 0 15px;
-    color: #333;
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 16px;
 }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+.card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .card {
-    background: #fff;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: rgba(230, 233, 240, 0.9); /* немного темнее чем фон секции */
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    background-color: rgba(215, 220, 230, 0.95);
 }
 
-.card h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    color: #2c3e50;
+.card-title {
+    font-weight: 600;
+    margin-bottom: 4px;
 }
 
-.card p {
-    margin: 5px 0;
-    font-size: 14px;
+.card-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     color: #555;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
 }
+
+.card-info .icon {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-style: normal;
+}
+
 
 /* Стиль кнопки выхода из акканута */
 .logout-container {

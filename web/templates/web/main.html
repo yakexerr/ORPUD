@@ -8,71 +8,90 @@
     <a href="{% url 'tags' %}">Добавить теги</a> <br>
     <a href="{% url 'add_employee' %}">Добавить сотрудника</a>
 
-{% if role == 'manager' %}
-    <section>
-        <h2 class="section-title">Мои проекты</h2>
-        <div class="card-grid">
-            {% for project in projects %}
-                <div class="card">
-                    <h3>{{ project.title }}</h3>
-                    <p>{{ project.description }}</p>
-                    <p><strong>Дедлайн:</strong> {{ project.deadline|date:"d.m.Y H:i" }}</p>
-                    <p><strong>Статус:</strong> {{ project.is_done|yesno:"Завершён,В процессе" }}</p>
-                </div>
-            {% empty %}
-                <p>Нет активных проектов.</p>
-            {% endfor %}
-        </div>
-    </section>
+<div class="dashboard">
 
-    <section>
-        <h2 class="section-title">Сотрудники</h2>
-        <div class="card-grid">
-            {% for employee in employees %}
-                <div class="card">
-                    <h3>{{ employee.fio }}</h3>
-                    <p><strong>Должность:</strong> {{ employee.position }}</p>
-                    <p><strong>Email:</strong> {{ employee.email }}</p>
-                    <p><strong>Телефон:</strong> {{ employee.phone }}</p>
-                </div>
-            {% empty %}
-                <p>Сотрудники не назначены.</p>
-            {% endfor %}
-        </div>
-    </section>
+<!--  {% if user.is_authenticated %}-->
 
-{% elif role == 'employee' %}
-    <section>
-        <h2 class="section-title">Мои задачи</h2>
-        <div class="card-grid">
-            {% for task in tasks %}
-                <div class="card">
-                    <h3>{{ task.title }}</h3>
-                    <p>{{ task.description|truncatechars:100 }}</p>
-                    <p><strong>Приоритет:</strong> {{ task.get_priority_display }}</p>
-                    <p><strong>Дедлайн:</strong> {{ task.deadline|date:"d.m.Y H:i" }}</p>
-                    <p><strong>Статус:</strong> {{ task.is_done|yesno:"Выполнена,В процессе" }}</p>
-                </div>
-            {% empty %}
-                <p>Нет активных задач.</p>
-            {% endfor %}
+    {% if manager_account %}
+      <!-- Блок проектов менеджера -->
+      <div class="dashboard-section">
+        <div class="section-title">Проекты</div>
+        <div class="card-list">
+          {% for project in manager_projects %}
+          <div class="card">
+            <div>
+              <div class="card-title">{{ project.title }}</div>
+              <div class="card-info">
+                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                <span class="icon">👥</span>
+                {% for emp in project.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
-    </section>
+      </div>
 
-    <section>
-        <h2 class="section-title">Проекты</h2>
-        <div class="card-grid">
-            {% for project in projects %}
-                <div class="card">
-                    <h3>{{ project.title }}</h3>
-                    <p>{{ project.description|truncatechars:100 }}</p>
-                    <p><strong>Менеджер:</strong> {{ project.manager.fio }}</p>
-                    <p><strong>Дедлайн:</strong> {{ project.deadline|date:"d.m.Y H:i" }}</p>
-                </div>
-            {% empty %}
-                <p>Вы не добавлены ни в один проект.</p>
-            {% endfor %}
+      <!-- Блок сотрудников -->
+      <div class="dashboard-section">
+        <div class="section-title">Сотрудники</div>
+        <div class="card-list">
+          {% for emp in manager_employees %}
+          <div class="card">
+            <div class="card-title">{{ emp.fio }}</div>
+            <div class="card-info">
+              <span class="icon">📞</span>{{ emp.phone }}
+              <span class="icon">✉️</span>{{ emp.email }}
+            </div>
+          </div>
+          {% endfor %}
         </div>
-    </section>
-{% endif %}
+      </div>
+    {% endif %}
+
+    {% if employee_account %}
+      <!-- Блок задач сотрудника -->
+      <div class="dashboard-section">
+        <div class="section-title">Мои задачи</div>
+        <div class="card-list">
+          {% for task in employee_tasks %}
+          <div class="card">
+            <div>
+              <div class="card-title">{{ task.title }}</div>
+              <div class="card-info">
+                <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+                <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Блок проектов сотрудника -->
+      <div class="dashboard-section">
+        <div class="section-title">Проекты</div>
+        <div class="card-list">
+          {% for project in employee_projects %}
+          <div class="card">
+            <div>
+              <div class="card-title">{{ project.title }}</div>
+              <div class="card-info">
+                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                <span class="icon">👥</span>
+                {% for emp in project.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+<!--  {% endif %}-->
+
+</div>
 {% endblock %}
+

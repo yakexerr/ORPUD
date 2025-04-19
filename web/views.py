@@ -11,28 +11,28 @@ User = get_user_model()
 @login_required
 def main_view(request):
     user = request.user
-    is_manager = ManagerAccount.objects.filter(email=user.email).exists()
-    is_employee = EmployeeAccount.objects.filter(email=user.email).exists()
-
     context = {}
 
-    if is_manager:
+    try:
         manager = ManagerAccount.objects.get(email=user.email)
-        projects = Project.objects.filter(manager=manager)
-        employees = EmployeeAccount.objects.filter(project__in=projects).distinct()
-        context['role'] = 'manager'
-        context['projects'] = projects
-        context['employees'] = employees
+        context['manager_account'] = manager
+        context['manager_projects'] = Project.objects.filter(manager=manager)
+        context['manager_employees'] = EmployeeAccount.objects.filter(
+            id__in=context['manager_projects'].values_list('employees', flat=True)
+        ).distinct()
+    except ManagerAccount.DoesNotExist:
+        pass
 
-    elif is_employee:
+    try:
         employee = EmployeeAccount.objects.get(email=user.email)
-        tasks = Task.objects.filter(employees=employee)
-        projects = Project.objects.filter(employees=employee).distinct()
-        context['role'] = 'employee'
-        context['tasks'] = tasks
-        context['projects'] = projects
+        context['employee_account'] = employee
+        context['employee_tasks'] = Task.objects.filter(employees=employee)
+        context['employee_projects'] = Project.objects.filter(employees=employee)
+    except EmployeeAccount.DoesNotExist:
+        pass
 
     return render(request, 'web/main.html', context)
+
 
 
 def registration_view(request):
