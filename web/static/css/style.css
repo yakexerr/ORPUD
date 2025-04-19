@@ -80,6 +80,20 @@ body {
   }
 }
 
+/* Стили главного меню */
+.project-list, .employee-list, .task-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.project-list li, .employee-list li, .task-list li {
+    background-color: #f5f5f5;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Стиль кнопки выхода из акканута */
 .logout-container {
     display: flex;

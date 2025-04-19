@@ -7,4 +7,50 @@
     <a href="{% url 'add_task' %}">Добавить задачу</a> <br>
     <a href="{% url 'tags' %}">Добавить теги</a> <br>
     <a href="{% url 'add_employee' %}">Добавить сотрудника</a>
+{% if role == 'manager' %}
+    <h2>Ваши проекты</h2>
+    <ul class="project-list">
+        {% for project in projects %}
+            <li>
+                <strong>{{ project.title }}</strong><br>
+                <small>Дедлайн: {{ project.deadline|date:"d.m.Y H:i" }}</small>
+            </li>
+        {% empty %}
+            <li>Проектов пока нет.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Сотрудники в проектах</h2>
+    <ul class="employee-list">
+        {% for employee in employees %}
+            <li>{{ employee.fio }} — {{ employee.position }}</li>
+        {% empty %}
+            <li>Сотрудников пока нет.</li>
+        {% endfor %}
+    </ul>
+
+{% elif role == 'employee' %}
+    <h2>Ваши задачи</h2>
+    <ul class="task-list">
+        {% for task in tasks %}
+            <li>
+                <strong>{{ task.title }}</strong><br>
+                Приоритет: {{ task.get_priority_display }}<br>
+                Дедлайн: {{ task.deadline|date:"d.m.Y H:i" }}
+            </li>
+        {% empty %}
+            <li>Задач пока нет.</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Проекты, в которых вы участвуете</h2>
+    <ul class="project-list">
+        {% for project in projects %}
+            <li>{{ project.title }} — Менеджер: {{ project.manager.fio }}</li>
+        {% empty %}
+            <li>Вы пока не участвуете в проектах.</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 {% endblock %}

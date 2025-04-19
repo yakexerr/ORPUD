@@ -2,7 +2,7 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
-from web.models import Task, EmployeeAccount, TaskTag
+from web.models import Task, EmployeeAccount, TaskTag, Project, EmployeeAccount, Task, ManagerAccount
 from web.forms import RegistrationForm, AuthForm, TaskForm, EmployeeForm, TaskTagForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
@@ -10,16 +10,29 @@ User = get_user_model()
 
 @login_required
 def main_view(request):
-    # order_by для того, чтобы сортировать (у нас по дате), а символ "-" - идёт в обратном порядке
-    # TODO: Удалить или исправить
-    #  timeslots = TimeSlot.objects.all().order_by('-start_date')
-    employees = EmployeeAccount.objects.all()
-    return render(request, 'web/main.html', {
-        "employees": employees
-        # "year" : year,
-        # "timeslots": timeslots,
-        # "form": TimeSlotForm(),
-    })
+    user = request.user
+    is_manager = ManagerAccount.objects.filter(email=user.email).exists()
+    is_employee = EmployeeAccount.objects.filter(email=user.email).exists()
+
+    context = {}
+
+    if is_manager:
+        manager = ManagerAccount.objects.get(email=user.email)
+        projects = Project.objects.filter(manager=manager)
+        employees = EmployeeAccount.objects.filter(project__in=projects).distinct()
+        context['role'] = 'manager'
+        context['projects'] = projects
+        context['employees'] = employees
+
+    elif is_employee:
+        employee = EmployeeAccount.objects.get(email=user.email)
+        tasks = Task.objects.filter(employees=employee)
+        projects = Project.objects.filter(employees=employee).distinct()
+        context['role'] = 'employee'
+        context['tasks'] = tasks
+        context['projects'] = projects
+
+    return render(request, 'web/main.html', context)
 
 
 def registration_view(request):
