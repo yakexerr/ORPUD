@@ -3,54 +3,76 @@
 {% extends 'web/base.html' %}
 {% block content %}
 <!-- TODO: Реализовать в соответствии с макетом и models.py -->
-<h1>Главная</h1>
+<h1 class="page-title">Главная</h1>
     <a href="{% url 'add_task' %}">Добавить задачу</a> <br>
     <a href="{% url 'tags' %}">Добавить теги</a> <br>
     <a href="{% url 'add_employee' %}">Добавить сотрудника</a>
-{% if role == 'manager' %}
-    <h2>Ваши проекты</h2>
-    <ul class="project-list">
-        {% for project in projects %}
-            <li>
-                <strong>{{ project.title }}</strong><br>
-                <small>Дедлайн: {{ project.deadline|date:"d.m.Y H:i" }}</small>
-            </li>
-        {% empty %}
-            <li>Проектов пока нет.</li>
-        {% endfor %}
-    </ul>
 
-    <h2>Сотрудники в проектах</h2>
-    <ul class="employee-list">
-        {% for employee in employees %}
-            <li>{{ employee.fio }} — {{ employee.position }}</li>
-        {% empty %}
-            <li>Сотрудников пока нет.</li>
-        {% endfor %}
-    </ul>
+{% if role == 'manager' %}
+    <section>
+        <h2 class="section-title">Мои проекты</h2>
+        <div class="card-grid">
+            {% for project in projects %}
+                <div class="card">
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description }}</p>
+                    <p><strong>Дедлайн:</strong> {{ project.deadline|date:"d.m.Y H:i" }}</p>
+                    <p><strong>Статус:</strong> {{ project.is_done|yesno:"Завершён,В процессе" }}</p>
+                </div>
+            {% empty %}
+                <p>Нет активных проектов.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section>
+        <h2 class="section-title">Сотрудники</h2>
+        <div class="card-grid">
+            {% for employee in employees %}
+                <div class="card">
+                    <h3>{{ employee.fio }}</h3>
+                    <p><strong>Должность:</strong> {{ employee.position }}</p>
+                    <p><strong>Email:</strong> {{ employee.email }}</p>
+                    <p><strong>Телефон:</strong> {{ employee.phone }}</p>
+                </div>
+            {% empty %}
+                <p>Сотрудники не назначены.</p>
+            {% endfor %}
+        </div>
+    </section>
 
 {% elif role == 'employee' %}
-    <h2>Ваши задачи</h2>
-    <ul class="task-list">
-        {% for task in tasks %}
-            <li>
-                <strong>{{ task.title }}</strong><br>
-                Приоритет: {{ task.get_priority_display }}<br>
-                Дедлайн: {{ task.deadline|date:"d.m.Y H:i" }}
-            </li>
-        {% empty %}
-            <li>Задач пока нет.</li>
-        {% endfor %}
-    </ul>
+    <section>
+        <h2 class="section-title">Мои задачи</h2>
+        <div class="card-grid">
+            {% for task in tasks %}
+                <div class="card">
+                    <h3>{{ task.title }}</h3>
+                    <p>{{ task.description|truncatechars:100 }}</p>
+                    <p><strong>Приоритет:</strong> {{ task.get_priority_display }}</p>
+                    <p><strong>Дедлайн:</strong> {{ task.deadline|date:"d.m.Y H:i" }}</p>
+                    <p><strong>Статус:</strong> {{ task.is_done|yesno:"Выполнена,В процессе" }}</p>
+                </div>
+            {% empty %}
+                <p>Нет активных задач.</p>
+            {% endfor %}
+        </div>
+    </section>
 
-    <h2>Проекты, в которых вы участвуете</h2>
-    <ul class="project-list">
-        {% for project in projects %}
-            <li>{{ project.title }} — Менеджер: {{ project.manager.fio }}</li>
-        {% empty %}
-            <li>Вы пока не участвуете в проектах.</li>
-        {% endfor %}
-    </ul>
+    <section>
+        <h2 class="section-title">Проекты</h2>
+        <div class="card-grid">
+            {% for project in projects %}
+                <div class="card">
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description|truncatechars:100 }}</p>
+                    <p><strong>Менеджер:</strong> {{ project.manager.fio }}</p>
+                    <p><strong>Дедлайн:</strong> {{ project.deadline|date:"d.m.Y H:i" }}</p>
+                </div>
+            {% empty %}
+                <p>Вы не добавлены ни в один проект.</p>
+            {% endfor %}
+        </div>
+    </section>
 {% endif %}
-
 {% endblock %}
