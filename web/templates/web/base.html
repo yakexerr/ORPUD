@@ -29,10 +29,6 @@
         {% if request.path == '/profile/' %}<span class="dash">—</span>{% endif %}
         <a href="/profile/">Профиль</a>
     </li>
-    <li class="{% if request.path == '/feedback/' %}active{% endif %}">
-        {% if request.path == '/tasks/add/' %}<span class="dash">—</span>{% endif %}
-        <a href="/tasks/add/">Добавление задачи</a>
-    </li>
     <li class="{% if request.path == '/employees_dashboard/' %}active{% endif %}">
         {% if request.path == '/employees_dashboard/' %}<span class="dash">—</span>{% endif %}
         <a href="/employees_dashboard/">Отчёт по сотрудникам</a>

@@ -2,8 +2,8 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
-from web.models import Task
-from web.forms import RegistrationForm, AuthForm, TaskForm
+from web.models import Task, EmployeeAccount, TaskTag
+from web.forms import RegistrationForm, AuthForm, TaskForm, EmployeeForm, TaskTagForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
 User = get_user_model()
@@ -13,7 +13,9 @@ def main_view(request):
     # order_by для того, чтобы сортировать (у нас по дате), а символ "-" - идёт в обратном порядке
     # TODO: Удалить или исправить
     #  timeslots = TimeSlot.objects.all().order_by('-start_date')
+    employees = EmployeeAccount.objects.all()
     return render(request, 'web/main.html', {
+        "employees": employees
         # "year" : year,
         # "timeslots": timeslots,
         # "form": TimeSlotForm(),
@@ -95,14 +97,41 @@ def feedback_view(request):
 
 @login_required
 def add_task_view(request, id=None):
-    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
-    form = TaskForm(instance=task)
+    form = TaskForm()
     if request.method == 'POST':
-        form = TaskForm(data=request.POST, instance=form, initial={"user": request.user})
+        form = TaskForm(data=request.POST, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
     return render(request, 'web/add_task.html', {"form": form})
+
+@login_required
+def add_employee_view(request):
+    form = EmployeeForm()
+    if request.method == 'POST':
+        form = EmployeeForm(data=request.POST, files=request.FILES, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    return render(request, 'web/add_employee.html', {"form": form})
+
+
+@login_required
+def task_tags_view(request):
+    tags = TaskTag.objects.all() #Доступные теги
+    form = TaskTagForm()
+    if request.method == "POST":
+        form = TaskTagForm(data=request.POST, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect('tags')
+    return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
+
+
+def delete_task_tag_view(request, id):
+    tag = get_object_or_404(TaskTag, user=request.user, id=id)
+    tag.delete()
+    return redirect('tags')
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности
