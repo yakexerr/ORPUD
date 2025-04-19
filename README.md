@@ -63,6 +63,7 @@ docker-compose up -d
 После того как контейнеры запустятся, вам нужно применить миграции для базы данных. Выполните команду для применения миграций внутри контейнера с Django:
 
 ```bash
+docker exec -it orpud-web-1 python manage.py makemigrations
 docker exec -it orpud-web-1 python manage.py migrate
 ```
 
