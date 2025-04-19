@@ -12,7 +12,9 @@
     {% if not user.is_anonymous %}
     <nav class="sidebar" id="sidebar">
     <div class="logo">
-        <img src="{% static 'img/logo.png' %}" alt="Task tracker">
+        <a href="/">
+            <img src="{% static 'img/logo.png' %}" alt="Task tracker">
+        </a>
     </div>
     <ul class="menu">
     <li class="{% if request.path == '/' %}active{% endif %}">

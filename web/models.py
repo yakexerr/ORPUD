@@ -7,9 +7,9 @@ User = get_user_model()
 
 class ManagerAccount(models.Model):
     fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
+    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
     position = models.CharField(max_length=256, verbose_name="Должность")
-    email = models.CharField(max_length=256, verbose_name="Email")
+    email = models.EmailField(max_length=256, verbose_name="Email")
 
     def __str__(self):
         return self.fio
@@ -17,9 +17,9 @@ class ManagerAccount(models.Model):
 
 class EmployeeAccount(models.Model):
     fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
+    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
     position = models.CharField(max_length=256, verbose_name="Должность")
-    email = models.CharField(max_length=256, verbose_name="Email")
+    email = models.EmailField(max_length=256, verbose_name="Email")
     phone = models.CharField(max_length=256, verbose_name="Телефон")
 
     def __str__(self):
@@ -33,6 +33,7 @@ class TaskTag(models.Model):
     def __str__(self):
         return self.title
 
+
 class Task(models.Model):
     HIGH = 3
     MEDIUM = 2
@@ -45,7 +46,7 @@ class Task(models.Model):
     ]
 
     title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
-    description = models.CharField(max_length=512, default="", verbose_name="Описание")
+    description = models.TextField(max_length=512, default="", verbose_name="Описание")
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     date_added = models.DateTimeField(default=timezone.now)
     deadline = models.DateTimeField()
@@ -65,7 +66,6 @@ class TaskComment:
     date_sent = models.DateTimeField()
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Название")
-
 
 
 class Project(models.Model):

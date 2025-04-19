@@ -4,4 +4,7 @@
 {% block content %}
 <!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Главная</h1>
+    <a href="{% url 'add_task' %}">Добавить задачу</a> <br>
+    <a href="{% url 'tags' %}">Добавить теги</a> <br>
+    <a href="{% url 'add_employee' %}">Добавить сотрудника</a>
 {% endblock %}
