@@ -1,91 +1,82 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 
+class ManagerAccount(models.Model):
+    fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
+    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
+    position = models.CharField(max_length=256, verbose_name="Должность")
+    email = models.CharField(max_length=256, verbose_name="Email")
 
-class Task(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
+    def __str__(self):
+        return self.fio
 
-    PRIORITY_CHOICES = [
-        ('low', 'Low'),
-        ('medium', 'Medium'),
-        ('high', 'High'),
-    ]
-    priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
 
-    deadline = models.DateTimeField(null=True, blank=True)
-    estimated_time = models.DurationField()  # Время на выполнение
+class EmployeeAccount(models.Model):
+    fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
+    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
+    position = models.CharField(max_length=256, verbose_name="Должность")
+    email = models.CharField(max_length=256, verbose_name="Email")
+    phone = models.CharField(max_length=256, verbose_name="Телефон")
 
-    STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
-        ('on_hold', 'On Hold'),
-    ]
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    def __str__(self):
+        return self.fio
 
-    # Дополнительные поля
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    employee = models.ForeignKey('Employee', on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True, blank=True)
+
+class TaskTag(models.Model):
+    title = models.CharField(max_length=256, verbose_name="Название", null=False, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
+class Task(models.Model):
+    HIGH = 3
+    MEDIUM = 2
+    LOW = 1
 
-class Employee(models.Model):
-    full_name = models.CharField(max_length=100)
-    position = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
-    week_hours = models.IntegerField()
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    PRIORITY_CHOICES = [
+        (HIGH, "High"),
+        (MEDIUM, "Medium"),
+        (LOW, "Low")
+    ]
 
-
-class TaskLog(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True)
-    old_status = models.CharField(max_length=20)
-    new_status = models.CharField(max_length=20)
-    changed_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Task {self.task.id} status changed from {self.old_status} to {self.new_status}"
-
-
-class Assignment(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    assigned_time = models.FloatField()  # Время, затраченное на выполнение
-    assigned_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.employee.full_name} assigned to {self.task.title}"
-
-
-class TimeSlot(models.Model):
-    title = models.CharField(max_length=256)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    is_realtime = models.BooleanField(default=False)
+    title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
+    description = models.CharField(max_length=512, default="", verbose_name="Описание")
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
+    date_added = models.DateTimeField(default=timezone.now)
+    deadline = models.DateTimeField()
+    tags = models.ManyToManyField(TaskTag, verbose_name="Теги", blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
+    is_done = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"{self.title} ({self.start_date} - {self.end_date})"
+
+class TaskLogs(models.Model): #Если что переименуйте
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    date_task_take = models.DateTimeField()
+    date_task_close = models.DateTimeField()
+
+
+class TaskComment:
+    date_sent = models.DateTimeField()
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Название")
 
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=200)
-    description = models.TextField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
+    description = models.CharField(max_length=512, default="", verbose_name="Описание")
+    date_create = models.DateTimeField(default=timezone.now)
+    deadline = models.DateTimeField()
+    is_done = models.BooleanField(default=False)
+    tasks = models.ManyToManyField(Task, verbose_name="Задачи")
+    manager = models.ForeignKey(ManagerAccount, default=1, verbose_name="Менеджер", on_delete=models.PROTECT)
+    employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
 
     def __str__(self):
-        return self.name
-
-
+        return f"{self.title}, owner: {self.manager}"

@@ -1,0 +1,141 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 0;
+  padding: 0;
+  display: flex; /* позволяет расположить блоки в ряд */
+}
+/* Стили навигации */
+.sidebar {
+  width: 250px;
+  background-color: #f9f9fb;
+  padding: 40px 20px;
+  border-right: 1px solid #ddd;
+  height: 100vh;
+  box-sizing: border-box;  /* учитывает padding внутри height */
+  overflow: hidden;        /* прячет лишнее, если всё же что-то вылезет */
+}
+
+
+.logo {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.logo img {
+  height: 100px;
+  width: 100%; /* или фиксированная ширина */
+  object-fit: cover; /* обрезает изображение, сохраняя пропорции */
+  object-position: center 50%; /* если нужно обрезать снизу */
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  margin: 18px 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000;
+}
+
+.menu li a {
+  text-decoration: none;
+  color: #000;
+  transition: 0.2s;
+}
+
+.menu li a:hover {
+  font-weight: 500;
+}
+
+.menu li.active {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.menu li.active .dash {
+  margin-right: 8px;
+  font-size: 18px;
+  line-height: 0;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+}
+
+/* Стиль кнопки выхода из акканута */
+.logout-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+}
+
+.username-box {
+    background-color: #fff4e6; /* светло-оранжевый фон */
+    border: 1px solid #ffd699;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.username-label {
+    font-size: 12px;
+    color: #a66f00;
+    opacity: 0.8;
+}
+
+.username {
+    font-size: 16px;
+    font-weight: 600;
+    color: #cc7a00;
+}
+
+.logout-button {
+    padding: 10px 20px;
+    background-color: #ffa94d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.logout-button:hover {
+    background-color: #ff922b;
+    transform: scale(1.05);
+}
+
+.logout-button:active {
+    background-color: #e67600;
+}
+
+/* Стили блока контента */
+
+.main-content {
+  flex: 1; /* занимает всё оставшееся пространство */
+  padding: 20px;
+}

@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
+# from web.models import TimeSlot, TimeSlotTag, Holiday
+
 User = get_user_model()
 class RegistrationForm(forms.ModelForm):
     password2 = forms.CharField(widget=forms.PasswordInput) #чтобы пароль не отображался
@@ -20,3 +22,50 @@ class RegistrationForm(forms.ModelForm):
 class AuthForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+# TODO: переделать в соответствии с models.py
+'''
+class TimeSlotForm(forms.ModelForm):
+    # переопределяем метод save
+    def save(self, commit=True):
+        self.instance.user = self.initial['user']
+        return super().save(commit)
+
+    class Meta:
+        model = TimeSlot # указываем что форма на модели таймслот
+        fields = ('title', 'start_date', 'end_date', 'image', 'tags')
+        widgets = {
+            "start_date": forms.DateTimeInput(
+                attrs={"type": "datetime-local"}, format='%Y-%m-%dT%H:%M'
+            ),
+            "end_date": forms.DateTimeInput(
+                attrs={"type": "datetime-local"}, format='%Y-%m-%dT%H:%M'
+            )
+        }
+
+class TimeSlotTagForm(forms.ModelForm):
+    # переопределяем метод save
+    def save(self, commit=True):
+        self.instance.user = self.initial['user']
+        return super().save(commit)
+
+    class Meta:
+        model = TimeSlotTag # указываем что форма на модели таймслот
+        fields = ('title',)
+
+
+class HolidayForm(forms.ModelForm):
+    # переопределяем метод save
+    def save(self, commit=True):
+        self.instance.user = self.initial['user']
+        return super().save(commit)
+
+    class Meta:
+        model = Holiday # указываем что форма на модели таймслот
+        fields = ('date',)
+        widgets = {
+            "date": forms.DateTimeInput(
+                attrs={"type": "date"}, format='%Y-%m-%d'
+            ),
+        }
+'''
