@@ -55,18 +55,17 @@ class Task(models.Model):
     employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
     is_done = models.BooleanField(default=False)
 
-
+# TODO: Разобраться c связью многие ко многим и полями date_task_take, date_task_close для EmploerAccount и Task
 class TaskLogs(models.Model): #Если что переименуйте
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     date_task_take = models.DateTimeField()
     date_task_close = models.DateTimeField()
 
-
+# TODO: Разобраться почему нету в админ панели
 class TaskComment:
     date_sent = models.DateTimeField()
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Название")
-
 
 class Project(models.Model):
     title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
