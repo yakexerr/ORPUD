@@ -45,7 +45,7 @@ class Task(models.Model):
     ]
 
     title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
-    description = models.CharField(max_length=512, default="", verbose_name="Описание")
+    description = models.TextField(max_length=512, default="", verbose_name="Описание")
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     date_added = models.DateTimeField(default=timezone.now)
     deadline = models.DateTimeField()

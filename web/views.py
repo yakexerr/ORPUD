@@ -1,14 +1,10 @@
 from datetime import datetime
-
-from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
-
-from web.forms import RegistrationForm, AuthForm#, TimeSlotForm, TimeSlotTagForm, HolidayForm
+from web.models import Task
+from web.forms import RegistrationForm, AuthForm, TaskForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
-
-# from web.models import TimeSlot, TimeSlotTag, Holiday
 
 User = get_user_model()
 
@@ -38,6 +34,7 @@ def registration_view(request):
             user.set_password(form.cleaned_data['password'])
             user.save()
             is_success = True
+            return redirect('auth')
     return render(request, 'web/registration.html',
                   {
                       "form": form,
@@ -95,6 +92,17 @@ def calendar_view(request):
 def feedback_view(request):
     # TODO: Реализовать
     return render(request, 'web/feedback.html', {})
+
+@login_required
+def add_task_view(request, id=None):
+    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
+    form = TaskForm(instance=task)
+    if request.method == 'POST':
+        form = TaskForm(data=request.POST, instance=form, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    return render(request, 'web/add_task.html', {"form": form})
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности

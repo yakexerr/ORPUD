@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
-
-# from web.models import TimeSlot, TimeSlotTag, Holiday
+from web.models import Task, EmployeeAccount
 
 User = get_user_model()
+
+
 class RegistrationForm(forms.ModelForm):
     password2 = forms.CharField(widget=forms.PasswordInput) #чтобы пароль не отображался
 
@@ -22,6 +23,24 @@ class RegistrationForm(forms.ModelForm):
 class AuthForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class TaskForm(forms.ModelForm):
+    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
+    priority = forms.ChoiceField(choices=Task.PRIORITY_CHOICES, widget=forms.Select, initial=Task.MEDIUM, label="Приоритет")
+
+    def save(self, commit=True):
+        self.instance.user = self.initial['user']
+        return super().save(commit)
+
+    class Meta:
+        model = Task
+        exclude = ('user', 'tags', 'is_done', 'date_added')
+
+
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = EmployeeAccount
 
 # TODO: переделать в соответствии с models.py
 '''
