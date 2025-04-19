@@ -1,5 +1,15 @@
 from datetime import datetime
 
+#--------- для отправки письма ------------
+
+
+from django.core.mail import EmailMessage
+from django.shortcuts import render, redirect
+from .forms import FeedbackForm
+
+
+#-------------------------------------------
+
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from web.forms import RegistrationForm, AuthForm
@@ -129,11 +139,35 @@ def feedback_view(request):
     if request.method == "POST":
         form = FeedbackForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("main")
+            feedback = form.save()
+
+            # Формируем письмо
+            subject = "Новое сообщение с формы обратной связи"
+            message = f"""
+                Имя: {feedback.name}
+                Фамилия: {feedback.last_name}
+                Email: {feedback.email}
+                Телефон: {feedback.phone}
+                Сообщение:
+                {feedback.message}
+            """
+            # Создаём объект EmailMessage
+            email = EmailMessage(
+                subject,
+                message,
+                'task_trackerorpud@mail.ru',  # От кого
+                ['task_trackerorpud@mail.ru'],  # Кому
+            )
+            # Добавляем заголовок Reply-To
+            email.reply_to = [feedback.email]  # Почта пользователя для ответа
+            # Отправляем письмо
+            email.send(fail_silently=False)
+            # Перенаправляем пользователя на главную страницу
+            return redirect("feedback")
     else:
         form = FeedbackForm()
     return render(request, 'web/feedback.html', {"form": form})
+
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности
