@@ -175,3 +175,4 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 web/migrations/0006_feedback.py
+requirements.txt

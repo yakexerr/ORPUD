@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from web.forms import RegistrationForm, AuthForm
 from django.contrib.auth import get_user_model, authenticate, login
-
+from .forms import FeedbackForm
 User = get_user_model()
 
 def main_view(request):
@@ -126,8 +126,14 @@ def calendar_view(request):
 
 @login_required
 def feedback_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/feedback.html', {})
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    else:
+        form = FeedbackForm()
+    return render(request, 'web/feedback.html', {"form": form})
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности

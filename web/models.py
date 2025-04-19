@@ -80,3 +80,14 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.title}, owner: {self.manager}"
+
+class FeedBack(models.Model):
+    name = models.CharField('Имя', max_length=100)
+    last_name = models.CharField('Фамилия', max_length=100, blank=True, null=True)
+    email = models.EmailField('Почта')
+    phone = models.CharField('Телефон:', max_length=20, blank=True)
+    message = models.TextField('Сообщение')
+    created_at = models.DateTimeField('Дата создания',auto_now_add=True)
+
+    def __str__(self):
+        return self.name

@@ -1,7 +1,40 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
-<h1>Обратная связь</h1>
+<div class="feedback-container">
+    <h1 class="page-title">Обратная связь</h1>
+    
+    <div class="feedback-form">
+        <h2>Оставить заявку</h2>
+        <form action="" method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">Ваше имя:</label>
+                {{ form.name }}
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Email:</label>
+                {{ form.email }}
+            </div>
+            
+            <!-- Добавлен блок для текста сообщения -->
+            <div class="form-group">
+                <label class="form-label">Ваше сообщение:</label>
+                {{ form.message }}
+            </div>
+
+            <button type="submit" class="submit-button">Оставить заявку</button>
+        </form>
+    </div>
+    
+    <div class="contacts-section">
+        <h3>Наши контакты:</h3>
+        <ul class="contacts-list">
+            <li><strong>Email:</strong> s@s.ru</li>
+            <li><strong>Телефон:</strong> +7-800-555-35-35</li>
+            <li><strong>Адрес:</strong> Россия, Где-то, ул. Пушкина, д. Колотушкина</li>
+        </ul>
+    </div>
+</div>
 {% endblock %}

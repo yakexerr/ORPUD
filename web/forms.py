@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from .models import FeedBack
 
 # from web.models import TimeSlot, TimeSlotTag, Holiday
+from web.models import FeedBack
+
 
 User = get_user_model()
 class RegistrationForm(forms.ModelForm):
@@ -22,6 +25,19 @@ class RegistrationForm(forms.ModelForm):
 class AuthForm(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = FeedBack
+        fields = ['name', 'last_name', 'email', 'phone', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Введите Ваше имя'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Введите Вашу фамилию'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Введите Ваш email'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Введите Ваш телефон'}),
+            'message': forms.Textarea(attrs={'placeholder': 'Введите Ваше сообщение', 'rows': 4}),
+        }
 
 # TODO: переделать в соответствии с models.py
 '''
