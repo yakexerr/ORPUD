@@ -5,10 +5,10 @@
 <html>
 <head>
     <title>Task tracker</title> <!-- это то что наверху в иконке пишется -->
-</head>
-<body>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/script.js' %}" defer></script>
+</head>
+<body>
     {% if not user.is_anonymous %}
     <nav class="sidebar" id="sidebar">
     <div class="logo">
