@@ -4,8 +4,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.conf import settings
 
-#User = get_user_model()
-
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, fio, password=None, role='employee', **extra_fields):
         if not username:

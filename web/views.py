@@ -32,21 +32,15 @@ def registration_view(request):
     form = RegistrationForm()
     is_success = False
     if request.method == "POST":
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(data=request.POST)
         if form.is_valid():
-            user = CustomUser.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                fio=form.cleaned_data['fio'],
-                password=form.cleaned_data['password']
-            )
+            user = form.save()
             is_success = True
-            return redirect('auth')  # Перенаправление на страницу логина
+            return redirect('auth')
     return render(request, 'web/registration.html', {
         "form": form,
         "is_success": is_success
     })
-
 
 # Авторизация
 def auth_view(request):

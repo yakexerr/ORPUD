@@ -7,6 +7,7 @@ User = get_user_model()
 class RegistrationForm(forms.ModelForm):
     password2 = forms.CharField(widget=forms.PasswordInput, label="Повторите пароль")
     password = forms.CharField(widget=forms.PasswordInput, label="Пароль")
+    fio = forms.CharField(max_length=256, label="ФИО")  # Добавлено поле fio
 
     ROLE_CHOICES = [
         ('manager', 'Менеджер'),
@@ -30,7 +31,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password2', 'role')
+        fields = ('username', 'email', 'password', 'password2', 'role', 'fio')
 
 
 class AuthForm(forms.Form):
