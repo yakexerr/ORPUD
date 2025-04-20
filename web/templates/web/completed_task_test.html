@@ -16,10 +16,14 @@
                 {% for tag in task.tags.all %}
                     {{ tag.title }} {% if not forloop.last %}, {% endif %}
                 {% endfor %}
-            </small><br>
-        {% endif %}
-        <br>
+            </small>
+        {% endif %}<br>
+        <b>Над задачей работали: </b>
+        {% for emp in task.employees.all %}
+            {{ emp.fio }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}
     </p>
+    <a href="{% url 'complete_task' task.id %}">Вернуть</a>
     <hr>
 {% endfor %}
 {% endblock %}

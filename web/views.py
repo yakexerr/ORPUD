@@ -85,8 +85,9 @@ def project_view(request):
 
 @login_required
 def profile_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/profile.html', {})
+    employee = request.user
+    # employee = get_object_or_404(EmployeeAccount, user=request.user, id=id) if id is not None else None
+    return render(request, 'web/profile.html', {"employee": employee})
 
 @login_required
 def employees_dashboard_view(request):
@@ -130,7 +131,10 @@ def delete_task_view(request, id):
 @login_required
 def complete_task_view(request, id):
     task = get_object_or_404(Task, user=request.user, id=id)
-    task.is_done = True
+    if not task.is_done:
+        task.is_done = True
+    else:
+        task.is_done = False
     task.save()
     return redirect('tasks')
 
@@ -145,7 +149,6 @@ def task_view(request): #для теста редактирования\удал
 def completed_task_view(request):
     tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
     return render(request, 'web/completed_task_test.html', {"tasks": tasks})
-
 
 @login_required
 def add_employee_view(request):
