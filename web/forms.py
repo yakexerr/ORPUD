@@ -72,6 +72,10 @@ class TaskTagForm(forms.ModelForm):
         model = TaskTag
         fields = ("title", )
 
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ('fio', 'position', 'email', 'phone', 'image')
 # TODO: переделать в соответствии с models.py
 '''
 class TimeSlotForm(forms.ModelForm):
