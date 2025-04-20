@@ -193,7 +193,7 @@ def delete_task_tag_view(request, id):
     return redirect('tags')
 
 def employees_view(request):
-    employees = EmployeeAccount.objects.all()
+    employees = CustomUser.objects.filter(role='employee')
     return render(request, 'web/employees.html', {"employees": employees})
 
 # TODO: Переделать формочки под models.py
