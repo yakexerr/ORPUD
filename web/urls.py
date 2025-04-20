@@ -1,8 +1,7 @@
 from django.urls import path
 
 from tasktracker import settings
-from web.views import main_view, registration_view, auth_view, logout_view, profile_view, project_view, projects_dashboard_view, employees_dashboard_view, calendar_view, \
-    feedback_view, add_task_view, add_employee_view, task_tags_view, delete_task_tag_view
+from web.views import *
 
 urlpatterns = [
     path("", main_view, name="main"),

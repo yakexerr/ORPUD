@@ -2,11 +2,11 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
-from web.models import Task, EmployeeAccount, TaskTag, Project, EmployeeAccount, Task, ManagerAccount
-from web.forms import RegistrationForm, AuthForm, TaskForm, EmployeeForm, TaskTagForm
+from web.models import *
+from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
-User = get_user_model()
+#User = get_user_model()
 
 @login_required
 def main_view(request):
