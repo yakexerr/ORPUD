@@ -27,12 +27,7 @@ class AuthForm(forms.Form):
 
 class TaskForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
-    priority = forms.ChoiceField(
-        choices=Task.PRIORITY_CHOICES,
-        widget=forms.Select,
-        initial=Task.MEDIUM,
-        label="Приоритет"
-    )
+    forms.ChoiceField(choices=Task.PRIORITY_CHOICES, widget=forms.Select, initial=Task.MEDIUM, label="Приоритет")
 
     #Чтобы выбрать несколько тегов, зажми Ctrl+Shift (Это для страницы в браузере)
 

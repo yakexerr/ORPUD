@@ -109,14 +109,43 @@ def feedback_view(request):
     return render(request, 'web/feedback.html', {})
 
 @login_required
-def add_task_view(request, id=None):
-    form = TaskForm()
+def edit_task_view(request, id=None):
+    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
+    form = TaskForm(instance=task)
     if request.method == 'POST':
-        form = TaskForm(data=request.POST, initial={"user": request.user})
+        form = TaskForm(data=request.POST, instance=task, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
     return render(request, 'web/add_task.html', {"form": form})
+
+
+@login_required
+def delete_task_view(request, id):
+    task = get_object_or_404(Task, user=request.user, id=id)
+    task.delete()
+    return redirect('tasks')
+
+
+@login_required
+def complete_task_view(request, id):
+    task = get_object_or_404(Task, user=request.user, id=id)
+    task.is_done = True
+    task.save()
+    return redirect('tasks')
+
+
+@login_required
+def task_view(request): #для теста редактирования\удаления задач
+    tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
+    return render(request, 'web/task_test.html', {"tasks": tasks})
+
+
+@login_required
+def completed_task_view(request):
+    tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
+    return render(request, 'web/completed_task_test.html', {"tasks": tasks})
+
 
 @login_required
 def add_employee_view(request):
@@ -140,7 +169,7 @@ def task_tags_view(request):
             return redirect('tags')
     return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
 
-
+@login_required
 def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
