@@ -178,6 +178,10 @@ def delete_task_tag_view(request, id):
     tag.delete()
     return redirect('tags')
 
+def employees_view(request):
+    employees = EmployeeAccount.objects.all()
+    return render(request, 'web/employees.html', {"employees": employees})
+
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности
 # def time_slot_add_view(request):

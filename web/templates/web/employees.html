@@ -1,0 +1,18 @@
+{% extends 'web/base.html' %}
+{% block content %}
+<h1>Сотрудники</h1>
+<div>
+    {% for emp in employees %}
+        {% if emp.image %}
+            <img src="{{emp.image.url}}" width="100">
+        {% endif %}
+        <div>
+            <b>ФИО: </b> {{emp.fio}}<br>
+            <b>Должность: </b> {{emp.position}}<br>
+            <b>Email: </b>{{emp.email}}<br>
+            <b>Телефон: </b>{{emp.phone}}<br>
+        </div>
+        <hr>
+    {% endfor %}
+</div>
+{% endblock %}

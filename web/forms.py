@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from web.models import Task, EmployeeAccount, TaskTag
+from web.models import Task, EmployeeAccount, TaskTag, ManagerAccount
 
 User = get_user_model()
 
@@ -53,6 +53,11 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = EmployeeAccount
         fields = ('fio', 'position', 'email', 'phone', 'image', )
+
+class ManagerForm(forms.ModelForm):
+    class Meta:
+        model = ManagerAccount
+        fields = ('fio', 'position', 'email', 'image', )
 
 # TODO: переделать в соответствии с models.py
 '''
