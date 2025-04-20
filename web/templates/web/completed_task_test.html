@@ -1,0 +1,29 @@
+{% extends 'web/base.html' %}
+{% block content %}
+<h2>Выполненные задачи</h2>
+    <a href="{% url 'tasks' %}">Невыполненные задачи</a>
+    <hr>
+{% for task in tasks %}
+    <b>Добавлена: </b> {{ task.date_added }}
+
+    <p>
+        <b>{{task.title}}</b><br>
+        <b>Описание: </b>{{task.description}}<br>
+        <b>Дедлайн: </b>{{task.deadline}}<br>
+        {% if task.tags.all.count > 0 %}
+            <b>Теги: </b>
+            <small>
+                {% for tag in task.tags.all %}
+                    {{ tag.title }} {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </small>
+        {% endif %}<br>
+        <b>Над задачей работали: </b>
+        {% for emp in task.employees.all %}
+            {{ emp.fio }} {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+    <a href="{% url 'complete_task' task.id %}">Вернуть</a>
+    <hr>
+{% endfor %}
+{% endblock %}

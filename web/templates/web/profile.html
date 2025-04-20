@@ -1,7 +1,15 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Профиль</h1>
+<div>
+    {% if employee.image %}
+            <img src="{{employee.image.url}}" width="200">
+    {% endif %}
+        <div>
+            <b>ФИО: </b> {{employee.fio}}<br>
+            <b>Должность: </b> {{employee.position}}<br>
+            <b>Email: </b>{{employee.email}}<br>
+            <b>Телефон: </b>{{employee.phone}}<br>
+        </div>
+</div>
 {% endblock %}

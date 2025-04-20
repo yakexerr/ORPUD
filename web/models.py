@@ -7,7 +7,7 @@ User = get_user_model()
 
 class ManagerAccount(models.Model):
     fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
+    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото", default='img/account_avatars/default_avatar.jpg')
     position = models.CharField(max_length=256, verbose_name="Должность")
     email = models.EmailField(max_length=256, verbose_name="Email")
 
@@ -17,7 +17,7 @@ class ManagerAccount(models.Model):
 
 class EmployeeAccount(models.Model):
     fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
+    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото", default='img/account_avatars/default_avatar.jpg')
     position = models.CharField(max_length=256, verbose_name="Должность")
     email = models.EmailField(max_length=256, verbose_name="Email")
     phone = models.CharField(max_length=256, verbose_name="Телефон")
@@ -54,6 +54,9 @@ class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
     is_done = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 # TODO: Разобраться c связью многие ко многим и полями date_task_take, date_task_close для EmploerAccount и Task
 class TaskLogs(models.Model): #Если что переименуйте

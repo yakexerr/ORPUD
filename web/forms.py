@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from web.models import Task, EmployeeAccount, TaskTag
+from web.models import Task, EmployeeAccount, TaskTag, ManagerAccount
 
 User = get_user_model()
 
@@ -27,12 +27,7 @@ class AuthForm(forms.Form):
 
 class TaskForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
-    priority = forms.ChoiceField(
-        choices=Task.PRIORITY_CHOICES,
-        widget=forms.Select,
-        initial=Task.MEDIUM,
-        label="Приоритет"
-    )
+    forms.ChoiceField(choices=Task.PRIORITY_CHOICES, widget=forms.Select, initial=Task.MEDIUM, label="Приоритет")
 
     #Чтобы выбрать несколько тегов, зажми Ctrl+Shift (Это для страницы в браузере)
 
@@ -58,6 +53,11 @@ class EmployeeForm(forms.ModelForm):
     class Meta:
         model = EmployeeAccount
         fields = ('fio', 'position', 'email', 'phone', 'image', )
+
+class ManagerForm(forms.ModelForm):
+    class Meta:
+        model = ManagerAccount
+        fields = ('fio', 'position', 'email', 'image', )
 
 # TODO: переделать в соответствии с models.py
 '''
