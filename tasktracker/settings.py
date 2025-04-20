@@ -138,3 +138,5 @@ MEDIA_ROOT = 'media/'
 MEDIA_URL = 'media/'
 
 LOGIN_URL = '/auth/'
+
+AUTH_USER_MODEL = 'web.CustomUser'

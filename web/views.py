@@ -2,77 +2,62 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
-from web.models import Task, EmployeeAccount, TaskTag, Project, EmployeeAccount, Task, ManagerAccount
-from web.forms import RegistrationForm, AuthForm, TaskForm, EmployeeForm, TaskTagForm
+from web.models import *
+from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
-User = get_user_model()
-
+# Главная страница
 @login_required
 def main_view(request):
     user = request.user
     context = {}
 
-    try:
-        manager = ManagerAccount.objects.get(email=user.email)
-        context['manager_account'] = manager
-        context['manager_projects'] = Project.objects.filter(manager=manager)
-        context['manager_employees'] = EmployeeAccount.objects.filter(
-            id__in=context['manager_projects'].values_list('employees', flat=True)
-        ).distinct()
-    except ManagerAccount.DoesNotExist:
-        pass
+    # Проверяем, является ли пользователь менеджером
+    if user.role == 'manager':
+        context['manager_account'] = user
+        context['manager_projects'] = Project.objects.filter(manager=user)
+        context['manager_employees'] = CustomUser.objects.filter(role='employee', id__in=context['manager_projects'].values_list('employees', flat=True)).distinct()
 
-    try:
-        employee = EmployeeAccount.objects.get(email=user.email)
-        context['employee_account'] = employee
-        context['employee_tasks'] = Task.objects.filter(employees=employee)
-        context['employee_projects'] = Project.objects.filter(employees=employee)
-    except EmployeeAccount.DoesNotExist:
-        pass
+    # Если пользователь - сотрудник
+    elif user.role == 'employee':
+        context['employee_account'] = user
+        context['employee_tasks'] = Task.objects.filter(employees=user)
+        context['employee_projects'] = Project.objects.filter(employees=user)
 
     return render(request, 'web/main.html', context)
 
 
-
+# Регистрация
 def registration_view(request):
     form = RegistrationForm()
     is_success = False
     if request.method == "POST":
         form = RegistrationForm(data=request.POST)
         if form.is_valid():
-            # если всё гуд, создаём модель пользователя
-            user = User(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-            )
-            user.set_password(form.cleaned_data['password'])
-            user.save()
+            user = form.save()
             is_success = True
             return redirect('auth')
-    return render(request, 'web/registration.html',
-                  {
-                      "form": form,
-                      "is_success": is_success
-                  })
+    return render(request, 'web/registration.html', {
+        "form": form,
+        "is_success": is_success
+    })
 
-
+# Авторизация
 def auth_view(request):
     form = AuthForm()
     if request.method == "POST":
-        form = AuthForm(data=request.POST)
+        form = AuthForm(request.POST)
         if form.is_valid():
-            user = authenticate(**form.cleaned_data)  # если пользователь найден, то сюда запишется
+            user = authenticate(request, **form.cleaned_data)
             if user is None:
                 form.add_error(None, "Введены неверные данные")
             else:
-                # если пользователь обновит страницу, авторизация слетит, поэтому добавляем login
                 login(request, user)
-                # переброс на главную
-                return redirect("main")
+                return redirect("main")  # Перенаправление на главную страницу
     return render(request, 'web/auth.html', {"form": form})
 
 
+# Выход из системы
 def logout_view(request):
     logout(request)
     return redirect("main")
@@ -85,9 +70,8 @@ def project_view(request):
 
 @login_required
 def profile_view(request):
-    employee = request.user
-    # employee = get_object_or_404(EmployeeAccount, user=request.user, id=id) if id is not None else None
-    return render(request, 'web/profile.html', {"employee": employee})
+    # TODO: Реализовать
+    return render(request, 'web/profile.html', {})
 
 @login_required
 def employees_dashboard_view(request):
@@ -109,47 +93,19 @@ def feedback_view(request):
     # TODO: Реализовать
     return render(request, 'web/feedback.html', {})
 
+# Добавление задачи
 @login_required
-def edit_task_view(request, id=None):
-    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
-    form = TaskForm(instance=task)
+def add_task_view(request, id=None):
+    form = TaskForm()
     if request.method == 'POST':
-        form = TaskForm(data=request.POST, instance=task, initial={"user": request.user})
+        form = TaskForm(data=request.POST, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
     return render(request, 'web/add_task.html', {"form": form})
 
 
-@login_required
-def delete_task_view(request, id):
-    task = get_object_or_404(Task, user=request.user, id=id)
-    task.delete()
-    return redirect('tasks')
-
-
-@login_required
-def complete_task_view(request, id):
-    task = get_object_or_404(Task, user=request.user, id=id)
-    if not task.is_done:
-        task.is_done = True
-    else:
-        task.is_done = False
-    task.save()
-    return redirect('tasks')
-
-
-@login_required
-def task_view(request): #для теста редактирования\удаления задач
-    tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
-    return render(request, 'web/task_test.html', {"tasks": tasks})
-
-
-@login_required
-def completed_task_view(request):
-    tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
-    return render(request, 'web/completed_task_test.html', {"tasks": tasks})
-
+# Добавление сотрудника
 @login_required
 def add_employee_view(request):
     form = EmployeeForm()
@@ -161,9 +117,10 @@ def add_employee_view(request):
     return render(request, 'web/add_employee.html', {"form": form})
 
 
+# Управление тегами задач
 @login_required
 def task_tags_view(request):
-    tags = TaskTag.objects.all() #Доступные теги
+    tags = TaskTag.objects.all()
     form = TaskTagForm()
     if request.method == "POST":
         form = TaskTagForm(data=request.POST, initial={"user": request.user})
@@ -172,15 +129,13 @@ def task_tags_view(request):
             return redirect('tags')
     return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
 
+
+# Удаление тега задачи
 @login_required
 def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
-
-def employees_view(request):
-    employees = EmployeeAccount.objects.all()
-    return render(request, 'web/employees.html', {"employees": employees})
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности
