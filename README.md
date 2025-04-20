@@ -148,7 +148,11 @@ docker exec -it orpud-db-1 psql -U laba2_user -d laba2_db -f /var/lib/postgresql
 
 ```bash
 git fetch origin
+```
+```bash
 git checkout master
+```
+```bash
 git reset --hard origin/master
 ```
 
