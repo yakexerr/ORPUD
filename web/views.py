@@ -52,8 +52,10 @@ def auth_view(request):
             if user is None:
                 form.add_error(None, "Введены неверные данные")
             else:
+                # если пользователь обновит страницу, авторизация слетит, поэтому добавляем login
                 login(request, user)
-                return redirect("main")  # Перенаправление на главную страницу
+                # переброс на главную
+                return redirect("main")
     return render(request, 'web/auth.html', {"form": form})
 
 
@@ -70,8 +72,9 @@ def project_view(request):
 
 @login_required
 def profile_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/profile.html', {})
+    employee = request.user
+    # employee = get_object_or_404(EmployeeAccount, user=request.user, id=id) if id is not None else None
+    return render(request, 'web/profile.html', {"employee": employee})
 
 @login_required
 def employees_dashboard_view(request):
@@ -95,10 +98,11 @@ def feedback_view(request):
 
 # Добавление задачи
 @login_required
-def add_task_view(request, id=None):
-    form = TaskForm()
+def edit_task_view(request, id=None):
+    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
+    form = TaskForm(instance=task)
     if request.method == 'POST':
-        form = TaskForm(data=request.POST, initial={"user": request.user})
+        form = TaskForm(data=request.POST, instance=task, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
@@ -120,7 +124,7 @@ def add_employee_view(request):
 # Управление тегами задач
 @login_required
 def task_tags_view(request):
-    tags = TaskTag.objects.all()
+    tags = TaskTag.objects.all() #Доступные теги
     form = TaskTagForm()
     if request.method == "POST":
         form = TaskTagForm(data=request.POST, initial={"user": request.user})
@@ -132,10 +136,65 @@ def task_tags_view(request):
 
 # Удаление тега задачи
 @login_required
+def delete_task_view(request, id):
+    task = get_object_or_404(Task, user=request.user, id=id)
+    task.delete()
+    return redirect('tasks')
+
+
+@login_required
+def complete_task_view(request, id):
+    task = get_object_or_404(Task, user=request.user, id=id)
+    if not task.is_done:
+        task.is_done = True
+    else:
+        task.is_done = False
+    task.save()
+    return redirect('tasks')
+
+
+@login_required
+def task_view(request): #для теста редактирования\удаления задач
+    tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
+    return render(request, 'web/task_test.html', {"tasks": tasks})
+
+
+@login_required
+def completed_task_view(request):
+    tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
+    return render(request, 'web/completed_task_test.html', {"tasks": tasks})
+
+@login_required
+def add_employee_view(request):
+    form = EmployeeForm()
+    if request.method == 'POST':
+        form = EmployeeForm(data=request.POST, files=request.FILES, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect("main")
+    return render(request, 'web/add_employee.html', {"form": form})
+
+
+@login_required
+def task_tags_view(request):
+    tags = TaskTag.objects.all() #Доступные теги
+    form = TaskTagForm()
+    if request.method == "POST":
+        form = TaskTagForm(data=request.POST, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect('tags')
+    return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
+
+@login_required
 def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
+
+def employees_view(request):
+    employees = EmployeeAccount.objects.all()
+    return render(request, 'web/employees.html', {"employees": employees})
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности

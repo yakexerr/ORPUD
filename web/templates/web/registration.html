@@ -9,30 +9,11 @@
                 <button class="btn btn-primary" onclick="window.location.href='{% url 'auth' %}'">Войти</button>
             </div>
         {% else %}
-            <form action="" method="post" class="registration-form">
-                {% csrf_token %}
+        <!-- благодаря этому методу, нас не будет отправлять на ту же страницу -->
+            <form action="" method="post" class="registration-form"><!-- ещё, чтобы не отображались все данные в строке ссылки -->
+                {% csrf_token %}<!-- тэш безопасности, чтобы защититься от CSRF-атак  -->
                 <div class="form-group">
-                    {{ form.fio.label }} {{ form.fio }}
-                </div>
-                <div class="form-group">
-                    {{ form.username.label_tag }}
-                    {{ form.username }}  <!-- Поле для имени пользователя -->
-                </div>
-                <div class="form-group">
-                    {{ form.email.label_tag }}
-                    {{ form.email }}  <!-- Поле для email -->
-                </div>
-                <div class="form-group">
-                    {{ form.password.label_tag }}
-                    {{ form.password }}  <!-- Поле для пароля -->
-                </div>
-                <div class="form-group">
-                    {{ form.password2.label_tag }}
-                    {{ form.password2 }}  <!-- Поле для повторного ввода пароля -->
-                </div>
-                <div class="form-group">
-                    {{ form.role.label_tag }}
-                    {{ form.role }}  <!-- Поле для выбора роли -->
+                    {{ form.as_p }}
                 </div>
                 <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
             </form>
