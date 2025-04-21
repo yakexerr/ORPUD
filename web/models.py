@@ -1,37 +1,58 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.conf import settings
 
-User = get_user_model()
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, email, fio, password=None, role='employee', **extra_fields):
+        if not username:
+            raise ValueError('Username обязателен')
+        if not email:
+            raise ValueError('Email обязателен')
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, fio=fio, role=role, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
+    def create_superuser(self, username, email, fio, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        return self.create_user(username, email, fio, password, role='manager', **extra_fields)
 
-class ManagerAccount(models.Model):
-    fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    ROLE_CHOICES = [
+        ('manager', 'Менеджер'),
+        ('employee', 'Сотрудник'),
+    ]
+
+    username = models.CharField(unique=True, max_length=256, verbose_name='Username')  # Логин
+    email = models.EmailField(unique=True, verbose_name='Email')
+    fio = models.CharField(max_length=256, verbose_name="ФИО")
+    image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
     position = models.CharField(max_length=256, verbose_name="Должность")
-    email = models.CharField(max_length=256, verbose_name="Email")
+    phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Телефон")
+
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='employee')
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)  # Для админки
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'username'  # Используем username как логин
+    REQUIRED_FIELDS = ['email', 'fio']
 
     def __str__(self):
-        return self.fio
-
-
-class EmployeeAccount(models.Model):
-    fio = models.CharField(max_length=256, verbose_name="ФИО", null=False, blank=False)
-    image = models.ImageField(upload_to='account_avatars/', null=True, blank=True, verbose_name="Фото")
-    position = models.CharField(max_length=256, verbose_name="Должность")
-    email = models.CharField(max_length=256, verbose_name="Email")
-    phone = models.CharField(max_length=256, verbose_name="Телефон")
-
-    def __str__(self):
-        return self.fio
-
+        return f'{self.fio} ({self.get_role_display()})'
 
 class TaskTag(models.Model):
     title = models.CharField(max_length=256, verbose_name="Название", null=False, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
+
 
 class Task(models.Model):
     HIGH = 3
@@ -45,27 +66,38 @@ class Task(models.Model):
     ]
 
     title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
-    description = models.CharField(max_length=512, default="", verbose_name="Описание")
+    description = models.TextField(max_length=512, default="", verbose_name="Описание")
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     date_added = models.DateTimeField(default=timezone.now)
     deadline = models.DateTimeField()
     tags = models.ManyToManyField(TaskTag, verbose_name="Теги", blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="created_tasks")
+    employees = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='TaskEmployee',
+        related_name='assigned_tasks',
+        verbose_name="Работники"
+    )
     is_done = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.title
 
-class TaskLogs(models.Model): #Если что переименуйте
+class TaskEmployee(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    date_task_take = models.DateTimeField()
-    date_task_close = models.DateTimeField()
+    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date_task_take = models.DateTimeField(null=True, blank=True)
+    date_task_close = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('task', 'employee')
 
 
-class TaskComment:
-    date_sent = models.DateTimeField()
+class TaskComment(models.Model):  # ← добавлен `models.Model`!
+    date_sent = models.DateTimeField(default=timezone.now)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Название")
-
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Комментарий")
 
 
 class Project(models.Model):
@@ -75,9 +107,19 @@ class Project(models.Model):
     deadline = models.DateTimeField()
     is_done = models.BooleanField(default=False)
     tasks = models.ManyToManyField(Task, verbose_name="Задачи")
-    manager = models.ForeignKey(ManagerAccount, default=1, verbose_name="Менеджер", on_delete=models.PROTECT)
-    employees = models.ManyToManyField(EmployeeAccount, verbose_name="Работники")
-
+    manager = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        limit_choices_to={'role': 'manager'},  # только менеджеры
+        verbose_name="Менеджер",
+        on_delete=models.PROTECT,
+        related_name="managed_projects"
+    )
+    employees = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="projects",
+        limit_choices_to={'role': 'employee'},
+        verbose_name="Работники"
+    )
     def __str__(self):
         return f"{self.title}, owner: {self.manager}"
 
@@ -90,4 +132,4 @@ class FeedBack(models.Model):
     created_at = models.DateTimeField('Дата создания',auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.name # ← слишком много пробелов (8 вместо 4)

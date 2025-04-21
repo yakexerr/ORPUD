@@ -1,8 +1,7 @@
 from django.urls import path
 
 from tasktracker import settings
-from web.views import main_view, registration_view, auth_view, logout_view, profile_view, project_view, projects_dashboard_view, employees_dashboard_view, calendar_view, feedback_view
-from web.views import main_view, registration_view, auth_view
+from web.views import *
 
 urlpatterns = [
     path("", main_view, name="main"),
@@ -15,7 +14,17 @@ urlpatterns = [
     path("projects_dashboard/", projects_dashboard_view, name="projects_dashboard"),
     path("calendar/", calendar_view, name="calendar"),
     path("feedback/", feedback_view, name="feedback"),
-# TODO: Переделать формочки под models.py
+    path("tasks/add/", edit_task_view, name="add_task"),
+    path("tasks/<int:id>/edit/", edit_task_view, name="edit_task"),
+    path("tasks/<int:id>/delete/", delete_task_view, name="delete_task"),
+    path("tasks/<int:id>/complete/", complete_task_view, name="complete_task"),
+    path("employees/add/", add_employee_view, name="add_employee"),
+    path("tags", task_tags_view, name="tags"),
+    path("tags/<int:id>/delete/", delete_task_tag_view, name="delete_tag"),
+    path("tasks/", task_view, name="tasks"), #для теста
+    path("tasks/completed/", completed_task_view, name="completed_tasks"),#для теста
+    path("employees/", employees_view, name="employees"),
+    # TODO: Переделать формочки под models.py
     # path("time_slots/add/", time_slot_edit_view, name="time_slots_add"),
     # path("time_slots/<int:id>/", time_slot_edit_view, name="time_slots_edit"),
     # path("tags/", tags_view, name="tags"),

@@ -75,6 +75,7 @@ WSGI_APPLICATION = 'tasktracker.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -114,9 +115,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'ru'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -139,6 +139,8 @@ MEDIA_ROOT = 'media/'
 MEDIA_URL = 'media/'
 
 LOGIN_URL = '/auth/'
+
+AUTH_USER_MODEL = 'web.CustomUser'
 
 # НЕОБХОДИМО ДЛЯ ОТПРАВКИ ЗАПРОСА НА ПОЧТУ
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

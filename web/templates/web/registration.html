@@ -1,15 +1,86 @@
 {% extends 'web/base.html' %}
 {% block content %}
-    <h1>Регистрация</h1>
-    {% if is_success %} <!-- если флаг true (те пользователь зарегистрирован), выводим сообщение -->
-        <p><b>Спасибо за регистрацию!</b></p>
-    {% else %}
+    <div class="registration-container">
+        <h1>Регистрация</h1>
+
+        {% if is_success %}
+            <div class="success-message">
+                <p><b>Спасибо за регистрацию!</b></p>
+                <button class="btn btn-primary" onclick="window.location.href='{% url 'auth' %}'">Войти</button>
+            </div>
+        {% else %}
         <!-- благодаря этому методу, нас не будет отправлять на ту же страницу -->
-        <form action="" method="post"> <!-- ещё, чтобы не отображались все данные в строке ссылки -->
-            {% csrf_token %} <!-- тэш безопасности, чтобы защититься от CSRF-атак  -->
-            {{ form.as_p }}
-            <button>Зарегистрироваться</button>
-        </form>
-        <button onclick='window.location.href="{% url 'auth' %}"'>Войти</button>
-    {% endif %}
+            <form action="" method="post" class="registration-form"><!-- ещё, чтобы не отображались все данные в строке ссылки -->
+                {% csrf_token %}<!-- тэш безопасности, чтобы защититься от CSRF-атак  -->
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            </form>
+
+            <div class="auth-links">
+                <button class="btn btn-secondary" onclick="window.location.href='{% url 'auth' %}'">Уже есть аккаунт? Войти</button>
+            </div>
+        {% endif %}
+    </div>
+
+    <style>
+        .registration-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .success-message {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .success-message button {
+            margin-top: 10px;
+        }
+    </style>
 {% endblock %}
