@@ -1,0 +1,12 @@
+{% extends 'web/base.html' %}
+{% block content %}
+<h1>Технические сообщенипгшея</h1>
+{% if action_message == "delete_profile" %}
+    <div>
+        <h1>Ваш профиль удалён</h1>
+        <img src="/media/img/account_avatars/goodbye.jpg" width="300">
+        <p><a href="{% url 'registration' %}">Зарегистрироваться</a></p>
+        <p><a href="{% url 'auth' %}">Авторизироваться</a></p>
+    </div>
+{% endif %}
+{% endblock %}

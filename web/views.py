@@ -6,6 +6,8 @@ from web.models import *
 from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
+User = get_user_model()
+
 # Главная страница
 @login_required
 def main_view(request):
@@ -39,7 +41,7 @@ def registration_view(request):
             return redirect('auth')
     return render(request, 'web/registration.html', {
         "form": form,
-        "is_success": is_success
+        "is_success": is_success,
     })
 
 # Авторизация
@@ -64,6 +66,12 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
+
+#техническое сообщение по типу "Вы зарегистрированы"
+def action_message_view(request):
+    return render(request, 'web/action_message.html')
+
+
 @login_required
 def project_view(request):
     # TODO: Реализовать
@@ -73,8 +81,33 @@ def project_view(request):
 @login_required
 def profile_view(request):
     employee = request.user
-    # employee = get_object_or_404(EmployeeAccount, user=request.user, id=id) if id is not None else None
-    return render(request, 'web/profile.html', {"employee": employee})
+    if request.user.role == 'manager':
+        projects = Project.objects.filter(manager=request.user)
+    if request.user.role == 'employee':
+        projects = Project.objects.filter(employee=request.user)
+    return render(request, 'web/profile.html', {"employee": employee, "projects": projects})
+
+@login_required
+def edit_profile_view(request):
+    employee_profile = get_object_or_404(User, id=request.user.id) if id is not None else None
+    form = EmployeeForm(instance=employee_profile)
+    if request.method == 'POST':
+        form = EmployeeForm(data=request.POST, instance=employee_profile, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+    return render(request, 'web/add_employee.html', {"form": form})
+
+
+@login_required
+def delete_profile_view(request):
+    employee = get_object_or_404(User, id=request.user.id)
+    employee.delete()
+    return render(
+        request,
+        'web/action_message.html',
+        {"action_message": "delete_profile"}
+    )
 
 @login_required
 def employees_dashboard_view(request):
@@ -111,14 +144,36 @@ def edit_task_view(request, id=None):
 
 # Добавление сотрудника
 @login_required
-def add_employee_view(request):
-    form = EmployeeForm()
+def edit_employee_view(request, id=None):
+    employee = get_object_or_404(User, id=id) if id is not None else None
+    form = EmployeeForm(instance=employee)
     if request.method == 'POST':
-        form = EmployeeForm(data=request.POST, files=request.FILES, initial={"user": request.user})
+
+        email = request.POST.get('email', '')
+        fio = request.POST.get('fio', '')
+
+        email_prefix = email.split('@')[0]
+        fio_initials = ''.join([el[0] for el in fio.strip().split()])
+        auto_username = f"{email_prefix}{fio_initials}"
+
+        form = EmployeeForm(data=request.POST, instance=employee, files=request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect("main")
+            user = form.save(commit=False)
+            user.username = auto_username
+            user.save()
+            return redirect("employees")
     return render(request, 'web/add_employee.html', {"form": form})
+
+
+def employees_view(request):
+    employees = CustomUser.objects.filter(role='employee')
+    return render(request, 'web/employees.html', {"employees": employees})
+
+@login_required
+def delete_employee_view(request, id):
+    task = get_object_or_404(User, id=id)
+    task.delete()
+    return redirect('employees')
 
 
 # Управление тегами задач
@@ -164,16 +219,6 @@ def completed_task_view(request):
     tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
     return render(request, 'web/completed_task_test.html', {"tasks": tasks})
 
-@login_required
-def add_employee_view(request):
-    form = EmployeeForm()
-    if request.method == 'POST':
-        form = EmployeeForm(data=request.POST, files=request.FILES, initial={"user": request.user})
-        if form.is_valid():
-            form.save()
-            return redirect("main")
-    return render(request, 'web/add_employee.html', {"form": form})
-
 
 @login_required
 def task_tags_view(request):
@@ -191,67 +236,3 @@ def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
-
-def employees_view(request):
-    employees = CustomUser.objects.filter(role='employee')
-    return render(request, 'web/employees.html', {"employees": employees})
-
-# TODO: Переделать формочки под models.py
-# # @login_required # зачита от неавторизованности
-# def time_slot_add_view(request):
-#     if request.method == "POST":
-#         form = TimeSlotForm(data=request.POST, files=request.FILES, initial={"user": request.user})
-#         if form.is_valid():
-#             form.save()
-#             return redirect("main")
-#     else:
-#         form = TimeSlotForm(initial={"user": request.user})
-#
-#     return render(request, 'web/time_slot_form.html', {"form": form})
-#
-#
-# def time_slot_edit_view(request, id=None):
-#     timeslot = None
-#     if id is not None:
-#         timeslot = TimeSlot.objects.get(id=id)
-#
-#     if request.method == "POST":
-#         form = TimeSlotForm(data=request.POST, files=request.FILES, instance=timeslot, initial={"user": request.user})
-#         if form.is_valid():
-#             form.save()
-#             return redirect("main")  # перебрасываем в мейн
-#     else:
-#         form = TimeSlotForm(instance=timeslot, initial={"user": request.user})
-#
-#     return render(request, 'web/time_slot_form.html', {"form": form})
-#
-#
-# def _list_editor_view(request, model_cls, form_cls, template_name, url_name):
-#     items = model_cls.objects.all()
-#     form = form_cls()
-#     if request.method == "POST":
-#         form = form_cls(data=request.POST, initial={"user": request.user})
-#         if form.is_valid():
-#             form.save()
-#             return redirect(url_name)
-#     return render(request, f'web/{template_name}.html', {"items": items, "form": form})
-#
-#
-# def tags_view(request):
-#     return _list_editor_view(request, TimeSlotTag, TimeSlotTagForm, "tags", "tags")
-#
-#
-# def tags_delete_view(request, id):
-#     tag = TimeSlotTag.objects.get(id=id)
-#     tag.delete()
-#     return redirect("tags")
-#
-#
-# def holidays_view(request):
-#     return _list_editor_view(request, Holiday, HolidayForm, "holidays", "holidays")
-#
-#
-# def holidays_delete_view(request, id):
-#     holiday = Holiday.objects.get(id=id)
-#     holiday.delete()
-#     return redirect("holidays")
