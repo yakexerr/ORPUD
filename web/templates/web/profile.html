@@ -1,15 +1,45 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<h1>Профиль</h1>
 <div>
+    <p align="right"><a href="{% url 'delete_profile' %}">Удалить</a></p>
+
+    <h1>Информация о пользователе</h1>
     {% if employee.image %}
             <img src="{{employee.image.url}}" width="200">
+    {% else %}
+        <img src="/media/img/account_avatars/default_avatar.jpg" width="200">
     {% endif %}
         <div>
             <b>ФИО: </b> {{employee.fio}}<br>
-            <b>Должность: </b> {{employee.position}}<br>
+            <b>Должность: </b> {{user.get_role_display}}<br>
             <b>Email: </b>{{employee.email}}<br>
-            <b>Телефон: </b>{{employee.phone}}<br>
+            {% if emp.phone %}
+                <b>Телефон: </b>{{emp.phone}}<br>
+            {% endif %}
         </div>
+
+
+    <br><br>
+    {% if user.role == 'manager'%}
+        <h1>Проекты</h1>
+        <div class="card-list">
+          {% for project in projects %}
+          <div class="card">
+            <div>
+              <div class="card-title">{{ project.title }}</div>
+              <div class="card-info">
+                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                <span class="icon">👥</span>
+                  {% for emp in project.employees.all %}
+                    {{ emp.fio }}
+                    {% if not forloop.last %},
+                    {% endif %}
+                  {% endfor %}
+              </div>
+            </div>
+              {% endfor %}
+          </div>
+    {% endif %}
 </div>
 {% endblock %}

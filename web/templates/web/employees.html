@@ -5,13 +5,22 @@
     {% for emp in employees %}
         {% if emp.image %}
             <img src="{{emp.image.url}}" width="100">
+        {% else %}
+            <img src="/media/img/account_avatars/default_avatar.jpg" width="100">
         {% endif %}
         <div>
             <b>ФИО: </b> {{emp.fio}}<br>
-            <b>Должность: </b> {{emp.position}}<br>
+            <b>Должность: </b> {{user.get_role_display}}<br>
             <b>Email: </b>{{emp.email}}<br>
-            <b>Телефон: </b>{{emp.phone}}<br>
+            {% if emp.phone %}
+                <b>Телефон: </b>{{emp.phone}}<br>
+            {% endif %}
         </div>
+        <small>
+            <a href="{% url 'edit_employee' emp.id %}">Редактировать</a>
+            <a href="{% url 'delete_employee' emp.id %}">Удалить</a>
+        </small>
+        {{b}}
         <hr>
     {% endfor %}
 </div>
