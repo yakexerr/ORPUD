@@ -40,6 +40,10 @@
         <a href="/calendar/">Календарный график</a>
     </li>
     <li class="{% if request.path == '/feedback/' %}active{% endif %}">
+        {% if request.path == '/tasks/' %}<span class="dash">—</span>{% endif %}
+        <a href="/tasks/">Задачи</a>
+    </li>
+    <li class="{% if request.path == '/feedback/' %}active{% endif %}">
         {% if request.path == '/feedback/' %}<span class="dash">—</span>{% endif %}
         <a href="/feedback/">Обратная связь</a>
     </li>

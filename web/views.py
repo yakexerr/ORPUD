@@ -15,6 +15,7 @@ from .forms import FeedbackForm
 
 
 #-------------------------------------------
+from django.shortcuts import render, get_object_or_404
 
 # Главная страница
 @login_required
@@ -234,6 +235,51 @@ def delete_task_tag_view(request, id):
 def employees_view(request):
     employees = CustomUser.objects.filter(role='employee')
     return render(request, 'web/employees.html', {"employees": employees})
+
+
+
+#-----------------------------
+
+
+
+
+def task_list_view(request):
+    """
+    Список всех задач. Шаблон task_test.html
+    """
+    tasks = Task.objects.all().order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks
+    })
+
+def task_detail_view(request, task_id):
+    """
+    Поля одной задачи. Шаблон task_detail.html
+    """
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'web/task_detail.html', {
+        'task': task
+    })
+
+def user_tasks_view(request):
+    """
+    Список задач, привязанных к текущему пользователю.
+    """
+    tasks = Task.objects.filter(user=request.user).order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks
+    })
+
+def project_tasks_view(request, project_id):
+    """
+    Если нужен просмотр по проекту, и у тебя в модели Project есть поле tasks = ManyToManyField(Task)
+    """
+    project = get_object_or_404(Project, id=project_id)
+    tasks = project.tasks.all().order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks,
+        'project': project
+    })
 
 # TODO: Переделать формочки под models.py
 # # @login_required # зачита от неавторизованности пользователя

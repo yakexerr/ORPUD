@@ -1,0 +1,14 @@
+{% extends 'web/base.html' %}
+{% block content %}
+<h2>Задача: {{ task.title }}</h2>
+<p><b>Описание:</b> {{ task.description }}</p>
+<p><b>Приоритет:</b> {{ task.get_priority_display }}</p>
+<p><b>Срок:</b> {{ task.deadline }}</p>
+<p><b>Теги:</b>
+  {% for tag in task.tags.all %}{{ tag.title }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</p>
+<p><b>Исполнители:</b>
+  {% for emp in task.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</p>
+<a href="{% url 'task_list' %}">← Вернуться к списку</a>
+{% endblock %}

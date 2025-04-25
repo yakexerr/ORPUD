@@ -1,33 +1,36 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<h2>Задачи</h2>
-    <a href="{% url 'completed_tasks' %}">Выполненные задачи</a>
-    <hr>
+<h2>Задачи{% if project %} проекта "{{ project.title }}"{% endif %}</h2>
+{% if request.resolver_match.url_name == 'user_tasks' %}
+  <p>Ваши задачи:</p>
+{% endif %}
+<hr>
 {% for task in tasks %}
-    <b>Добавлена: </b> {{ task.date_added }}
-
+    <b>Добавлена:</b> {{ task.date_added }}<br>
     <p>
-        <b>{{task.title}}</b><br>
-        <b>Описание: </b>{{task.description}}<br>
-        <b>Дедлайн: </b>{{task.deadline}}<br>
-        <b>Приоритет: </b>{{task.get_priority_display }}<br>
-        {% if task.tags.all.count > 0 %}
-            <b>Теги: </b>
-            <small>
-                {% for tag in task.tags.all %}
-                    {{ tag.title }} {% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </small><br>
-        {% endif %}
-        <b>Над задачей работают: </b>
-        {% for emp in task.employees.all %}
-            {{ emp.fio }} {% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        <br>
+      <b>{{ task.title }}</b><br>
+      <b>Описание:</b> {{ task.description }}<br>
+      <b>Дедлайн:</b> {{ task.deadline }}<br>
+      <b>Приоритет:</b> {{ task.get_priority_display }}<br>
+      {% if task.tags.count %}
+        <b>Теги:</b>
+        <small>
+          {% for tag in task.tags.all %}
+            {{ tag.title }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </small><br>
+      {% endif %}
+      <b>Исполнители:</b>
+      {% for emp in task.employees.all %}
+        {{ emp.fio }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
     </p>
+    <a href="{% url 'task_detail' task.id %}">Подробнее</a> |
     <a href="{% url 'complete_task' task.id %}">Выполнено</a> |
-    <a href="{% url 'edit_task' task.id %}">Редактировать</a>
+    <a href="{% url 'edit_task' task.id %}">Редактировать</a> |
     <a href="{% url 'delete_task' task.id %}">Удалить</a>
     <hr>
+{% empty %}
+    <p>Задач нет.</p>
 {% endfor %}
 {% endblock %}

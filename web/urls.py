@@ -2,6 +2,8 @@ from django.urls import path
 
 from tasktracker import settings
 from web.views import *
+from . import views
+
 
 urlpatterns = [
     path("", main_view, name="main"),
@@ -24,6 +26,12 @@ urlpatterns = [
     path("tasks/", task_view, name="tasks"), #для теста
     path("tasks/completed/", completed_task_view, name="completed_tasks"),#для теста
     path("employees/", employees_view, name="employees"),
+    # 1) Список всех задач (или задач по проекту)
+    path('tasks/', views.task_list_view, name='task_list'),
+    # 2) Детали одной задачи
+    path('tasks/<int:task_id>/', views.task_detail_view, name='task_detail'),
+    # 3) Список задач в профиле (только свои)
+    path('profile/tasks/', views.user_tasks_view, name='user_tasks'),
     # TODO: Переделать формочки под models.py
     # path("time_slots/add/", time_slot_edit_view, name="time_slots_add"),
     # path("time_slots/<int:id>/", time_slot_edit_view, name="time_slots_edit"),

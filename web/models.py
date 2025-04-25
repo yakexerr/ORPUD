@@ -133,3 +133,19 @@ class FeedBack(models.Model):
 
     def __str__(self):
         return self.name # ← слишком много пробелов (8 вместо 4)
+
+
+# работаем в отображение команд
+class Column(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class ColumnProject(models.Model):
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # исправлено с Projects на Project
+
+class ColumnTask(models.Model):
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)  # исправлено с Tasks на Task
