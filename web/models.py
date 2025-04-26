@@ -124,6 +124,37 @@ class Project(models.Model):
     def __str__(self):
         return f"{self.title}, owner: {self.manager}"
 
+
+class FeedBack(models.Model):
+    name = models.CharField('Имя', max_length=100)
+    last_name = models.CharField('Фамилия', max_length=100, blank=True, null=True)
+    email = models.EmailField('Почта')
+    phone = models.CharField('Телефон:', max_length=20, blank=True)
+    message = models.TextField('Сообщение')
+    created_at = models.DateTimeField('Дата создания', auto_now_add=True)
+
+    def __str__(self):
+        return self.name  # ← слишком много пробелов (8 вместо 4)
+
+
+# работаем в отображение команд
+class Column(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class ColumnProject(models.Model):
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # исправлено с Projects на Project
+
+
+class ColumnTask(models.Model):
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+
 # TODO: добавить модель группировки задач (связи между задачами)
 '''
 Связь многие ко многим таблицы задачи к самой себе:

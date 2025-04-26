@@ -104,7 +104,7 @@ docker ps
 Чтобы остановить контейнеры, выполните:
 
 ```bash
-docker-compose down
+docker-compose down -v
 ```
 
 ---

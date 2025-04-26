@@ -6,6 +6,18 @@ from web.models import *
 from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
+#--------- для отправки письма ------------
+
+
+from django.core.mail import EmailMessage
+from django.shortcuts import render, redirect
+from .forms import FeedbackForm
+
+
+#-------------------------------------------
+from django.shortcuts import render, get_object_or_404
+
+
 User = get_user_model()
 
 # Главная страница
@@ -126,8 +138,37 @@ def calendar_view(request):
 
 @login_required
 def feedback_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/feedback.html', {})
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            feedback = form.save()
+
+            # Формируем письмо
+            subject = "Новое сообщение с формы обратной связи"
+            message = f"""
+                Имя: {feedback.name}
+                Фамилия: {feedback.last_name}
+                Email: {feedback.email}
+                Телефон: {feedback.phone}
+                Сообщение:
+                {feedback.message}
+            """
+            # Создаём объект EmailMessage
+            email = EmailMessage(
+                subject,
+                message,
+                'task_trackerorpud@mail.ru',  # От кого
+                ['task_trackerorpud@mail.ru'],  # Кому
+            )
+            # Добавляем заголовок Reply-To
+            email.reply_to = [feedback.email]  # Почта пользователя для ответа
+            # Отправляем письмо
+            email.send(fail_silently=False)
+            # Перенаправляем пользователя на главную страницу
+            return redirect("feedback")
+    else:
+        form = FeedbackForm()
+    return render(request, 'web/feedback.html', {"form": form})
 
 # Добавление задачи
 @login_required
@@ -236,3 +277,41 @@ def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
+
+def task_list_view(request):
+    """
+    Список всех задач. Шаблон task_test.html
+    """
+    tasks = Task.objects.all().order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks
+    })
+
+def task_detail_view(request, task_id):
+    """
+    Поля одной задачи. Шаблон task_detail.html
+    """
+    task = get_object_or_404(Task, id=task_id)
+    return render(request, 'web/task_detail.html', {
+        'task': task
+    })
+
+def user_tasks_view(request):
+    """
+    Список задач, привязанных к текущему пользователю.
+    """
+    tasks = Task.objects.filter(user=request.user).order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks
+    })
+
+def project_tasks_view(request, project_id):
+    """
+    Если нужен просмотр по проекту, и у тебя в модели Project есть поле tasks = ManyToManyField(Task)
+    """
+    project = get_object_or_404(Project, id=project_id)
+    tasks = project.tasks.all().order_by('-date_added')
+    return render(request, 'web/task_test.html', {
+        'tasks': tasks,
+        'project': project
+    })

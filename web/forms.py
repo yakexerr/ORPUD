@@ -1,5 +1,10 @@
 from django import forms
 from django.contrib.auth import get_user_model
+
+
+# from web.models import TimeSlot, TimeSlotTag, Holiday
+from web.models import FeedBack
+
 from web.models import *
 
 User = get_user_model()
@@ -39,6 +44,17 @@ class AuthForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput)
 
 
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = FeedBack
+        fields = ['name', 'last_name', 'email', 'phone', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Введите Ваше имя'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Введите Вашу фамилию'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Введите Ваш email'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Введите Ваш телефон'}),
+            'message': forms.Textarea(attrs={'placeholder': 'Введите Ваше сообщение', 'rows': 4}),
+        }
 class TaskForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
     priority = forms.ChoiceField(
@@ -69,6 +85,15 @@ class TaskTagForm(forms.ModelForm):
         return super().save(commit)
 
     class Meta:
+        model = FeedBack
+        fields = ['name', 'last_name', 'email', 'phone', 'message']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'Введите Ваше имя'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Введите Вашу фамилию'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Введите Ваш email'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Введите Ваш телефон'}),
+            'message': forms.Textarea(attrs={'placeholder': 'Введите Ваше сообщение', 'rows': 4}),
+        }
         model = TaskTag
         fields = ("title", )
 
