@@ -123,3 +123,13 @@ class Project(models.Model):
 
     def __str__(self):
         return f"{self.title}, owner: {self.manager}"
+
+# TODO: добавить модель группировки задач (связи между задачами)
+'''
+Связь многие ко многим таблицы задачи к самой себе:
+
+Tm
+id1Parntem
+id2Child
+type
+'''

@@ -5,16 +5,16 @@
 
     <h1>Информация о пользователе</h1>
     {% if employee.image %}
-            <img src="{{employee.image.url}}" width="200">
+            <img src="{{employees.image.url}}" width="200">
     {% else %}
         <img src="/media/img/account_avatars/default_avatar.jpg" width="200">
     {% endif %}
         <div>
-            <b>ФИО: </b> {{employee.fio}}<br>
+            <b>ФИО: </b> {{employees.fio}}<br>
             <b>Должность: </b> {{user.get_role_display}}<br>
-            <b>Email: </b>{{employee.email}}<br>
-            {% if emp.phone %}
-                <b>Телефон: </b>{{emp.phone}}<br>
+            <b>Email: </b>{{employees.email}}<br>
+            {% if employees.phone %}
+                <b>Телефон: </b>{{employees.phone}}<br>
             {% endif %}
         </div>
 

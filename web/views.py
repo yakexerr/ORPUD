@@ -84,8 +84,8 @@ def profile_view(request):
     if request.user.role == 'manager':
         projects = Project.objects.filter(manager=request.user)
     if request.user.role == 'employee':
-        projects = Project.objects.filter(employee=request.user)
-    return render(request, 'web/profile.html', {"employee": employee, "projects": projects})
+        projects = Project.objects.filter(employees=request.user)
+    return render(request, 'web/profile.html', {"employees": employee, "projects": projects})
 
 @login_required
 def edit_profile_view(request):
