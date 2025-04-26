@@ -1,7 +1,22 @@
-<!-- комментарий -->
-<!--  -->
+
 {% extends 'web/base.html' %}
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
-<h1>Проект</h1>
+<h1>Проект "{{project.title}}"</h1>
+    <div>
+        <b>Менеджер: </b> {{project.manager}}
+        <p><b>Сотрудники: </b></p>
+        {% for emp in project.employees.all %}
+            <div>
+                <p>
+                    {% if employee.image %}
+                        <img src="{{emp.image.url}}" width="50">
+                    {% else %}
+                        <img src="/media/img/account_avatars/default_avatar.jpg" width="50">
+                    {% endif %} <br>
+                    <b>ФИО: </b>{{emp.fio}} <br>
+                    <b>Email: </b>{{emp.email}}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

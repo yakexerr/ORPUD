@@ -24,6 +24,7 @@ urlpatterns = [
     path("tags", task_tags_view, name="tags"),
     path("tags/<int:id>/delete/", delete_task_tag_view, name="delete_tag"),
     path("tasks/", task_view, name="tasks"), #для теста
+    path("task/<int:id>/", current_project_view, name="current_project"),
     path("tasks/completed/", completed_task_view, name="completed_tasks"),#для теста
     path("employees/", employees_view, name="employees"),
     path("employees/add/", edit_employee_view, name="add_employee"),

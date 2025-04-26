@@ -129,6 +129,11 @@ def feedback_view(request):
     # TODO: Реализовать
     return render(request, 'web/feedback.html', {})
 
+def current_project_view(request, id=None):
+    project = get_object_or_404(Project, id=id) if id is not None else None
+    return render(request, 'web/project.html', {"project": project})
+
+
 # Добавление задачи
 @login_required
 def edit_task_view(request, id=None):
