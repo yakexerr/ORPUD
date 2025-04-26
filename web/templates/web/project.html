@@ -3,6 +3,7 @@
 {% block content %}
 <h1>Проект "{{project.title}}"</h1>
     <div>
+        <p><b>Дедлайн: </b>{{project.deadline}}</p>
         <b>Менеджер: </b> {{project.manager}}
         <p><b>Сотрудники: </b></p>
         {% for emp in project.employees.all %}
@@ -17,6 +18,20 @@
                     <b>Email: </b>{{emp.email}}
                 </p>
             </div>
+        {% endfor %}
+        <hr>
+        <p><h1>Задачи</h1></p>
+        <hr>
+        {% for task in project.tasks.all.order_by %}
+            <div>
+                <p><b>Название: </b>{{task.title}}</p>
+                <p><b>Дедлайн: </b>{{task.deadline}}</p>
+                <p><b>Приоритет:</b> {{task.get_priority_display}}</p>
+                <p><b>Описание: </b>{{task.description}}</p>
+                <p><b>Сотрудники: </b>{% for employee in task.employees.all %} {{employee.fio}} {% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                <p><b></b></p>
+            </div>
+            <hr>
         {% endfor %}
     </div>
 {% endblock %}

@@ -23,17 +23,20 @@
         <div class="section-title">Проекты</div>
         <div class="card-list">
           {% for project in manager_projects %}
-          <div class="card">
+          <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
             <div>
               <div class="card-title">{{ project.title }}</div>
               <div class="card-info">
                 <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
                 <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
                 <span class="icon">👥</span>
-                {% for emp in project.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% for emp in project.employees.all %}
+                    {{ emp.fio }}
+                    {% if not forloop.last %},
+                    {% endif %}
+                  {% endfor %}
               </div>
             </div>
-          </div>
           {% endfor %}
         </div>
       </div>
@@ -79,7 +82,7 @@
         <div class="section-title">Проекты</div>
         <div class="card-list">
           {% for project in employee_projects %}
-          <div class="card">
+          <div>
             <div>
               <div class="card-title">{{ project.title }}</div>
               <div class="card-info">
@@ -92,7 +95,6 @@
           </div>
           {% endfor %}
         </div>
-      </div>
     {% endif %}
 
 <!--  {% endif %}-->

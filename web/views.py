@@ -89,14 +89,14 @@ def profile_view(request):
 
 @login_required
 def edit_profile_view(request):
-    employee_profile = get_object_or_404(User, id=request.user.id) if id is not None else None
-    form = EmployeeForm(instance=employee_profile)
+    profile = get_object_or_404(User, id=request.user.id) if id is not None else None
+    form = EmployeeForm(instance=profile)
     if request.method == 'POST':
-        form = EmployeeForm(data=request.POST, instance=employee_profile, files=request.FILES)
+        form = EmployeeForm(data=request.POST, instance=profile, files=request.FILES)
         if form.is_valid():
             form.save()
             return redirect("profile")
-    return render(request, 'web/add_employee.html', {"form": form})
+    return render(request, 'web/edit_employee.html', {"form": form})
 
 
 @login_required

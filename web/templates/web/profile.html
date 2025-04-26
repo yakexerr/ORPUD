@@ -3,12 +3,12 @@
 <div>
     <p align="right"><a href="{% url 'delete_profile' %}">Удалить</a></p>
 
-    <h1>Информация о пользователе</h1>
-    {% if employee.image %}
+    <h1>Информация о пользователе</h1>{% if employee.image %}
             <img src="{{employee.image.url}}" width="200">
     {% else %}
         <img src="/media/img/account_avatars/default_avatar.jpg" width="200">
     {% endif %}
+
         <div>
             <b>ФИО: </b> {{employee.fio}}<br>
             <b>Должность: </b> {{user.get_role_display}}<br>
@@ -17,14 +17,14 @@
                 <b>Телефон: </b>{{emp.phone}}<br>
             {% endif %}
         </div>
-
+        <p><a href="{% url 'edit_profile' %}">Редактировать профиль</a></p>
 
     <br><br>
     {% if user.role == 'manager'%}
         <h1>Проекты</h1>
         <div class="card-list">
           {% for project in projects %}
-          <div class="card" onclick="window.location.href='{% url 'current_project' project.id %}'">
+          <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
             <div>
               <div class="card-title">{{ project.title }}</div>
               <div class="card-info">
@@ -41,5 +41,6 @@
               {% endfor %}
           </div>
     {% endif %}
+        </div>
 </div>
 {% endblock %}
