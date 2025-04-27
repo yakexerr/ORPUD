@@ -27,25 +27,21 @@
 
     {% if user.role == 'manager' %}
         <h1>Проекты</h1>
-        <div class="card-list">
-          {% for project in projects.all %}
-          <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
-            <div>
-              <div class="card-title">{{ project.title }}</div>
-              <div class="card-info">
-                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-                <span class="icon">👥</span>
-                  {% for emp in project.employees.all %}
-                    {{ emp.fio }}
-                    {% if not forloop.last %},
-                    {% endif %}
-                  {% endfor %}
-              </div>
-            </div>
+    <div class="card-list">
+      {% for project in projects %}
+      <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+        <div class="card-title">{{ project.title }}</div>
+        <div class="card-info">
+          <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+          <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+          <span class="icon">👥</span>
+          {% for emp in project.employees.all %}
+            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
           {% endfor %}
         </div>
       </div>
+      {% endfor %}
+    </div>
     {% endif %}
 </div>
 {% endblock %}

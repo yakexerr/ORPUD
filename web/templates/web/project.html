@@ -21,9 +21,10 @@
         {% endfor %}
 
         <p><h1>Задачи</h1></p>
-        <hr>
-        {% for task in project.tasks.all.order_by %}
-            <div>
+        <div class="task-list">
+            <hr>
+            {% for task in project.tasks.all.order_by %}
+            <div class="task-field" onclick="location.href='{% url 'current_task' task.id %}'">
                 <p><b>Название: </b>{{task.title}}</p>
                 <p><b>Дедлайн: </b>{{task.deadline}}</p>
                 <p><b>Приоритет:</b> {{task.get_priority_display}}</p>
@@ -32,7 +33,8 @@
                 <p><b></b></p>
             </div>
             <hr>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 {% else %}
 <h1>Проекты</h1>

@@ -235,6 +235,11 @@ def task_view(request): #для теста редактирования\удал
     tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
     return render(request, 'web/task_test.html', {"tasks": tasks})
 
+@login_required
+def current_task_view(request, id=None):
+    task = get_object_or_404(Task, id=id) if id is not None else None
+    return render(request, 'web/task.html', {"task": task})
+
 
 @login_required
 def completed_task_view(request):

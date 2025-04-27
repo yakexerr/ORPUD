@@ -1,13 +1,10 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<h2></h2>
-    <a href="{% url 'completed_tasks' %}">Выполненные задачи</a>
+<h2>{{task.title}}</h2>
     <hr>
-{% for task in tasks %}
     <b>Добавлена: </b> {{ task.date_added }}
-
     <p>
-        <b>{{task.title}}</b><br>
+        <b>Название: </b>{{task.title}}<br>
         <b>Описание: </b>{{task.description}}<br>
         <b>Дедлайн: </b>{{task.deadline}}<br>
         <b>Приоритет: </b>{{task.get_priority_display }}<br>
@@ -29,5 +26,4 @@
     <a href="{% url 'edit_task' task.id %}">Редактировать</a>
     <a href="{% url 'delete_task' task.id %}">Удалить</a>
     <hr>
-{% endfor %}
 {% endblock %}
