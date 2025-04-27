@@ -76,7 +76,14 @@ class TaskTagForm(forms.ModelForm):
         model = TaskTag
         fields = ("title", )
 
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ('fio', 'position', 'email', 'phone', 'image')
+
+
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ('title', 'description', 'deadline', 'tasks', 'employees')

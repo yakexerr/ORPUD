@@ -11,6 +11,7 @@ urlpatterns = [
     path("action_message/", action_message_view, name="action_message"),
     path("project/", first_project_redirect_view.as_view(), name="project"),
     path("project/<int:id>/", project_view, name="current_project"),
+    path("project/<int:id>/edit/", edit_project_view, name="edit_project"),
     path("profile/", profile_view, name="my_profile"),
     path("profile/<int:id>/", profile_view, name="other_profile"),
     path("profile/edit", edit_profile_view, name="edit_profile"),

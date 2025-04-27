@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
@@ -91,8 +92,19 @@ class first_project_redirect_view(RedirectView):
         if employee.role == 'employee':
             first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
         if first_project:
-            return f"/project/{first_project.id}/"
+            return f"/project/"
         return "project/"
+
+@login_required
+def edit_project_view(request, id=None):
+    project = get_object_or_404(Project, id=id) if id is not None else None
+    form = ProjectForm(instance=project)
+    if request.method == 'POST':
+        form = ProjectForm(data=request.POST, instance=project, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('current_project', args=[id]))
+    return render(request, 'web/edit_project.html', {"form": form})
 
 
 @login_required
