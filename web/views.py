@@ -315,3 +315,32 @@ def project_tasks_view(request, project_id):
         'tasks': tasks,
         'project': project
     })
+
+
+
+
+
+
+def tasks_report_view(request):
+    # Статистика по выполненным и невыполненным задачам
+    completed_tasks = Task.objects.filter(is_done=True)
+    not_completed_tasks = Task.objects.filter(is_done=False)
+
+    # Считаем задачи по приоритетам (используем константы из модели)
+    completed_priority = {
+        'High': completed_tasks.filter(priority=Task.HIGH).count(),
+        'Medium': completed_tasks.filter(priority=Task.MEDIUM).count(),
+        'Low': completed_tasks.filter(priority=Task.LOW).count(),
+    }
+
+    not_completed_priority = {
+        'High': not_completed_tasks.filter(priority=Task.HIGH).count(),
+        'Medium': not_completed_tasks.filter(priority=Task.MEDIUM).count(),
+        'Low': not_completed_tasks.filter(priority=Task.LOW).count(),
+    }
+
+    context = {
+        'completed_priority': completed_priority,
+        'not_completed_priority': not_completed_priority,
+    }
+    return render(request, 'web/tasks_report.html', context)

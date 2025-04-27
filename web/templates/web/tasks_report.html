@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отчет по задачам</title>
+    <!-- Подключаем Chart.js в head -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Статистика по задачам</h1>
+
+    <h2>Выполненные задачи по приоритетам</h2>
+    <ul>
+        <li>High: {{ completed_priority.High }}</li>
+        <li>Medium: {{ completed_priority.Medium }}</li>
+        <li>Low: {{ completed_priority.Low }}</li>
+    </ul>
+
+    <h2>Не выполненные задачи по приоритетам</h2>
+    <ul>
+        <li>High: {{ not_completed_priority.High }}</li>
+        <li>Medium: {{ not_completed_priority.Medium }}</li>
+        <li>Low: {{ not_completed_priority.Low }}</li>
+    </ul>
+
+    <!-- Тут можно будет вставить код для отображения графиков -->
+</body>
+</html>
