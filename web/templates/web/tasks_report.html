@@ -1,29 +1,45 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Отчет по задачам</title>
-    <!-- Подключаем Chart.js в head -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <h1>Статистика по задачам</h1>
+{% extends "web/base.html" %}
+{% block content %}
+<h1>Отчет по задачам</h1>
 
-    <h2>Выполненные задачи по приоритетам</h2>
-    <ul>
-        <li>High: {{ completed_priority.High }}</li>
-        <li>Medium: {{ completed_priority.Medium }}</li>
-        <li>Low: {{ completed_priority.Low }}</li>
-    </ul>
+<canvas id="tasksChart" width="400" height="200"></canvas>
 
-    <h2>Не выполненные задачи по приоритетам</h2>
-    <ul>
-        <li>High: {{ not_completed_priority.High }}</li>
-        <li>Medium: {{ not_completed_priority.Medium }}</li>
-        <li>Low: {{ not_completed_priority.Low }}</li>
-    </ul>
-
-    <!-- Тут можно будет вставить код для отображения графиков -->
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('tasksChart').getContext('2d');
+    const tasksChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [
+                {
+                    label: 'Выполненные задачи',
+                    data: [
+                        {{ completed_priority.High }},
+                        {{ completed_priority.Medium }},
+                        {{ completed_priority.Low }},
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Невыполненные задачи',
+                    data: [
+                        {{ not_completed_priority.High }},
+                        {{ not_completed_priority.Medium }},
+                        {{ not_completed_priority.Low }},
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

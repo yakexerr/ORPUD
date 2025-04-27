@@ -321,12 +321,13 @@ def project_tasks_view(request, project_id):
 
 
 
+@login_required
 def tasks_report_view(request):
     # Статистика по выполненным и невыполненным задачам
-    completed_tasks = Task.objects.filter(is_done=True)
-    not_completed_tasks = Task.objects.filter(is_done=False)
+    completed_tasks = Task.objects.filter(is_done=True, user=request.user)
+    not_completed_tasks = Task.objects.filter(is_done=False, user=request.user)
 
-    # Считаем задачи по приоритетам (используем константы из модели)
+    # Считаем задачи по приоритетам
     completed_priority = {
         'High': completed_tasks.filter(priority=Task.HIGH).count(),
         'Medium': completed_tasks.filter(priority=Task.MEDIUM).count(),
