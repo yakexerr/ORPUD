@@ -2,6 +2,8 @@ from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
+from django.views.generic import RedirectView
+
 from web.models import *
 from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
@@ -73,29 +75,44 @@ def action_message_view(request):
 
 
 @login_required
-def project_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/project.html', {})
+def project_view(request, id=None):
+    project = get_object_or_404(Project, id=id) if id is not None else None
+    return render(request, 'web/project.html', {"project": project})
+
+
+class first_project_redirect_view(RedirectView):
+    permanent = False
+    query_string = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        employee = self.request.user
+        if employee.role == 'manager':
+            first_project = Project.objects.filter(manager=employee).order_by('-date_create').first()
+        if employee.role == 'employee':
+            first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
+        if first_project:
+            return f"/project/{first_project.id}/"
+        return "project/"
 
 
 @login_required
-def profile_view(request):
-    employee = request.user
-    if request.user.role == 'manager':
-        projects = Project.objects.filter(manager=request.user)
-    if request.user.role == 'employee':
-        projects = Project.objects.filter(employee=request.user)
+def profile_view(request, id=None):
+    employee = get_object_or_404(User, id=id) if id is not None else request.user
+    if employee.role == 'manager':
+        projects = Project.objects.filter(manager=employee)
+    if employee.role == 'employee':
+        projects = Project.objects.filter(employees=employee)
     return render(request, 'web/profile.html', {"employee": employee, "projects": projects})
 
 @login_required
 def edit_profile_view(request):
-    profile = get_object_or_404(User, id=request.user.id) if id is not None else None
+    profile = request.user
     form = EmployeeForm(instance=profile)
     if request.method == 'POST':
         form = EmployeeForm(data=request.POST, instance=profile, files=request.FILES)
         if form.is_valid():
             form.save()
-            return redirect("profile")
+            return redirect("my_profile")
     return render(request, 'web/edit_employee.html', {"form": form})
 
 
@@ -129,9 +146,9 @@ def feedback_view(request):
     # TODO: Реализовать
     return render(request, 'web/feedback.html', {})
 
-def current_project_view(request, id=None):
-    project = get_object_or_404(Project, id=id) if id is not None else None
-    return render(request, 'web/project.html', {"project": project})
+# def current_project_view(request, id=None):
+#     project = get_object_or_404(Project, id=id) if id is not None else None
+#     return render(request, 'web/project.html', {"project": project})
 
 
 # Добавление задачи

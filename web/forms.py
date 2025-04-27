@@ -40,6 +40,10 @@ class AuthForm(forms.Form):
 
 
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['employees'].queryset = User.objects.filter(role='employee')
+
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
     priority = forms.ChoiceField(
         choices=Task.PRIORITY_CHOICES,

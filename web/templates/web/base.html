@@ -21,13 +21,17 @@
         {% if request.path == '/' %}<span class="dash">—</span>{% endif %}
         <a href="/">Главная</a>
     </li>
-    <li class="{% if request.path == '/project/' %}active{% endif %}">
-        {% if request.path == '/project/' %}<span class="dash">—</span>{% endif %}
-        <a href="/project/">Проект</a>
+    <li class="{% if '/project/' in request.path %}active{% endif %}">
+        {% if '/project/' in request.path %}
+            <span class="dash">—</span>
+            <span class="menu-item">Проект</span>
+        {% else %}
+            <a href="/project/" class="menu-item">Проект</a>
+        {% endif %}
     </li>
     <li class="{% if request.path == '/profile/' %}active{% endif %}">
         {% if request.path == '/profile/ ' %}<span class="dash">—</span>{% endif %}
-        <a href="/profile/">Профиль</a>
+        <a href="{% url 'my_profile' %}">Профиль</a>
     </li>
     <li class="{% if request.path == '/employees_dashboard/' %}active{% endif %}">
         {% if request.path == '/employees_dashboard/' %}<span class="dash">—</span>{% endif %}

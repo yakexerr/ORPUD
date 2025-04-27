@@ -46,7 +46,8 @@
         <div class="section-title">Сотрудники</div>
         <div class="card-list">
           {% for emp in manager_employees %}
-          <div class="card">
+          <div class="card"
+            onclick="location.href='{% if emp == user %}{% url 'my_profile' %}{% else %}{% url 'other_profile' emp.id %}{% endif %}'">
             <div class="card-title">{{ emp.fio }}</div>
             <div class="card-info">
               <span class="icon">📞</span>{{ emp.phone }}

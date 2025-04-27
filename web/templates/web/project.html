@@ -1,7 +1,7 @@
-
 {% extends 'web/base.html' %}
 {% block content %}
-<h1>Проект "{{project.title}}"</h1>
+{% if project%}
+    <h1>Проект "{{project.title}}"</h1>
     <div>
         <p><b>Дедлайн: </b>{{project.deadline}}</p>
         <b>Менеджер: </b> {{project.manager}}
@@ -9,17 +9,17 @@
         {% for emp in project.employees.all %}
             <div>
                 <p>
-                    {% if employee.image %}
+                    {% if emp.image %}
                         <img src="{{emp.image.url}}" width="50">
                     {% else %}
                         <img src="/media/img/account_avatars/default_avatar.jpg" width="50">
                     {% endif %} <br>
                     <b>ФИО: </b>{{emp.fio}} <br>
-                    <b>Email: </b>{{emp.email}}
+                    <b>Email: </b>{{emp.email}} <br>
                 </p>
             </div>
         {% endfor %}
-        <hr>
+
         <p><h1>Задачи</h1></p>
         <hr>
         {% for task in project.tasks.all.order_by %}
@@ -34,4 +34,8 @@
             <hr>
         {% endfor %}
     </div>
+{% else %}
+<h1>Проекты</h1>
+<b>Проектов пока нет :)</b><br>
+{% endif %}
 {% endblock %}
