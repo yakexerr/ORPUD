@@ -31,7 +31,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, verbose_name='Email')
     fio = models.CharField(max_length=256, verbose_name="ФИО")
     image = models.ImageField(upload_to='img/account_avatars/', null=True, blank=True, verbose_name="Фото")
-    position = models.CharField(max_length=256, verbose_name="Должность")
+    position = models.CharField(max_length=256, blank=True, verbose_name="Должность")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name="Телефон")
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='employee')

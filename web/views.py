@@ -1,7 +1,10 @@
 from datetime import datetime
+from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
+from django.views.generic import RedirectView
+
 from web.models import *
 from web.forms import *
 from django.contrib.auth import get_user_model, authenticate, login, logout
@@ -85,30 +88,56 @@ def action_message_view(request):
 
 
 @login_required
-def project_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/project.html', {})
+def project_view(request, id=None):
+    project = get_object_or_404(Project, id=id) if id is not None else None
+    return render(request, 'web/project.html', {"project": project})
+
+
+class first_project_redirect_view(RedirectView):
+    permanent = False
+    query_string = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        employee = self.request.user
+        if employee.role == 'manager':
+            first_project = Project.objects.filter(manager=employee).order_by('-date_create').first()
+        if employee.role == 'employee':
+            first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
+        if first_project:
+            return f"/project/"
+        return "project/"
+
+@login_required
+def edit_project_view(request, id=None):
+    project = get_object_or_404(Project, id=id) if id is not None else None
+    form = ProjectForm(instance=project)
+    if request.method == 'POST':
+        form = ProjectForm(data=request.POST, instance=project, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('current_project', args=[id]))
+    return render(request, 'web/edit_project.html', {"form": form})
 
 
 @login_required
-def profile_view(request):
-    employee = request.user
-    if request.user.role == 'manager':
-        projects = Project.objects.filter(manager=request.user)
-    if request.user.role == 'employee':
-        projects = Project.objects.filter(employees=request.user)
-    return render(request, 'web/profile.html', {"employees": employee, "projects": projects})
+def profile_view(request, id=None):
+    employee = get_object_or_404(User, id=id) if id is not None else request.user
+    if employee.role == 'manager':
+        projects = Project.objects.filter(manager=employee)
+    if employee.role == 'employee':
+        projects = Project.objects.filter(employees=employee)
+    return render(request, 'web/profile.html', {"employee": employee, "projects": projects})
 
 @login_required
 def edit_profile_view(request):
-    employee_profile = get_object_or_404(User, id=request.user.id) if id is not None else None
-    form = EmployeeForm(instance=employee_profile)
+    profile = request.user
+    form = EmployeeForm(instance=profile)
     if request.method == 'POST':
-        form = EmployeeForm(data=request.POST, instance=employee_profile, files=request.FILES)
+        form = EmployeeForm(data=request.POST, instance=profile, files=request.FILES)
         if form.is_valid():
             form.save()
-            return redirect("profile")
-    return render(request, 'web/add_employee.html', {"form": form})
+            return redirect("my_profile")
+    return render(request, 'web/edit_employee.html', {"form": form})
 
 
 @login_required
@@ -254,6 +283,11 @@ def task_view(request): #для теста редактирования\удал
     tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
     return render(request, 'web/task_test.html', {"tasks": tasks})
 
+@login_required
+def current_task_view(request, id=None):
+    task = get_object_or_404(Task, id=id) if id is not None else None
+    return render(request, 'web/task.html', {"task": task})
+
 
 @login_required
 def completed_task_view(request):
@@ -277,41 +311,3 @@ def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
-
-def task_list_view(request):
-    """
-    Список всех задач. Шаблон task_test.html
-    """
-    tasks = Task.objects.all().order_by('-date_added')
-    return render(request, 'web/task_test.html', {
-        'tasks': tasks
-    })
-
-def task_detail_view(request, task_id):
-    """
-    Поля одной задачи. Шаблон task_detail.html
-    """
-    task = get_object_or_404(Task, id=task_id)
-    return render(request, 'web/task_detail.html', {
-        'task': task
-    })
-
-def user_tasks_view(request):
-    """
-    Список задач, привязанных к текущему пользователю.
-    """
-    tasks = Task.objects.filter(user=request.user).order_by('-date_added')
-    return render(request, 'web/task_test.html', {
-        'tasks': tasks
-    })
-
-def project_tasks_view(request, project_id):
-    """
-    Если нужен просмотр по проекту, и у тебя в модели Project есть поле tasks = ManyToManyField(Task)
-    """
-    project = get_object_or_404(Project, id=project_id)
-    tasks = project.tasks.all().order_by('-date_added')
-    return render(request, 'web/task_test.html', {
-        'tasks': tasks,
-        'project': project
-    })

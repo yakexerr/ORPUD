@@ -8,5 +8,9 @@
         <p><a href="{% url 'registration' %}">Зарегистрироваться</a></p>
         <p><a href="{% url 'auth' %}">Авторизироваться</a></p>
     </div>
+{% if action_message == "feedback" %}
+<h1>Ваше сообщение отпралено!</h1>
+<img src="/media/img/account_avatars/feedback.jpg" width="300">
+<p><a href="{% url 'main' %}">Вернуться главную</a></p>
 {% endif %}
 {% endblock %}

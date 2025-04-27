@@ -56,6 +56,10 @@ class FeedbackForm(forms.ModelForm):
             'message': forms.Textarea(attrs={'placeholder': 'Введите Ваше сообщение', 'rows': 4}),
         }
 class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['employees'].queryset = User.objects.filter(role='employee')
+
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
     priority = forms.ChoiceField(
         choices=Task.PRIORITY_CHOICES,
@@ -97,53 +101,14 @@ class TaskTagForm(forms.ModelForm):
         model = TaskTag
         fields = ("title", )
 
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ('fio', 'position', 'email', 'phone', 'image')
-# TODO: переделать в соответствии с models.py
-'''
-class TimeSlotForm(forms.ModelForm):
-    # переопределяем метод save
-    def save(self, commit=True):
-        self.instance.user = self.initial['user']
-        return super().save(commit)
 
+
+class ProjectForm(forms.ModelForm):
     class Meta:
-        model = TimeSlot # указываем что форма на модели таймслот
-        fields = ('title', 'start_date', 'end_date', 'image', 'tags')
-        widgets = {
-            "start_date": forms.DateTimeInput(
-                attrs={"type": "datetime-local"}, format='%Y-%m-%dT%H:%M'
-            ),
-            "end_date": forms.DateTimeInput(
-                attrs={"type": "datetime-local"}, format='%Y-%m-%dT%H:%M'
-            )
-        }
-
-class TimeSlotTagForm(forms.ModelForm):
-    # переопределяем метод save
-    def save(self, commit=True):
-        self.instance.user = self.initial['user']
-        return super().save(commit)
-
-    class Meta:
-        model = TimeSlotTag # указываем что форма на модели таймслот
-        fields = ('title',)
-
-
-class HolidayForm(forms.ModelForm):
-    # переопределяем метод save
-    def save(self, commit=True):
-        self.instance.user = self.initial['user']
-        return super().save(commit)
-
-    class Meta:
-        model = Holiday # указываем что форма на модели таймслот
-        fields = ('date',)
-        widgets = {
-            "date": forms.DateTimeInput(
-                attrs={"type": "date"}, format='%Y-%m-%d'
-            ),
-        }
-'''
+        model = Project
+        fields = ('title', 'description', 'deadline', 'tasks', 'employees')

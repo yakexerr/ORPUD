@@ -1,0 +1,30 @@
+{% extends 'web/base.html' %}
+{% block content %}
+<h1>Редактирование профиля</h1>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="fio-field">
+        {{form.fio.label_tag}}
+        {{form.fio}}
+    </div>
+    <br>
+    <div class="email-field">
+        {{form.email.label_tag}}
+        {{form.email}}
+    </div>
+    <br>
+    {% if user.role == "employee" %}
+        <div class="phone-field">
+            {{form.phone.label_tag}}
+            {{form.phone}}
+        </div>
+    {% endif %}
+    <div class="image-field">
+        {{form.image.label_tag}}
+        {{form.image.url}}
+        {{form.image}}
+    </div>
+    <br>
+    <button type="submit">Сохранить</button>
+</form>
+{% endblock %}

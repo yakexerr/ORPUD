@@ -1,102 +1,94 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
+
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1 class="page-title">Главная</h1>
-    <div>
-      <a href="{% url 'add_task' %}">Добавить задачу</a> <br>
-      <a href="{% url 'tags' %}">Добавить теги</a> <br>
-      <a href="{% url 'add_employee' %}">Добавить сотрудника</a> <br>
-      <a href="{% url 'tasks' %}">Для теста задач</a><br>
-      <a href="{% url 'employees' %}">Сотрудники</a><br>
-      <a href="{% url 'action_message' %}">тест сообщения</a>
-    </div>
+
+<div>
+  <a href="{% url 'add_task' %}">Добавить задачу</a><br>
+  <a href="{% url 'tags' %}">Добавить теги</a><br>
+  <a href="{% url 'add_employee' %}">Добавить сотрудника</a><br>
+  <a href="{% url 'tasks' %}">Для теста задач</a><br>
+  <a href="{% url 'employees' %}">Сотрудники</a><br>
+  <a href="{% url 'action_message' %}">Тест сообщения</a>
+</div>
 
 <div class="dashboard">
 
-<!--  {% if user.is_authenticated %}-->
-
-    {% if manager_account %}
-      <!-- Блок проектов менеджера -->
-      <div class="dashboard-section">
-        <div class="section-title">Проекты</div>
-        <div class="card-list">
-          {% for project in manager_projects %}
-          <div class="card">
-            <div>
-              <div class="card-title">{{ project.title }}</div>
-              <div class="card-info">
-                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-                <span class="icon">👥</span>
-                {% for emp in project.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
-              </div>
-            </div>
-          </div>
+{% if manager_account %}
+  <!-- Блок проектов менеджера -->
+  <div class="dashboard-section">
+    <div class="section-title">Проекты</div>
+    <div class="card-list">
+      {% for project in manager_projects %}
+      <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+        <div class="card-title">{{ project.title }}</div>
+        <div class="card-info">
+          <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+          <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+          <span class="icon">👥</span>
+          {% for emp in project.employees.all %}
+            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
           {% endfor %}
         </div>
       </div>
+      {% endfor %}
+    </div>
+  </div>
 
-      <!-- Блок сотрудников -->
-      <div class="dashboard-section">
-        <div class="section-title">Сотрудники</div>
-        <div class="card-list">
-          {% for emp in manager_employees %}
-          <div class="card">
-            <div class="card-title">{{ emp.fio }}</div>
-            <div class="card-info">
-              <span class="icon">📞</span>{{ emp.phone }}
-              <span class="icon">✉️</span>{{ emp.email }}
-            </div>
-          </div>
+  <!-- Блок сотрудников менеджера -->
+  <div class="dashboard-section">
+    <div class="section-title">Сотрудники</div>
+    <div class="card-list">
+      {% for emp in manager_employees %}
+      <div class="card" onclick="location.href='{% if emp == user %}{% url 'my_profile' %}{% else %}{% url 'other_profile' emp.id %}{% endif %}'">
+        <div class="card-title">{{ emp.fio }}</div>
+        <div class="card-info">
+          <span class="icon">📞</span>{{ emp.phone }}
+          <span class="icon">✉️</span>{{ emp.email }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% if employee_account %}
+  <!-- Блок задач сотрудника -->
+  <div class="dashboard-section">
+    <div class="section-title">Мои задачи</div>
+    <div class="card-list">
+      {% for task in employee_tasks %}
+      <div class="card">
+        <div class="card-title">{{ task.title }}</div>
+        <div class="card-info">
+          <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+          <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Блок проектов сотрудника -->
+  <div class="dashboard-section">
+    <div class="section-title">Проекты</div>
+    <div class="card-list">
+      {% for project in employee_projects %}
+      <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+        <div class="card-title">{{ project.title }}</div>
+        <div class="card-info">
+          <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+          <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+          <span class="icon">👥</span>
+          {% for emp in project.employees.all %}
+            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
           {% endfor %}
         </div>
       </div>
-    {% endif %}
-
-    {% if employee_account %}
-      <!-- Блок задач сотрудника -->
-      <div class="dashboard-section">
-        <div class="section-title">Мои задачи</div>
-        <div class="card-list">
-          {% for task in employee_tasks %}
-          <div class="card">
-            <div>
-              <div class="card-title">{{ task.title }}</div>
-              <div class="card-info">
-                <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
-                <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-
-      <!-- Блок проектов сотрудника -->
-      <div class="dashboard-section">
-        <div class="section-title">Проекты</div>
-        <div class="card-list">
-          {% for project in employee_projects %}
-          <div class="card">
-            <div>
-              <div class="card-title">{{ project.title }}</div>
-              <div class="card-info">
-                <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-                <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-                <span class="icon">👥</span>
-                {% for emp in project.employees.all %}{{ emp.fio }}{% if not forloop.last %}, {% endif %}{% endfor %}
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      </div>
-    {% endif %}
-
-<!--  {% endif %}-->
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
 
 </div>
 {% endblock %}
-
