@@ -26,7 +26,7 @@
     <br><br>
 
     {% if user.role == 'manager' %}
-        <h1>Проекты</h1>
+    <h1>Проекты</h1>
     <div class="card-list">
       {% for project in projects %}
       <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">

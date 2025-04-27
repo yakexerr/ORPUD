@@ -1,43 +1,53 @@
 {% extends 'web/base.html' %}
-{% block content %}
-{% if project%}
-    <h1>Проект "{{project.title}}"</h1>
-    <div>
-        <p><b>Дедлайн: </b>{{project.deadline}}</p>
-        <b>Менеджер: </b> {{project.manager}}
-        <p><b>Сотрудники: </b></p>
-        {% for emp in project.employees.all %}
-            <div>
-                <p>
-                    {% if emp.image %}
-                        <img src="{{emp.image.url}}" width="50">
-                    {% else %}
-                        <img src="/media/img/account_avatars/default_avatar.jpg" width="50">
-                    {% endif %} <br>
-                    <b>ФИО: </b>{{emp.fio}} <br>
-                    <b>Email: </b>{{emp.email}} <br>
-                </p>
-            </div>
-        {% endfor %}
 
-        <p><h1>Задачи</h1></p>
-        <div class="task-list">
-            <hr>
-            {% for task in project.tasks.all.order_by %}
-            <div class="task-field" onclick="location.href='{% url 'current_task' task.id %}'">
-                <p><b>Название: </b>{{task.title}}</p>
-                <p><b>Дедлайн: </b>{{task.deadline}}</p>
-                <p><b>Приоритет:</b> {{task.get_priority_display}}</p>
-                <p><b>Описание: </b>{{task.description}}</p>
-                <p><b>Сотрудники: </b>{% for employee in task.employees.all %} {{employee.fio}} {% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                <p><b></b></p>
+{% block content %}
+{% if project %}
+  <h1>Проект "{{ project.title }}"</h1>
+
+  <div>
+    <p><b>Дедлайн:</b> {{ project.deadline }}</p>
+    <p><b>Менеджер:</b> {{ project.manager }}</p>
+
+    <p><b>Сотрудники:</b></p>
+    {% for emp in project.employees.all %}
+      <div>
+        <p>
+          {% if emp.image %}
+            <img src="{{ emp.image.url }}" width="50">
+          {% else %}
+            <img src="/media/img/account_avatars/default_avatar.jpg" width="50">
+          {% endif %}
+          <br>
+          <b>ФИО:</b> {{ emp.fio }}<br>
+          <b>Email:</b> {{ emp.email }}<br>
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="dashboard">
+    <div class="dashboard-section">
+      <div class="section-title">Задачи</div>
+      <div class="card-list">
+        {% for task in project.tasks.all %}
+          <div class="card" onclick="location.href='{% url 'current_task' task.id %}'">
+            <div class="card-title">{{ task.title }}</div>
+            <div class="card-info">
+              <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+              <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+              <span class="icon">👥</span>
+              {% for employee in task.employees.all %}
+                {{ employee.fio }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
             </div>
-            <hr>
-            {% endfor %}
-        </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
+  </div>
+
 {% else %}
-<h1>Проекты</h1>
-<b>Проектов пока нет :)</b><br>
+  <h1>Проекты</h1>
+  <b>Проектов пока нет :)</b><br>
 {% endif %}
 {% endblock %}
