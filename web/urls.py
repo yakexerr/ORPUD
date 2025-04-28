@@ -10,6 +10,7 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("action_message/", action_message_view, name="action_message"),
     path("project/", first_project_redirect_view.as_view(), name="project"),
+    path("project/empty", project_view, name="project"),
     path("project/<int:id>/", project_view, name="current_project"),
     path("project/<int:id>/edit/", edit_project_view, name="edit_project"),
     path("profile/", profile_view, name="my_profile"),

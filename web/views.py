@@ -104,7 +104,7 @@ class first_project_redirect_view(RedirectView):
         if employee.role == 'employee':
             first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
         if first_project:
-            return f"/project/"
+            return f"/project/empty"
         return "project/"
 
 @login_required
@@ -172,7 +172,6 @@ def feedback_view(request):
         if form.is_valid():
             feedback = form.save()
 
-            # Формируем письмо
             subject = "Новое сообщение с формы обратной связи"
             message = f"""
                 Имя: {feedback.name}
@@ -182,18 +181,14 @@ def feedback_view(request):
                 Сообщение:
                 {feedback.message}
             """
-            # Создаём объект EmailMessage
             email = EmailMessage(
                 subject,
                 message,
                 'task_trackerorpud@mail.ru',  # От кого
                 ['task_trackerorpud@mail.ru'],  # Кому
             )
-            # Добавляем заголовок Reply-To
             email.reply_to = [feedback.email]  # Почта пользователя для ответа
-            # Отправляем письмо
             email.send(fail_silently=False)
-            # Перенаправляем пользователя на главную страницу
             return redirect("feedback")
     else:
         form = FeedbackForm()
@@ -235,6 +230,7 @@ def edit_employee_view(request, id=None):
     return render(request, 'web/add_employee.html', {"form": form})
 
 
+@login_required
 def employees_view(request):
     employees = CustomUser.objects.filter(role='employee')
     return render(request, 'web/employees.html', {"employees": employees})
