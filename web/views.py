@@ -103,7 +103,6 @@ class first_project_redirect_view(RedirectView):
             first_project = Project.objects.filter(manager=employee).order_by('-date_create').first()
         if employee.role == 'employee':
             first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
-        print(first_project)
         if first_project:
             return f"/project/{first_project.id}/"
         return "/project/empty"
