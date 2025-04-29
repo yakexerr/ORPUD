@@ -33,12 +33,4 @@ urlpatterns = [
     path("employees/add/", edit_employee_view, name="add_employee"),
     path("employees/<int:id>/edit/", edit_employee_view, name="edit_employee"),
     path("employees/<int:id>/delete", delete_employee_view, name="delete_employee"),
-    # TODO: Переделать формочки под models.py
-    # path("time_slots/add/", time_slot_edit_view, name="time_slots_add"),
-    # path("time_slots/<int:id>/", time_slot_edit_view, name="time_slots_edit"),
-    # path("tags/", tags_view, name="tags"),
-    # path("tags/<int:id>/delete/", tags_delete_view, name="tags_delete"),
-    # path("holidays/", holidays_view, name="holidays"),
-    # path("holidays/<int:id>/delete/", holidays_delete_view, name="holidays_delete"),
-
 ]
