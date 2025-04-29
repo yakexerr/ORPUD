@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.template.context_processors import request
+from django.views import View
 from django.views.generic import RedirectView
 
 from web.models import *
@@ -93,19 +94,19 @@ def project_view(request, id=None):
     return render(request, 'web/project.html', {"project": project})
 
 
-class first_project_redirect_view(RedirectView):
+class first_project_redirect_view(View):
     permanent = False
     query_string = True
 
-    def get_redirect_url(self, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         employee = self.request.user
         if employee.role == 'manager':
             first_project = Project.objects.filter(manager=employee).order_by('-date_create').first()
         if employee.role == 'employee':
             first_project = Project.objects.filter(employees=employee).order_by('-date_create').first()
         if first_project:
-            return f"/project/"
-        return "project/"
+            return redirect('current_project', first_project.id)
+        return render(request, 'web/project.html', {"project": None})
 
 @login_required
 def edit_project_view(request, id=None):

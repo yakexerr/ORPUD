@@ -1,6 +1,6 @@
 {% extends 'web/base.html' %}
-
 {% block content %}
+
 {% if project %}
   <h1>Проект "{{ project.title }}"</h1>
 
@@ -46,10 +46,13 @@
     </div>
   </div>
 
-  <a href="{% url 'edit_project' project.id %}">Редактировать</a>
+  {% if project.manager == user %}
+      <a href="{% url 'edit_project' project.id %}">Редактировать</a>
+  {% endif %}
 
 {% else %}
   <h1>Проекты</h1>
   <b>Проектов пока нет :)</b><br>
 {% endif %}
+
 {% endblock %}
