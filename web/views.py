@@ -19,7 +19,8 @@ from .forms import FeedbackForm
 
 #-------------------------------------------
 from django.shortcuts import render, get_object_or_404
-
+from django.utils.timezone import now
+from datetime import timedelta
 
 User = get_user_model()
 
@@ -160,10 +161,20 @@ def projects_dashboard_view(request):
     # TODO: Реализовать
     return render(request, 'web/projects_dashboard.html', {})
 
+# Календарный график
 @login_required
 def calendar_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/calendar.html', {})
+    user = request.user
+    tasks = Task.objects.filter(employees=user)
+
+    today = timezone.now().date()
+    days_range = [today + timedelta(days=i) for i in range(30)]
+
+    return render(request, 'web/calendar.html', {
+        'tasks': tasks,
+        'today': today,
+        'days_range': days_range,
+    })
 
 @login_required
 def feedback_view(request):

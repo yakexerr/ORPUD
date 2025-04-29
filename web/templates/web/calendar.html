@@ -2,6 +2,67 @@
 <!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
+<!-- Фильр -->
+{% load custom_filters %}
 <!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Календарный график</h1>
+<style>
+    .calendar-container {
+        overflow-x: auto;
+        white-space: nowrap;
+        border-top: 1px solid #ccc;
+        padding-top: 20px;
+        position: relative;
+    }
+    .task-bar {
+        position: absolute;
+        height: 30px;
+        background-color: #4CAF50;
+        color: white;
+        padding: 5px;
+        border-radius: 4px;
+        white-space: nowrap;
+        font-size: 14px;
+    }
+    .time-scale {
+        display: flex;
+        margin-bottom: 40px;
+        border-bottom: 1px solid #ddd;
+    }
+    .time-scale div {
+        width: 100px;
+        text-align: center;
+        font-size: 12px;
+        border-right: 1px solid #eee;
+    }
+</style>
+
+<div class="time-scale">
+    {% for day in days_range %}
+        <div>{{ day }}</div>
+    {% endfor %}
+</div>
+
+<div class="calendar-container" style="height: {{ tasks|length|add:'1' }}0px;">
+    {% for task in tasks %}
+        {% with task.date_added|date:"U" as start_ts %}
+            {% with task.deadline|default:today|date:"U" as end_ts %}
+                {% with today|date:"U" as base_ts %}
+                    {% with ((start_ts|add:"-base_ts") // 86400) as offset_days %}
+                        {% with ((end_ts|add:"-start_ts") // 86400) as duration_days %}
+                            <div class="task-bar"
+                                 style="top:{{ forloop.counter0|add:'1' }}0px;
+                                        left:{{ offset_days|floatformat:0|add:'0' }}00px;
+                                        width:{{ duration_days|floatformat:0|add:'1' }}00px;">
+                                {{ task.title }}
+                            </div>
+                        {% endwith %}
+                    {% endwith %}
+                {% endwith %}
+            {% endwith %}
+        {% endwith %}
+    {% endfor %}
+</div>
+
+
 {% endblock %}
