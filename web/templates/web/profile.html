@@ -33,32 +33,11 @@
 
         {% if user.role == 'manager' %}
             <h1>Мои проекты</h1>
-            <div class="dashboard">
-                <div class="dashboard-section">
-                    <div class="card-list">
-                        {% for project in projects %}
-                            {% if project.is_done == False %}
-                                <div class="card project {% if project.is_done %}done{% endif %}" onclick="location.href='{% url 'current_project' project.id %}'">
-                                    <div class="card-title">{{ project.title }}</div>
-                                    <div class="card-info">
-                                        <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-                                        <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-                                        <span class="icon">👥</span>
-                                        {% for emp in project.employees.all %}
-                                            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
+        {% else %}
+            <h1>Мой проект</h1>
         {% endif %}
 
-        {% if user.role == 'employee' %}
-            <h1>Мой проект</h1>
-            <div class="dashboard">
+                    <div class="dashboard">
                 <div class="dashboard-section">
                     <div class="card-list">
                         {% for project in projects %}
@@ -80,6 +59,7 @@
                 </div>
             </div>
 
+        {% if user.role == 'employee' %}
             <h1>Мои задачи</h1>
             <div class="dashboard">
                 <div class="dashboard-section">
