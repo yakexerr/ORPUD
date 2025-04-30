@@ -22,8 +22,12 @@
         {% endfor %}
         <br>
     </p>
-    <a href="{% url 'complete_task' task.id %}">Выполнено</a> |
-    <a href="{% url 'edit_task' task.id %}">Редактировать</a>
-    <a href="{% url 'delete_task' task.id %}">Удалить</a>
+    {% if task.is_done == False %}
+        <a href="{% url 'complete_task' task.id %}">Выполнено</a> |
+        <a href="{% url 'edit_task' task.id %}">Редактировать</a>
+        <a href="{% url 'delete_task' task.id %}">Удалить</a>
+    {% else %}
+        <a href="{% url 'complete_task' task.id %}">Отменить</a>
+    {% endif %}
     <hr>
 {% endblock %}

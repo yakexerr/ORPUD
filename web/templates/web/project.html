@@ -30,7 +30,7 @@
       <div class="section-title">Задачи</div>
       <div class="card-list">
         {% for task in project.tasks.all %}
-          <div class="card" onclick="location.href='{% url 'current_task' task.id %}'">
+          <div class="card task {% if task.is_done %}done{% endif %}" onclick="location.href='{% url 'current_task' task.id %}'">
             <div class="card-title">{{ task.title }}</div>
             <div class="card-info">
               <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
@@ -46,9 +46,13 @@
     </div>
   </div>
 
-  {% if project.manager == user %}
-      <a href="{% url 'edit_project' project.id %}">Редактировать</a> |
-      <a href="{% url 'complete_project' project.id %}">Выполнено</a>
+  {% if project.is_done == False %}
+        {% if project.manager == user %}
+          <a href="{% url 'edit_project' project.id %}">Редактировать</a> |
+        {% endif %}
+        <a href="{% url 'complete_project' project.id %}">Выполнено</a>
+  {% else %}
+        <a href="{% url 'complete_project' project.id %}">Отменить</a>
   {% endif %}
 
 {% else %}

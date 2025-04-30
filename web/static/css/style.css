@@ -113,10 +113,42 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-
-.card:hover {
+card.menu {
     background-color: rgba(215, 220, 230, 0.95);
 }
+
+.card.menu:hover {
+    background-color: rgba(215, 220, 230, 0.95);
+}
+
+
+.card.project {
+    background-color: rgba(255, 200, 200, 0.9); /* Красный (по умолчанию) */
+}
+.card.project.done {
+    background-color: rgba(200, 230, 200, 0.9); /* Зеленый (если is_done=True) */
+}
+.card.project:hover {
+    background-color: rgba(240, 180, 180, 0.95); /* Темнее красный при наведении */
+}
+.card.project.done:hover {
+    background-color: rgba(180, 210, 180, 0.95); /* Темнее зеленый при наведении */
+}
+
+
+.card.task {
+    background-color: rgba(255, 200, 200, 0.9); /* Красный (по умолчанию) */
+}
+.card.task.done {
+    background-color: rgba(200, 230, 200, 0.9); /* Зеленый (если is_done=True) */
+}
+.card.task:hover {
+    background-color: rgba(240, 180, 180, 0.95); /* Темнее красный при наведении */
+}
+.card.task.done:hover {
+    background-color: rgba(180, 210, 180, 0.95); /* Темнее зеленый при наведении */
+}
+
 
 .card-title {
     font-weight: 600;

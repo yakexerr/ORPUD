@@ -1,23 +1,58 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<div class="dashboard">
-    <div class="dashboard-section">
-        <div class="section-title">Проекты</div>
-        <div class="card-list">
-            {% for project in projects %}
-                <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
-                    <div class="card-title">{{ project.title }}</div>
-                    <div class="card-info">
-                        <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-                        <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-                        <span class="icon">👥</span>
-                        {% for emp in project.employees.all %}
-                            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
+    <form action="">
+        <b>Фильтры:</b><br>
+        {% for field in filter_form %}
+            {{field}}
+        {% endfor %}
+        <button>Найти</button>
+        <a href="?">Очистить</a>
+    </form>
+
+    <div class="dashboard">
+        <div class="dashboard-section">
+            <div class="section-title">Проекты</div>
+            <div class="card-list">
+                {% for project in projects %}
+                    <div class="card project {% if project.is_done %}done{% endif %}" onclick="location.href='{% url 'current_project' project.id %}'">
+                        <div class="card-title">{{ project.title }}</div>
+                        <div class="card-info">
+                            <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                            <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                            <span class="icon">👥</span>
+                            {% for emp in project.employees.all %}
+                                {{ emp.fio }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
+
+    <nav>
+        {% if tasks.has_previous %}
+            <a href="?page=1">В начало</a>
+            <a href="?page={{tasks.previous_page_number}}">Предыдушая страница</a>
+        {% endif %}
+
+        Найдено проектов:
+        {% if total_count > 0%}
+            <b>{{total_count}}</b> <br>
+        {% else %}
+            <b>0</b><br>
+        {% endif %}
+
+        {% if tasks.paginator.count > 0  %}
+            cтраница {{ tasks.number }} из {{tasks.paginator.num_pages}}
+        {% else %}
+            страница 1 из 1
+        {% endif %}
+
+        {% if tasks.has_next %}
+            <a href="?page={{tasks.next_page_number}}">В конец</a>
+            <a href="?page={{tasks.paginator.num_pages}}">Следующая страница</a>
+        {% endif %}
+    </nav>
+
 {% endblock %}
