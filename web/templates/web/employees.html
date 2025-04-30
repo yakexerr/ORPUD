@@ -10,7 +10,7 @@
         {% endif %}
         <div>
             <b>ФИО: </b> {{emp.fio}}<br>
-            <b>Должность: </b> {{user.get_role_display}}<br>
+            <b>Должность: </b> {{emp.get_role_display}}<br>
             <b>Email: </b>{{emp.email}}<br>
             {% if emp.phone %}
                 <b>Телефон: </b>{{emp.phone}}<br>

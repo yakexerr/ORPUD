@@ -113,6 +113,7 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+
 .card:hover {
     background-color: rgba(215, 220, 230, 0.95);
 }

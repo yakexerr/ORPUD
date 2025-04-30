@@ -14,7 +14,11 @@
 
     <div>
         <b>ФИО: </b> {{employee.fio}}<br>
-        <b>Должность: </b> {{user.get_role_display}}<br>
+        {% if employee.role == user.role %}
+            <b>Должность: </b> {{user.get_role_display}}<br>
+        {% else %}
+            <b>Должность: </b> {{employee.get_role_display}}<br>
+        {% endif %}
         <b>Email: </b>{{employee.email}}<br>
         {% if employee.phone %}
             <b>Телефон: </b>{{employee.phone}}<br>
@@ -31,7 +35,8 @@
     <h1>Проекты</h1>
     <div class="card-list">
       {% for project in projects %}
-      <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+            {% if project.is_done == False %}
+                <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
         <div class="card-title">{{ project.title }}</div>
         <div class="card-info">
           <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
@@ -42,6 +47,7 @@
           {% endfor %}
         </div>
       </div>
+            {% endif %}
       {% endfor %}
     </div>
     {% endif %}

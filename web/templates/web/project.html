@@ -47,7 +47,8 @@
   </div>
 
   {% if project.manager == user %}
-      <a href="{% url 'edit_project' project.id %}">Редактировать</a>
+      <a href="{% url 'edit_project' project.id %}">Редактировать</a> |
+      <a href="{% url 'complete_project' project.id %}">Выполнено</a>
   {% endif %}
 
 {% else %}

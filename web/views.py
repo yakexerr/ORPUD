@@ -121,6 +121,23 @@ def edit_project_view(request, id=None):
 
 
 @login_required
+def complete_project_view(request, id):
+    project = get_object_or_404(Project, id=id)
+    if not project.is_done:
+        project.is_done = True
+    else:
+        project.is_done = False
+    project.save()
+    return redirect('main')
+
+@login_required
+def projects_view(request):
+    if request.user.role == 'manager':
+        projects = Project.objects.all().filter(manager=request.user)
+        return render(request, 'web/all_projects.html', {"projects": projects})
+    return redirect('main')
+
+@login_required
 def profile_view(request, id=None):
     employee = get_object_or_404(User, id=id) if id is not None else request.user
     if employee.role == 'manager':

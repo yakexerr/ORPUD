@@ -9,7 +9,7 @@
   <a href="{% url 'add_employee' %}">Добавить сотрудника</a><br>
   <a href="{% url 'tasks' %}">Для теста задач</a><br>
   <a href="{% url 'employees' %}">Сотрудники</a><br>
-  <a href="{% url 'action_message' %}">Тест сообщения</a>
+  <a href="{% url 'projects' %}">Тест спика проектов</a>
 </div>
 
 <div class="dashboard">
@@ -20,7 +20,8 @@
     <div class="section-title">Проекты</div>
     <div class="card-list">
       {% for project in manager_projects %}
-      <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+        {% if project.is_done == False %}
+            <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
         <div class="card-title">{{ project.title }}</div>
         <div class="card-info">
           <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
@@ -31,6 +32,7 @@
           {% endfor %}
         </div>
       </div>
+        {% endif %}
       {% endfor %}
     </div>
   </div>
