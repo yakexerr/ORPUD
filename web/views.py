@@ -1,5 +1,5 @@
 from datetime import datetime
-from web.services import task_filter
+from web.services import task_filter, project_filter
 from django.core.paginator import Paginator
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -136,7 +136,21 @@ def complete_project_view(request, id):
 def projects_view(request):
     if request.user.role == 'manager':
         projects = Project.objects.all().filter(manager=request.user)
-        return render(request, 'web/all_projects.html', {"projects": projects})
+
+        filter_form = ProjectFilterForm(request.GET)
+        filter_form.is_valid()
+        projects = project_filter(projects, filter_form.cleaned_data)
+
+        total_count = projects.count()
+        page = request.GET.get("page", 1)
+        paginator = Paginator(projects, per_page=10)
+
+        return render(request, 'web/all_projects.html', {
+            "projects": projects,
+            "filter_form": filter_form,
+            "total_count": total_count
+        })
+
     return redirect('main')
 
 @login_required
