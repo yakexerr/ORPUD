@@ -146,11 +146,10 @@ def projects_view(request):
         paginator = Paginator(projects, per_page=10)
 
         return render(request, 'web/all_projects.html', {
-            "projects": projects,
+            "projects": paginator.get_page(page),
             "filter_form": filter_form,
             "total_count": total_count
         })
-
     return redirect('main')
 
 @login_required
@@ -160,6 +159,8 @@ def profile_view(request, id=None):
         projects = Project.objects.filter(manager=employee)
     if employee.role == 'employee':
         projects = Project.objects.filter(employees=employee)
+        tasks = Task.objects.filter(employees=employee)
+        return render(request, 'web/profile.html', {"employee": employee, "projects": projects, "tasks": tasks})
     return render(request, 'web/profile.html', {"employee": employee, "projects": projects})
 
 @login_required
@@ -299,7 +300,7 @@ def delete_task_view(request, id):
 
 @login_required
 def complete_task_view(request, id):
-    task = get_object_or_404(Task, user=request.user, id=id)
+    task = get_object_or_404(Task, id=id)
     if not task.is_done:
         task.is_done = True
     else:

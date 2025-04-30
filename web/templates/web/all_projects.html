@@ -8,6 +8,7 @@
         <button>Найти</button>
         <a href="?">Очистить</a>
     </form>
+
     <div class="dashboard">
         <div class="dashboard-section">
             <div class="section-title">Проекты</div>
@@ -35,7 +36,7 @@
             <a href="?page={{tasks.previous_page_number}}">Предыдушая страница</a>
         {% endif %}
 
-        Найдено задач:
+        Найдено проектов:
         {% if total_count > 0%}
             <b>{{total_count}}</b> <br>
         {% else %}

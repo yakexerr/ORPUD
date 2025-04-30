@@ -14,33 +14,27 @@
             <a href="?">Очистить</a>
         </form>
     <hr>
-{% for task in tasks %}
-    <b>Добавлена: </b> {{ task.date_added }}
 
-    <p>
-        <b>{{task.title}}</b><br>
-        <b>Описание: </b>{{task.description}}<br>
-        <b>Дедлайн: </b>{{task.deadline}}<br>
-        <b>Приоритет: </b>{{task.get_priority_display }}<br>
-        {% if task.tags.all.count > 0 %}
-            <b>Теги: </b>
-            <small>
-                {% for tag in task.tags.all %}
-                    {{ tag.title }} {% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </small><br>
-        {% endif %}
-        <b>Над задачей работают: </b>
-        {% for emp in task.employees.all %}
-            {{ emp.fio }} {% if not forloop.last %}, {% endif %}
+<div class="dashboard">
+    <div class="dashboard-section">
+      <div class="card-list">
+        {% for task in tasks %}
+          <div class="card task {% if task.is_done %}done{% endif %}" onclick="location.href='{% url 'current_task' task.id %}'">
+            <div class="card-title">{{ task.title }}</div>
+            <div class="card-info">
+              <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+              <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+              <span class="icon">👥</span>
+              {% for employee in task.employees.all %}
+                {{ employee.fio }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            </div>
+          </div>
         {% endfor %}
-        <br>
-    </p>
-    <a href="{% url 'complete_task' task.id %}">Выполнено</a> |
-    <a href="{% url 'edit_task' task.id %}">Редактировать</a>
-    <a href="{% url 'delete_task' task.id %}">Удалить</a>
-    <hr>
-{% endfor %}
+      </div>
+    </div>
+  </div>
+
     <nav>
         {% if tasks.has_previous %}
             <a href="?page=1">В начало</a>

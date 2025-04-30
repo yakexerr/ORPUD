@@ -155,9 +155,9 @@ class ProjectFilterForm(forms.Form):
     )
 
     is_done = forms.NullBooleanField(widget=(forms.Select(choices=(
-        ('unknown', 'Статус'),
-        ('true', 'Выполненена'),
-        ('false', 'Не выполнена')
+        (None, 'Статус'),
+        (True, 'Выполненен'),
+        (False, 'Не выполнен')
     ))),
         required=False
     )

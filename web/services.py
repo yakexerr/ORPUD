@@ -19,7 +19,7 @@ def project_filter(projects_qs, filters: dict):
     if filters['search']:
         projects_qs = projects_qs.filter(title__icontains=filters['search'])
 
-    if filters['is_done']:
+    if 'is_done' in filters and filters['is_done'] is not None:
         projects_qs = projects_qs.filter(is_done=filters['is_done'])
 
     if filters['manager']:
