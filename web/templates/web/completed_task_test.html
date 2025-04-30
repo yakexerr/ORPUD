@@ -26,4 +26,28 @@
     <a href="{% url 'complete_task' task.id %}">Вернуть</a>
     <hr>
 {% endfor %}
+    <nav>
+        {% if tasks.has_previous %}
+            <a href="?page=1">В начало</a>
+            <a href="?page={{tasks.previous_page_number}}">Предыдушая страница</a>
+        {% endif %}
+
+        Найдено задач:
+        {% if total_count > 0%}
+            <b>{{total_count}}</b> <br>
+        {% else %}
+            <b>0</b><br>
+        {% endif %}
+
+        {% if tasks.paginator > 0  %}
+            cтраница {{ tasks.number }} из {{tasks.paginator.num_pages}}
+        {% else %}
+            страница 1 из 1
+        {% endif %}
+
+        {% if tasks.has_next %}
+            <a href="?page={{tasks.next_page_number}}">В конец</a>
+            <a href="?page={{tasks.paginator.num_pages}}">Следующая страница</a>
+        {% endif %}
+    </nav>
 {% endblock %}

@@ -112,3 +112,33 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ('title', 'description', 'deadline', 'tasks', 'employees')
+
+class TaskFilterForm(forms.Form):
+    search = forms.CharField(widget=forms.TextInput(attrs={'placeholder': "Поиск по слову"}), required=False)
+    tag = forms.ChoiceField(
+        choices=[('', 'Тег')] + [(tag.id, str(tag)) for tag in TaskTag.objects.all()],
+        widget=forms.Select,
+        required=False
+    )
+    priority = forms.ChoiceField(
+        choices=[('', 'Приоритет')] + Task.PRIORITY_CHOICES,
+        widget=forms.Select,
+        required=False
+    )
+    employee = forms.ChoiceField(
+        choices=[('', 'Сотрудник')] + [(user.id, str(user)) for user in User.objects.all() if user.role == 'employee'],
+        widget=forms.Select,
+        required=False)
+    deadline = forms.DateTimeField(
+        widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"),
+        required=False,
+        label="Дедлайн"
+    )
+
+    # is_done = forms.NullBooleanField(widget=(forms.Select(choices=(
+    #     ('unknown', 'Статус'),
+    #     ('true', 'Выполненена'),
+    #     ('false', 'Не выполнена')
+    # ))),
+    #     required=False
+    # )

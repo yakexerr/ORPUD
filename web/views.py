@@ -1,4 +1,6 @@
 from datetime import datetime
+from web.services import task_filter
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -221,7 +223,7 @@ def edit_task_view(request, id=None):
         form = TaskForm(data=request.POST, instance=task, initial={"user": request.user})
         if form.is_valid():
             form.save()
-            return redirect("main")
+            return redirect("tasks")
     return render(request, 'web/add_task.html', {"form": form})
 
 
@@ -295,7 +297,20 @@ def complete_task_view(request, id):
 @login_required
 def task_view(request): #для теста редактирования\удаления задач
     tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
-    return render(request, 'web/task_test.html', {"tasks": tasks})
+
+    filter_form = TaskFilterForm(request.GET)
+    filter_form.is_valid()
+    tasks = task_filter(tasks, filter_form.cleaned_data)
+
+    total_count = tasks.count()
+    page = request.GET.get("page", 1)
+    paginator = Paginator(tasks, per_page=10)
+
+    return render(request, 'web/task_test.html', {
+        "tasks": paginator.get_page(page),
+        "filter_form": filter_form,
+        "total_count": total_count
+    })
 
 @login_required
 def current_task_view(request, id=None):

@@ -5,7 +5,7 @@
         <div class="section-title">Проекты</div>
         <div class="card-list">
             {% for project in projects %}
-                <div class="card" onclick="location.href='{% url 'current_project' project.id %}'">
+                <div class="card project {% if project.is_done %}done{% endif %}" onclick="location.href='{% url 'current_project' project.id %}'">
                     <div class="card-title">{{ project.title }}</div>
                     <div class="card-info">
                         <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}

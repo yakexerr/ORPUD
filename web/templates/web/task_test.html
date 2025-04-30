@@ -3,6 +3,17 @@
 <h2></h2>
     <a href="{% url 'completed_tasks' %}">Выполненные задачи</a>
     <hr>
+        <form action="">
+            <b>Фильтры:</b><br>
+
+            {% for field in filter_form %}
+                {{field}}
+            {% endfor %}
+
+            <button>Найти</button>
+            <a href="?">Очистить</a>
+        </form>
+    <hr>
 {% for task in tasks %}
     <b>Добавлена: </b> {{ task.date_added }}
 
@@ -30,4 +41,28 @@
     <a href="{% url 'delete_task' task.id %}">Удалить</a>
     <hr>
 {% endfor %}
+    <nav>
+        {% if tasks.has_previous %}
+            <a href="?page=1">В начало</a>
+            <a href="?page={{tasks.previous_page_number}}">Предыдушая страница</a>
+        {% endif %}
+
+        Найдено задач:
+        {% if total_count > 0%}
+            <b>{{total_count}}</b> <br>
+        {% else %}
+            <b>0</b><br>
+        {% endif %}
+
+        {% if tasks.paginator.count > 0  %}
+            cтраница {{ tasks.number }} из {{tasks.paginator.num_pages}}
+        {% else %}
+            страница 1 из 1
+        {% endif %}
+
+        {% if tasks.has_next %}
+            <a href="?page={{tasks.next_page_number}}">В конец</a>
+            <a href="?page={{tasks.paginator.num_pages}}">Следующая страница</a>
+        {% endif %}
+    </nav>
 {% endblock %}
