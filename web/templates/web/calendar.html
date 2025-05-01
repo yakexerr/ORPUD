@@ -1,113 +1,125 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
+
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Календарный график</h1>
 
-<div id="timeline" style="height: 400px; border: 1px solid #ccc; border-radius: 8px;"></div>
-
-<!-- Vis.js -->
+<!-- Контейнер для диаграммы -->
+<div id="timeline" style="height: 600px; min-height: 400px; border: 1px solid #ccc; border-radius: 8px;"></div>
+<!-- Подключаем стили для Vis.js -->
 <link href="https://unpkg.com/vis-timeline@7.7.0/styles/vis-timeline-graph2d.min.css" rel="stylesheet" />
 <script src="https://unpkg.com/vis-timeline@7.7.0/standalone/umd/vis-timeline-graph2d.min.js"></script>
 
+<!-- Подключаем moment.js и локаль -->
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/locale/ru.js"></script>
 <style>
     #timeline {
         height: 600px;
-        min-height: 400px;
-        border: 1px solid #ccc;
-    }
-
-    .vis-time-axis .vis-grid.vis-day {
-        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        background: #fafafa;
+        margin-top: 20px;
     }
 
     .vis-item {
-        font-size: 14px;
-        padding: 4px;
+        border-radius: 6px;
+        padding: 6px 10px;
+        color: #fff;
+        font-size: 13px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .no-tasks-message {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        font-size: 18px;
-        color: #666;
+    .vis-item:hover {
+        transform: scale(1.03);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+    }
+
+    .vis-time-axis .vis-grid.vis-day,
+    .vis-time-axis .vis-grid.vis-week,
+    .vis-time-axis .vis-grid.vis-month {
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    .vis-group {
+        border-bottom: 1px solid #eee;
+    }
+
+    .vis-group > div {
+        padding: 4px;
+        font-weight: 600;
+        color: #333;
+        background: linear-gradient(to right, #e9ecef, #f8f9fa);
+        border-left: 5px solid #6c757d;
+        border-radius: 4px;
+        margin: 4px 0;
+        white-space: normal !important;
+    }
+
+    .vis-tooltip {
+        font-size: 12px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .vis-group > div {
+        padding: 4px;
+        font-weight: 600;
+        color: #333;
+        background: linear-gradient(to right, #e9ecef, #f8f9fa);
+        border-left: 5px solid #6c757d;
+        border-radius: 4px;
+        margin: 4px 0;
+        white-space: normal !important;
+    }
+
+    .vis-tooltip {
+        font-size: 12px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .vis-group > div {
+        background: none !important; /* убираем фон — теперь он задаётся через content */
+        padding: 0 !important;
     }
 </style>
 
-{% now "Y-m-d\\TH:i:s" as today %}
-{% now "U" as now_ts %}
-{% with future_ts=now_ts|add:"2592000" %} {# 30 дней вперёд #}
-{% with future_date=future_ts|date:"Y-m-d\\TH:i:s" %}
-
 <script>
+    moment.locale('ru');  // Устанавливаем русскую локаль
+
+    const tasks = {{ tasks_json|safe }};
+    const groups = {{ groups_json|safe }};
+
+    const items = new vis.DataSet(tasks);
+    const groupsData = new vis.DataSet(groups);
+
     const container = document.getElementById('timeline');
 
-    const items = [
-        {% for task in tasks %}
-        {
-            id: {{ task.id }},
-            content: `<strong>{{ task.title|escapejs }}</strong><br>
-                      {{ task.user.fio|escapejs }}{% if task.priority == 3 %}<br><em>🔺 Высокий приоритет</em>{% elif task.priority == 2 %}<br><em>⚠ Средний приоритет</em>{% else %}<br><em>🟢 Низкий приоритет</em>{% endif %}`,
-            start: "{{ task.date_added|date:'Y-m-d\\TH:i:s' }}",
-            {% if task.deadline %}
-            end: "{{ task.deadline|date:'Y-m-d\\TH:i:s' }}",
-            {% endif %}
-            className: "{% if task.priority == 3 %}high{% elif task.priority == 2 %}medium{% else %}low{% endif %}"
-        },
-        {% endfor %}
-    ];
-
-    // Получаем сегодняшнюю дату и диапазон +/- 1 месяц
-    const today = new Date();
-    const startDate = new Date(today);
-    const endDate = new Date(today);
-    startDate.setMonth(today.getMonth() - 1);
-    endDate.setMonth(today.getMonth() + 1);
-
     const options = {
-    start: startDate,
-    end: endDate,
-    stack: true,
-    horizontalScroll: true,
-    zoomKey: 'ctrlKey',
-    maxHeight: '600px',
-    minHeight: '400px',
-    zoomMin: 1000 * 60 * 60 * 24 * 2,       // 2 дня
-    zoomMax: 1000 * 60 * 60 * 24 * 30,      // 30 дней
-    showCurrentTime: true,
-    timeAxis: {
-        scale: 'day',
-        step: 1,
-        format: {
-            minorLabels: {
-                day: 'D',
-                month: 'MMM',
-                year: 'YYYY'
-            },
-            majorLabels: {
-                day: 'MMMM YYYY',
-                month: 'YYYY',
-                year: ''
-            }
+        stack: true,
+        horizontalScroll: true,
+        zoomKey: 'ctrlKey',
+        maxHeight: '600px',
+        minHeight: '400px',
+        zoomMin: 1000 * 60 * 60 * 24,        // 1 день
+        zoomMax: 1000 * 60 * 60 * 24 * 30,   // 1 месяц
+        showCurrentTime: true,
+        orientation: 'both',
+        tooltip: {
+            followMouse: true
         }
-    },
-    orientation: 'both',
-    editable: false,
-    multiselect: false,
     };
 
-
-    const timeline = new vis.Timeline(container, items, options);
-
-    if (items.length === 0) {
-        const message = document.createElement('div');
-        message.className = 'no-tasks-message';
-        message.innerText = "Задачи не найдены. Отобразим пустой календарь.";
-        container.appendChild(message);
-    }
+    const timeline = new vis.Timeline(container, items, groupsData, options);
 </script>
-{% endwith %}
-{% endwith %}
+
 {% endblock %}
