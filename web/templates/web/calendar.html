@@ -5,13 +5,6 @@
 
 <!-- Контейнер для диаграммы -->
 <div id="timeline" style="height: 600px; min-height: 400px; border: 1px solid #ccc; border-radius: 8px;"></div>
-<!-- Подключаем стили для Vis.js -->
-<link href="https://unpkg.com/vis-timeline@7.7.0/styles/vis-timeline-graph2d.min.css" rel="stylesheet" />
-<script src="https://unpkg.com/vis-timeline@7.7.0/standalone/umd/vis-timeline-graph2d.min.js"></script>
-
-<!-- Подключаем moment.js и локаль -->
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/locale/ru.js"></script>
 <style>
     #timeline {
         height: 600px;
@@ -51,7 +44,6 @@
         padding: 4px;
         font-weight: 600;
         color: #333;
-        background: linear-gradient(to right, #e9ecef, #f8f9fa);
         border-left: 5px solid #6c757d;
         border-radius: 4px;
         margin: 4px 0;
@@ -65,31 +57,6 @@
         padding: 6px;
         border-radius: 6px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .vis-group > div {
-        padding: 4px;
-        font-weight: 600;
-        color: #333;
-        background: linear-gradient(to right, #e9ecef, #f8f9fa);
-        border-left: 5px solid #6c757d;
-        border-radius: 4px;
-        margin: 4px 0;
-        white-space: normal !important;
-    }
-
-    .vis-tooltip {
-        font-size: 12px;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        padding: 6px;
-        border-radius: 6px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .vis-group > div {
-        background: none !important; /* убираем фон — теперь он задаётся через content */
-        padding: 0 !important;
     }
 </style>
 

@@ -170,12 +170,12 @@ def get_project_color(project_id):
 
 def get_task_color(priority):
     if priority == Task.HIGH:
-        return '#e74c3c'  # Красный
+        return '#e74c3c33'  # Красный
     elif priority == Task.MEDIUM:
-        return '#f1c40f'  # Жёлтый
+        return '#f1c40f33'  # Жёлтый
     elif priority == Task.LOW:
-        return '#2ecc71'  # Зелёный
-    return '#3498db'     # Синий по умолчанию
+        return '#2ecc7133'  # Зелёный
+    return '#3498db33'     # Синий по умолчанию
 
 @login_required
 def calendar_view(request):
