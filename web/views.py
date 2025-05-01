@@ -22,7 +22,10 @@ from .forms import FeedbackForm
 
 #-------------------------------------------
 from django.shortcuts import render, get_object_or_404
-
+from django.utils.timezone import now
+from datetime import timedelta
+import json
+import random
 
 User = get_user_model()
 
@@ -195,10 +198,57 @@ def projects_dashboard_view(request):
     # TODO: Реализовать
     return render(request, 'web/projects_dashboard.html', {})
 
+# Календарный график
+def get_project_color(project_id):
+    colors = ['#6f42c1', '#007bff', '#20c997', '#ffc107', '#fd7e14', '#e83e8c']
+    return colors[project_id % len(colors)] + '33'  # '33' — это ~20% прозрачности
+
+def get_task_color(priority):
+    if priority == Task.HIGH:
+        return '#e74c3c33'  # Красный
+    elif priority == Task.MEDIUM:
+        return '#f1c40f33'  # Жёлтый
+    elif priority == Task.LOW:
+        return '#2ecc7133'  # Зелёный
+    return '#3498db33'     # Синий по умолчанию
+
 @login_required
 def calendar_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/calendar.html', {})
+    projects = Project.objects.prefetch_related('tasks')
+    data = []
+    groups = []
+
+    for project in projects:
+        color = get_project_color(project.id)
+        groups.append({
+            'id': project.id,
+            'content': f"<div><strong>{project.title}</strong><br><small>Дедлайн: {project.deadline.strftime('%d.%m.%Y')}</small></div>",
+            'style': f"background-color: {color}; color: darkslategray; font-weight: bold; padding: 4px; border-radius: 4px;"
+        })
+        for task in project.tasks.all():
+            start = task.date_added
+            end = task.deadline
+
+            # Задача занимает минимум 1 час
+            if end <= start or (end - start).total_seconds() < 86400:
+                end = start + timedelta(hours=1)
+
+            data.append({
+                'id': task.id,
+                'group': project.id,
+                'content': task.title,
+                'start': start.isoformat(),
+                'end': end.isoformat(),
+                'type': 'range',
+                'title': f'Задача: {task.title}\nОтветственный: {task.user.fio}\nПриоритет: {task.get_priority_display()}',
+                'style': f'background-color: {get_task_color(task.priority)};'
+            })
+
+    context = {
+        'tasks_json': json.dumps(data),
+        'groups_json': json.dumps(groups),
+    }
+    return render(request, 'web/calendar.html', context)
 
 @login_required
 def feedback_view(request):

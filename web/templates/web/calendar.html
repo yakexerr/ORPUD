@@ -1,7 +1,92 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
+
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Календарный график</h1>
+
+<!-- Контейнер для диаграммы -->
+<div id="timeline" style="height: 600px; min-height: 400px; border: 1px solid #ccc; border-radius: 8px;"></div>
+<style>
+    #timeline {
+        height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        background: #fafafa;
+        margin-top: 20px;
+    }
+
+    .vis-item {
+        border-radius: 6px;
+        padding: 6px 10px;
+        color: #fff;
+        font-size: 13px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .vis-item:hover {
+        transform: scale(1.03);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+    }
+
+    .vis-time-axis .vis-grid.vis-day,
+    .vis-time-axis .vis-grid.vis-week,
+    .vis-time-axis .vis-grid.vis-month {
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    .vis-group {
+        border-bottom: 1px solid #eee;
+    }
+
+    .vis-group > div {
+        padding: 4px;
+        font-weight: 600;
+        color: #333;
+        border-left: 5px solid #6c757d;
+        border-radius: 4px;
+        margin: 4px 0;
+        white-space: normal !important;
+    }
+
+    .vis-tooltip {
+        font-size: 12px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+<script>
+    moment.locale('ru');  // Устанавливаем русскую локаль
+
+    const tasks = {{ tasks_json|safe }};
+    const groups = {{ groups_json|safe }};
+
+    const items = new vis.DataSet(tasks);
+    const groupsData = new vis.DataSet(groups);
+
+    const container = document.getElementById('timeline');
+
+    const options = {
+        stack: true,
+        horizontalScroll: true,
+        zoomKey: 'ctrlKey',
+        maxHeight: '600px',
+        minHeight: '400px',
+        zoomMin: 1000 * 60 * 60 * 24,        // 1 день
+        zoomMax: 1000 * 60 * 60 * 24 * 30,   // 1 месяц
+        showCurrentTime: true,
+        orientation: 'both',
+        tooltip: {
+            followMouse: true
+        }
+    };
+
+    const timeline = new vis.Timeline(container, items, groupsData, options);
+</script>
+
 {% endblock %}

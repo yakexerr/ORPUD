@@ -7,6 +7,12 @@
     <title>Task tracker</title> <!-- это то что наверху в иконке пишется -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/script.js' %}" defer></script>
+    <!-- Библиотека для работы календаря -->
+    <link href="https://unpkg.com/vis-timeline@7.7.0/styles/vis-timeline-graph2d.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/vis-timeline@7.7.0/standalone/umd/vis-timeline-graph2d.min.js"></script>
+    <!-- Moment.js и локаль -->
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/locale/ru.js"></script>
 </head>
 <body>
     {% if not user.is_anonymous %}
