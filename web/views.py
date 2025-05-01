@@ -218,31 +218,40 @@ def calendar_view(request):
     data = []
     groups = []
 
-    for project in projects:
-        color = get_project_color(project.id)
-        groups.append({
-            'id': project.id,
-            'content': f"<div><strong>{project.title}</strong><br><small>Дедлайн: {project.deadline.strftime('%d.%m.%Y')}</small></div>",
-            'style': f"background-color: {color}; color: darkslategray; font-weight: bold; padding: 4px; border-radius: 4px;"
-        })
-        for task in project.tasks.all():
-            start = task.date_added
-            end = task.deadline
-
-            # Задача занимает минимум 1 час
-            if end <= start or (end - start).total_seconds() < 86400:
-                end = start + timedelta(hours=1)
-
-            data.append({
-                'id': task.id,
-                'group': project.id,
-                'content': task.title,
-                'start': start.isoformat(),
-                'end': end.isoformat(),
-                'type': 'range',
-                'title': f'Задача: {task.title}\nОтветственный: {task.user.fio}\nПриоритет: {task.get_priority_display()}',
-                'style': f'background-color: {get_task_color(task.priority)};'
+    if projects.exists():
+        for project in projects:
+            color = get_project_color(project.id)
+            groups.append({
+                'id': project.id,
+                'content': f"<div><strong>{project.title}</strong><br><small>Дедлайн: {project.deadline.strftime('%d.%m.%Y')}</small></div>",
+                'style': f"background-color: {color}; color: darkslategray; font-weight: bold; padding: 4px; border-radius: 4px;"
             })
+            for task in project.tasks.all():
+                start = task.date_added
+                end = task.deadline
+                if end <= start:
+                    end = start + timedelta(days=1)
+
+                data.append({
+                    'id': task.id,
+                    'group': project.id,
+                    'content': task.title,
+                    'start': start.isoformat(),
+                    'end': end.isoformat(),
+                    'title': f'Задача: {task.title}\nОтветственный: {task.user.fio}\nПриоритет: {task.get_priority_display()}',
+                    'style': f'background-color: {get_task_color(task.priority)};'
+                })
+    else:
+        # Добавим заглушку-группу и задачу, чтобы диаграмма всё равно отобразилась
+        groups.append({'id': 0, 'content': 'Нет проектов', 'style': 'background-color: #ccc;'})
+        data.append({
+            'id': 0,
+            'group': 0,
+            'content': 'Нет задач',
+            'start': timezone.now().isoformat(),
+            'end': (timezone.now() + timedelta(days=1)).isoformat(),
+            'style': 'background-color: #aaa;'
+        })
 
     context = {
         'tasks_json': json.dumps(data),
