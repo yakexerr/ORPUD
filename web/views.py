@@ -153,8 +153,10 @@ def projects_view(request):
             "filter_form": filter_form,
             "total_count": total_count
         })
+    if request.user.role == 'employee':
+        project = Project.objects.all().filter(employees=request.user).first()
+        return redirect(reverse('current_project', args=[project.id]))
     return redirect('main')
-
 @login_required
 def profile_view(request, id=None):
     employee = get_object_or_404(User, id=id) if id is not None else request.user
@@ -291,7 +293,7 @@ def feedback_view(request):
 # Добавление задачи
 @login_required
 def edit_task_view(request, id=None):
-    task = get_object_or_404(Task, user=request.user, id=id) if id is not None else None
+    task = get_object_or_404(Task, id=id) if id is not None else None
     form = TaskForm(instance=task)
     if request.method == 'POST':
         form = TaskForm(data=request.POST, instance=task, initial={"user": request.user})
@@ -370,7 +372,10 @@ def complete_task_view(request, id):
 
 @login_required
 def task_view(request): #для теста редактирования\удаления задач
-    tasks = Task.objects.all().filter(user=request.user, is_done=False).order_by('-priority')
+    if request.user.role == 'manager':
+        tasks = Task.objects.all().filter(is_done=False).order_by('-priority')
+    if request.user.role == 'employee':
+        tasks = Task.objects.all().filter(is_done=False, employees=request.user).order_by('-priority')
 
     filter_form = TaskFilterForm(request.GET)
     filter_form.is_valid()
@@ -394,8 +399,19 @@ def current_task_view(request, id=None):
 
 @login_required
 def completed_task_view(request):
-    tasks = Task.objects.all().filter(user=request.user, is_done=True).order_by('-priority')
-    return render(request, 'web/completed_task_test.html', {"tasks": tasks})
+    if request.user.role == 'manager':
+        tasks = Task.objects.all().filter(manager=request.user, is_done=True).order_by('-priority')
+    if request.user.role == 'employee':
+        tasks = Task.objects.all().filter(employees=request.user, is_done=True).order_by('-priority')
+
+    total_count = tasks.count()
+    page = request.GET.get("page", 1)
+    paginator = Paginator(tasks, per_page=10)
+
+    return render(request, 'web/completed_task_test.html', {
+        "tasks": paginator.get_page(page),
+        "total_count": total_count
+    })
 
 
 @login_required

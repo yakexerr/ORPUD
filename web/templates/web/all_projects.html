@@ -9,6 +9,11 @@
         <a href="?">Очистить</a>
     </form>
 
+    {% if user.role == 'manager' %}
+        <br>
+        <p><a href="{% url 'add_project' %}">Добавить проект</a></p>
+    {% endif %}
+
     <div class="dashboard">
         <div class="dashboard-section">
             <div class="section-title">Проекты</div>

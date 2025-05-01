@@ -1,6 +1,10 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<h1>Добавление задачи</h1>
+{% if request.path == '/tasks/add/' %}
+        <h1>Добавление задачи</h1>
+  {% else %}
+        <h1>Редактирование задачи</h1>
+  {% endif %}
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}

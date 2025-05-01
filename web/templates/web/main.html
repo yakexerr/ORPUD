@@ -60,7 +60,7 @@
     <div class="section-title">Мои задачи</div>
     <div class="card-list">
       {% for task in employee_tasks %}
-      <div class="card menu">
+      <div class="card menu" onclick="location.href='{% url 'current_task' task.id %}'">
         <div class="card-title">{{ task.title }}</div>
         <div class="card-info">
           <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}

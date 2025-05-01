@@ -109,6 +109,7 @@ class EmployeeForm(forms.ModelForm):
 
 
 class ProjectForm(forms.ModelForm):
+    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
     class Meta:
         model = Project
         fields = ('title', 'description', 'deadline', 'tasks', 'employees')
