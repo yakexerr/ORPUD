@@ -24,9 +24,9 @@
     <li class="{% if '/project/' in request.path %}active{% endif %}">
         {% if '/project/' in request.path %}
             <span class="dash">—</span>
-            <span class="menu-item">Проекты</span>
+            <span class="menu-item">{% if user.role == 'manager' %} Проекты {% else %} Мой проект {% endif %}</span>
         {% else %}
-            <a href="{% url 'projects' %}" class="menu-item">Проекты</a>
+            <a href="{% url 'projects' %}" class="menu-item">{% if user.role == 'manager' %} Проекты {% else %} Мой проект {% endif %}</a>
         {% endif %}
     </li>
     <li class="{% if '/profile/' in request.path%}active{% endif %}">

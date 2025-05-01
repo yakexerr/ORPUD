@@ -13,6 +13,7 @@ urlpatterns = [
     path("project/<int:id>/complete", complete_project_view, name="complete_project"),
     path("project/<int:id>/", project_view, name="current_project"),
     path("project/<int:id>/edit/", edit_project_view, name="edit_project"),
+    path("project/add/", edit_project_view, name="add_project"),
     path("project/all", projects_view, name="projects"),
     path("profile/", profile_view, name="my_profile"),
     path("profile/<int:id>/", profile_view, name="other_profile"),
