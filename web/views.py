@@ -164,17 +164,8 @@ def projects_dashboard_view(request):
 # Календарный график
 @login_required
 def calendar_view(request):
-    user = request.user
-    tasks = Task.objects.filter(employees=user)
-
-    today = timezone.now().date()
-    days_range = [today + timedelta(days=i) for i in range(30)]
-
-    return render(request, 'web/calendar.html', {
-        'tasks': tasks,
-        'today': today,
-        'days_range': days_range,
-    })
+    tasks = Task.objects.all()
+    return render(request, 'web/calendar.html', {'tasks': tasks})
 
 @login_required
 def feedback_view(request):
