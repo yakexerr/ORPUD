@@ -1,0 +1,45 @@
+{% extends "web/base.html" %}
+{% block content %}
+<h1>Отчет по задачам</h1>
+
+<canvas id="tasksChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('tasksChart').getContext('2d');
+    const tasksChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [
+                {
+                    label: 'Выполненные задачи',
+                    data: [
+                        {{ completed_priority.High }},
+                        {{ completed_priority.Medium }},
+                        {{ completed_priority.Low }},
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Невыполненные задачи',
+                    data: [
+                        {{ not_completed_priority.High }},
+                        {{ not_completed_priority.Medium }},
+                        {{ not_completed_priority.Low }},
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

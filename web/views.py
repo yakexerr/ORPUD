@@ -276,6 +276,7 @@ def feedback_view(request):
         if form.is_valid():
             feedback = form.save()
 
+            # Формируем письмо
             subject = "Новое сообщение с формы обратной связи"
             message = f"""
                 Имя: {feedback.name}
@@ -285,13 +286,16 @@ def feedback_view(request):
                 Сообщение:
                 {feedback.message}
             """
+            # Создаём объект EmailMessage
             email = EmailMessage(
                 subject,
                 message,
                 'task_trackerorpud@mail.ru',  # От кого
                 ['task_trackerorpud@mail.ru'],  # Кому
             )
+            # Добавляем заголовок Reply-To
             email.reply_to = [feedback.email]  # Почта пользователя для ответа
+            # Отправляем письмо
             email.send(fail_silently=False)
             return redirect("feedback")
     else:
@@ -438,3 +442,28 @@ def delete_task_tag_view(request, id):
     tag = get_object_or_404(TaskTag, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
+
+@login_required
+def tasks_report_view(request):
+    # Статистика по выполненным и невыполненным задачам
+    completed_tasks = Task.objects.filter(is_done=True, user=request.user)
+    not_completed_tasks = Task.objects.filter(is_done=False, user=request.user)
+
+    # Считаем задачи по приоритетам
+    completed_priority = {
+        'High': completed_tasks.filter(priority=Task.HIGH).count(),
+        'Medium': completed_tasks.filter(priority=Task.MEDIUM).count(),
+        'Low': completed_tasks.filter(priority=Task.LOW).count(),
+    }
+
+    not_completed_priority = {
+        'High': not_completed_tasks.filter(priority=Task.HIGH).count(),
+        'Medium': not_completed_tasks.filter(priority=Task.MEDIUM).count(),
+        'Low': not_completed_tasks.filter(priority=Task.LOW).count(),
+    }
+
+    context = {
+        'completed_priority': completed_priority,
+        'not_completed_priority': not_completed_priority,
+    }
+    return render(request, 'web/tasks_report.html', context)
