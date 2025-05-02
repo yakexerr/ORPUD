@@ -408,7 +408,7 @@ def current_task_view(request, id=None):
 @login_required
 def completed_task_view(request):
     if request.user.role == 'manager':
-        tasks = Task.objects.all().filter(manager=request.user, is_done=True).order_by('-priority')
+        tasks = Task.objects.all().filter(employees__in=request.user.managed_projects.values('employees'), is_done=True).order_by('-priority').distinct()
     if request.user.role == 'employee':
         tasks = Task.objects.all().filter(employees=request.user, is_done=True).order_by('-priority')
 
