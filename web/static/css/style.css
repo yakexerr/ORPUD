@@ -148,7 +148,13 @@ card.menu {
 .card.task.done:hover {
     background-color: rgba(180, 210, 180, 0.95); /* Темнее зеленый при наведении */
 }
+.card.task.in_process {
+    background-color: rgba(255, 255, 180, 0.9); /* Бледно-жёлтый */
+}
 
+.card.task.in_process:hover {
+    background-color: rgba(230, 230, 140, 0.95); /* Темнее жёлтый при наведении */
+}
 
 .card-title {
     font-weight: 600;

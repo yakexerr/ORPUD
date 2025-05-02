@@ -41,7 +41,11 @@
                 <div class="dashboard-section">
                     <div class="card-list">
                         {% for project in projects %}
-                            <div class="card project {% if project.is_done %}done{% endif %}" onclick="location.href='{% url 'current_project' project.id %}'">
+                            <div class="card project
+                            {% if project.is_done %}
+                            done
+                            {% endif %}
+                                 onclick="location.href='{% url 'current_project' project.id %}'">
                                     <div class="card-title">{{ project.title }}</div>
                                     <div class="card-info">
                                         <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
@@ -63,7 +67,15 @@
                 <div class="dashboard-section">
                     <div class="card-list">
                         {% for task in tasks %}
-                            <div class="card task {% if task.is_done %}done{% endif %}" onclick="location.href='{% url 'current_task' task.id %}'">
+                            <div class="card task
+                            {% if task.is_done %}
+                            done
+                            {% endif %}
+                            {% if task.in_process %}
+                                in_process
+                            {% endif %}"
+
+                                 onclick="location.href='{% url 'current_task' task.id %}'">
                                 <div class="card-title">{{ task.title }}</div>
                                 <div class="card-info">
                                     <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}

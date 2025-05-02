@@ -23,12 +23,12 @@
         <br>
     </p>
     {% if task.is_done == False %}
-        <a href="{% url 'complete_task' task.id %}">Выполнено</a>
         {% if user.role == 'manager' %}
-            | <a href="{% url 'edit_task' task.id %}">Редактировать</a>
-            <a href="{% url 'delete_task' task.id %}">Удалить</a>
+            <a href="{% url 'edit_task' task.id %}">Редактировать</a>
+            <a href="{% url 'delete_task' task.id %}">Удалить</a> |
         {% endif %}
-
+            <a href="{% url 'change_process_status_task' task.id %}">Взять задачу</a>
+            <a href="{% url 'complete_task' task.id %}">Выполнено</a>
     {% else %}
         <a href="{% url 'complete_task' task.id %}">Отменить</a>
     {% endif %}

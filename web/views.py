@@ -96,7 +96,12 @@ def action_message_view(request):
 @login_required
 def project_view(request, id=None):
     project = get_object_or_404(Project, id=id) if id is not None else None
-    return render(request, 'web/project.html', {"project": project})
+    task_employees = TaskEmployee.objects.filter(task__in=project.tasks.all())
+
+    return render(request, 'web/project.html', {
+        "project": project,
+        "task_employees": task_employees,
+    })
 
 
 class first_project_redirect_view(View):
@@ -420,6 +425,22 @@ def completed_task_view(request):
         "tasks": paginator.get_page(page),
         "total_count": total_count
     })
+
+@login_required
+def task_work_status_view(request, id=None):
+    task = get_object_or_404(Task, id=id) if id is not None else None
+    work_status_task = task.taskemployee_set.filter(employee=request.user).first()
+    if task.in_process:
+        work_status_task.date_task_close = now()
+        task.is_done = True
+        task.in_process = False
+    else:
+        work_status_task.date_task_take = now()
+        task.in_process = True
+
+    task.save()
+    work_status_task.save()
+    return redirect('tasks')
 
 
 @login_required

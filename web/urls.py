@@ -26,6 +26,7 @@ urlpatterns = [
     path("feedback/", feedback_view, name="feedback"),
     path("tasks/add/", edit_task_view, name="add_task"),
     path("tasks/<int:id>/edit/", edit_task_view, name="edit_task"),
+    path("tasks/<int:id>/change-process-status/", task_work_status_view, name="change_process_status_task"),
     path("tasks/<int:id>/delete/", delete_task_view, name="delete_task"),
     path("tasks/<int:id>/complete/", complete_task_view, name="complete_task"),
     path("tags", task_tags_view, name="tags"),
