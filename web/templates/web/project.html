@@ -48,7 +48,8 @@
 
   {% if project.is_done == False %}
         {% if project.manager == user %}
-          <a href="{% url 'edit_project' project.id %}">Редактировать</a> |
+          <a href="{% url 'edit_project' project.id %}">Редактировать</a>
+          <a href="{% url 'delete_project' project.id %}">Удалить</a> |
         {% endif %}
         <a href="{% url 'complete_project' project.id %}">Выполнено</a>
   {% else %}

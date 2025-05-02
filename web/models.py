@@ -112,7 +112,7 @@ class Project(models.Model):
         limit_choices_to={'role': 'manager'},  # только менеджеры
         verbose_name="Менеджер",
         on_delete=models.PROTECT,
-        related_name="managed_projects"
+        related_name="managed_projects",
     )
     employees = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

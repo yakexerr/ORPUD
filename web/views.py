@@ -121,7 +121,7 @@ def edit_project_view(request, id=None):
         form = ProjectForm(data=request.POST, instance=project, files=request.FILES)
         if form.is_valid():
             form.save()
-            return redirect(reverse('current_project', args=[id]))
+            return redirect('projects')
     return render(request, 'web/edit_project.html', {"form": form})
 
 
@@ -157,6 +157,14 @@ def projects_view(request):
         project = Project.objects.all().filter(employees=request.user).first()
         return redirect(reverse('current_project', args=[project.id]))
     return redirect('main')
+
+
+@login_required
+def delete_project_view(request, id):
+    project = get_object_or_404(Project, id=id)
+    project.delete()
+    return redirect('projects')
+
 @login_required
 def profile_view(request, id=None):
     employee = get_object_or_404(User, id=id) if id is not None else request.user
