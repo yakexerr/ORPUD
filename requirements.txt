@@ -2,3 +2,5 @@ Django==5.1.7
 Pillow==9.4.0
 psycopg[binary]
 joblib==1.4.2
+pandas==2.2.3
+scikit-learn==1.6.1

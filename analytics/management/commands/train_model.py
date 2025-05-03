@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from models import *
+from web.models import *
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import LabelEncoder

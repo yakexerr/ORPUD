@@ -26,7 +26,9 @@ from django.utils.timezone import now
 from datetime import timedelta
 import json
 import random
-import joblib
+import joblib, os
+from django.contrib import messages
+from django.core.management import call_command
 
 User = get_user_model()
 
@@ -201,22 +203,35 @@ def delete_profile_view(request):
 
 # Отчёт по эффективности выполнения задач сотрудниками
 # Загружаем модель
-model = joblib.load('task_model.pkl')
+#model = joblib.load('task_model.pkl')
 
 @login_required
 def employees_dashboard_view(request):
-    employees = User.objects.filter(role='employee')
+    if request.method == 'POST' and 'train_model' in request.POST:
+        try:
+            call_command('train_model')
+            messages.success(request, "Модель успешно обучена.")
+        except Exception as e:
+            messages.error(request, f"Ошибка при обучении модели: {e}")
+        return redirect('employees_dashboard')  # название должно соответствовать url имени
 
-    stats = []
-    for employee in employees:
-        for priority in [1, 2, 3]:  # LOW, MEDIUM, HIGH
-            x = [[employee.id, priority]]
-            predicted = model.predict(x)[0]
-            stats.append({
-                'employee': employee,
-                'priority': priority,
-                'predicted_hours': round(predicted, 2)
-            })
+    # Загружаем модель
+    if not os.path.exists('task_model.pkl'):
+        messages.warning(request, "Модель ещё не обучена. Нажмите 'Обучить модель'.")
+        stats = []
+    else:
+        model = joblib.load('task_model.pkl')
+        employees = User.objects.filter(role='employee')
+        stats = []
+        for employee in employees:
+            for priority in [1, 2, 3]:  # LOW, MEDIUM, HIGH
+                x = [[employee.id, priority]]
+                predicted = model.predict(x)[0]
+                stats.append({
+                    'employee': employee,
+                    'priority': priority,
+                    'predicted_hours': round(predicted, 2)
+                })
 
     return render(request, 'web/employees_dashboard.html', {'stats': stats})
 

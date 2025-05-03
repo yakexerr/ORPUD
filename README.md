@@ -66,11 +66,6 @@ docker-compose up -d
 docker exec -it orpud-web-1 python manage.py makemigrations
 docker exec -it orpud-web-1 python manage.py migrate
 ```
-! Обучение нейросетевой модели
-
-```bash
-docker exec -it orpud-web-1 python web/ai_model/train_model.py
-```
 
 ### 4. (Опционально) Создание суперпользователя
 
