@@ -26,6 +26,7 @@ from django.utils.timezone import now
 from datetime import timedelta
 import json
 import random
+import joblib
 
 User = get_user_model()
 
@@ -198,11 +199,28 @@ def delete_profile_view(request):
         {"action_message": "delete_profile"}
     )
 
+# Отчёт по эффективности выполнения задач сотрудниками
+# Загружаем модель
+model = joblib.load('task_model.pkl')
+
 @login_required
 def employees_dashboard_view(request):
-    # TODO: Реализовать
-    return render(request, 'web/employees_dashboard.html', {})
+    employees = User.objects.filter(role='employee')
 
+    stats = []
+    for employee in employees:
+        for priority in [1, 2, 3]:  # LOW, MEDIUM, HIGH
+            x = [[employee.id, priority]]
+            predicted = model.predict(x)[0]
+            stats.append({
+                'employee': employee,
+                'priority': priority,
+                'predicted_hours': round(predicted, 2)
+            })
+
+    return render(request, 'web/employees_dashboard.html', {'stats': stats})
+
+# Отчёт по выполненым задачам
 @login_required
 def projects_dashboard_view(request):
 

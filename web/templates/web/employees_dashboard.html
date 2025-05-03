@@ -1,5 +1,27 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<!-- TODO: Реализовать в соответствии с макетом и models.py -->
 <h1>Отчёт по сотрудникам</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Сотрудник</th>
+            <th>Приоритет задачи</th>
+            <th>Ожидаемое время выполнения (часы)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for stat in stats %}
+            <tr>
+                <td>{{ stat.employee.fio }}</td>
+                <td>
+                    {% if stat.priority == 3 %} High
+                    {% elif stat.priority == 2 %} Medium
+                    {% else %} Low
+                    {% endif %}
+                </td>
+                <td>{{ stat.predicted_hours }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
