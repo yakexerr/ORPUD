@@ -10,3 +10,4 @@ for model in app.get_models():
         admin.site.register(model)
     except AlreadyRegistered:
         pass
+# TODO: Исправить создание пользователей (пароль не кодируется)
