@@ -1,7 +1,7 @@
 {% extends 'web/base.html' %}
 
 {% block content %}
-<h1 class="page-title">Главная</h1>
+<h1 class="page-title mb-4">Главная</h1>
 
 <div>
   <a href="{% url 'add_task' %}">Добавить задачу</a><br>
@@ -11,86 +11,113 @@
   <a href="{% url 'employees' %}">Сотрудники</a><br>
   <a href="{% url 'projects' %}">Тест спика проектов</a>
 </div>
+<div class="dashboard d-flex flex-column gap-5">
 
-<div class="dashboard">
-
-{% if manager_account %}
-  <!-- Блок проектов менеджера -->
-  <div class="dashboard-section">
-    <div class="section-title">Проекты</div>
-    <div class="card-list">
-      {% for project in manager_projects %}
-        {% if project.is_done == False %}
-            <div class="card menu" onclick="location.href='{% url 'current_project' project.id %}'">
-        <div class="card-title">{{ project.title }}</div>
-        <div class="card-info">
-          <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-          <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-          <span class="icon">👥</span>
-          {% for emp in project.employees.all %}
-            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
-          {% endfor %}
-        </div>
+  {% if manager_account %}
+    <!-- Блок проектов менеджера -->
+    <div class="dashboard-section">
+      <div class="section-title mb-3">Проекты</div>
+      <div class="card-list d-flex flex-column gap-3">
+        {% for project in manager_projects %}
+          {% if not project.is_done %}
+            <div class="card project" onclick="location.href='{% url 'current_project' project.id %}'">
+              <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+                <div class="card-title">{{ project.title }}</div>
+                <div class="card-info d-flex flex-wrap gap-3">
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                  </div>
+                  <div class="d-flex align-items-center gap-1">
+                    <span class="icon">👥</span>
+                    {% for emp in project.employees.all %}
+                      {{ emp.fio }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
-        {% endif %}
-      {% endfor %}
     </div>
-  </div>
 
-  <!-- Блок сотрудников менеджера -->
-  <div class="dashboard-section">
-    <div class="section-title">Сотрудники</div>
-    <div class="card-list">
-      {% for emp in manager_employees %}
-      <div class="card menu" onclick="location.href='{% if emp == user %}{% url 'my_profile' %}{% else %}{% url 'other_profile' emp.id %}{% endif %}'">
-        <div class="card-title">{{ emp.fio }}</div>
-        <div class="card-info">
-          <span class="icon">📞</span>{{ emp.phone }}
-          <span class="icon">✉️</span>{{ emp.email }}
-        </div>
+    <!-- Блок сотрудников менеджера -->
+    <div class="dashboard-section">
+      <div class="section-title mb-3">Сотрудники</div>
+      <div class="card-list d-flex flex-column gap-3">
+        {% for emp in manager_employees %}
+          <div class="card" onclick="location.href='{% if emp == user %}{% url 'my_profile' %}{% else %}{% url 'other_profile' emp.id %}{% endif %}'">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+              <div class="card-title">{{ emp.fio }}</div>
+              <div class="card-info d-flex flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">📞</span>{{ emp.phone }}
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">✉️</span>{{ emp.email }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
-{% if employee_account %}
-  <!-- Блок задач сотрудника -->
-  <div class="dashboard-section">
-    <div class="section-title">Мои задачи</div>
-    <div class="card-list">
-      {% for task in employee_tasks %}
-      <div class="card menu" onclick="location.href='{% url 'current_task' task.id %}'">
-        <div class="card-title">{{ task.title }}</div>
-        <div class="card-info">
-          <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
-          <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
-        </div>
+  {% if employee_account %}
+    <!-- Блок задач сотрудника -->
+    <div class="dashboard-section">
+      <div class="section-title mb-3">Мои задачи</div>
+      <div class="card-list d-flex flex-column gap-3">
+        {% for task in employee_tasks %}
+          <div class="card task" onclick="location.href='{% url 'current_task' task.id %}'">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+              <div class="card-title">{{ task.title }}</div>
+              <div class="card-info d-flex flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
 
-  <!-- Блок проектов сотрудника -->
-  <div class="dashboard-section">
-    <div class="section-title">Проекты</div>
-    <div class="card-list">
-      {% for project in employee_projects %}
-      <div class="card menu" onclick="location.href='{% url 'current_project' project.id %}'">
-        <div class="card-title">{{ project.title }}</div>
-        <div class="card-info">
-          <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
-          <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
-          <span class="icon">👥</span>
-          {% for emp in project.employees.all %}
-            {{ emp.fio }}{% if not forloop.last %}, {% endif %}
-          {% endfor %}
-        </div>
+    <!-- Блок проектов сотрудника -->
+    <div class="dashboard-section">
+      <div class="section-title mb-3">Проекты</div>
+      <div class="card-list d-flex flex-column gap-3">
+        {% for project in employee_projects %}
+          <div class="card project" onclick="location.href='{% url 'current_project' project.id %}'">
+            <div class="d-flex flex-column flex-md-row justify-content-between gap-2">
+              <div class="card-title">{{ project.title }}</div>
+              <div class="card-info d-flex flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">📅</span>{{ project.date_create|date:"d/m/Y" }}
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">⏰</span>{{ project.deadline|date:"d/m/Y" }}
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <span class="icon">👥</span>
+                  {% for emp in project.employees.all %}
+                    {{ emp.fio }}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
-{% endif %}
+  {% endif %}
 
 </div>
 {% endblock %}
