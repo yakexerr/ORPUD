@@ -1,8 +1,5 @@
 from django import forms
 from django.contrib.auth import get_user_model
-
-
-# from web.models import TimeSlot, TimeSlotTag, Holiday
 from web.models import FeedBack
 
 from web.models import *
@@ -139,14 +136,6 @@ class TaskFilterForm(forms.Form):
         required=False,
         label="Дедлайн"
     )
-
-    # is_done = forms.NullBooleanField(widget=(forms.Select(choices=(
-    #     ('unknown', 'Статус'),
-    #     ('true', 'Выполненена'),
-    #     ('false', 'Не выполнена')
-    # ))),
-    #     required=False
-    # )
 
 
 class ProjectFilterForm(forms.Form):

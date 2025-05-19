@@ -82,29 +82,30 @@ body {
 
 /* Стили главного меню */
 .dashboard-section {
-    background-color: #f2f4f7; /* светло-серый фон, светлее чем карточки */
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 30px;
+    background-color: #f2f4f7;
+    padding: 1.25rem; /* 20px */
+    border-radius: 1rem; /* 16px */
+    margin-bottom: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .section-title {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 16px;
+    margin-bottom: 1rem;
 }
 
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0.75rem;
 }
 
+/* Используем Bootstrap .card, но можно модифицировать */
 .card {
-    background-color: rgba(230, 233, 240, 0.9); /* немного темнее чем фон секции */
-    padding: 16px 20px;
-    border-radius: 12px;
+    background-color: rgba(230, 233, 240, 0.9);
+    padding: 1rem 1.25rem;
+    border-radius: 0.75rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -113,52 +114,35 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-card.menu {
-    background-color: rgba(215, 220, 230, 0.95);
-}
-
-.card.menu:hover {
-    background-color: rgba(215, 220, 230, 0.95);
-}
-
-
-.card.project {
-    background-color: rgba(255, 200, 200, 0.9); /* Красный (по умолчанию) */
-}
-.card.project.done {
-    background-color: rgba(200, 230, 200, 0.9); /* Зеленый (если is_done=True) */
-}
-.card.project:hover {
-    background-color: rgba(240, 180, 180, 0.95); /* Темнее красный при наведении */
-}
-.card.project.done:hover {
-    background-color: rgba(180, 210, 180, 0.95); /* Темнее зеленый при наведении */
-}
-
-
+.card.project,
 .card.task {
-    background-color: rgba(255, 200, 200, 0.9); /* Красный (по умолчанию) */
-}
-.card.task.done {
-    background-color: rgba(200, 230, 200, 0.9); /* Зеленый (если is_done=True) */
-}
-.card.task:hover {
-    background-color: rgba(240, 180, 180, 0.95); /* Темнее красный при наведении */
-}
-.card.task.done:hover {
-    background-color: rgba(180, 210, 180, 0.95); /* Темнее зеленый при наведении */
+    background-color: rgba(255, 200, 200, 0.9);
 }
 
+.card.project.done,
+.card.task.done {
+    background-color: rgba(200, 230, 200, 0.9);
+}
+
+.card.project:hover,
+.card.task:hover {
+    background-color: rgba(240, 180, 180, 0.95);
+}
+
+.card.project.done:hover,
+.card.task.done:hover {
+    background-color: rgba(180, 210, 180, 0.95);
+}
 
 .card-title {
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 0.25rem;
 }
 
 .card-info {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
     color: #555;
     font-size: 0.9rem;
     flex-wrap: wrap;
@@ -167,10 +151,8 @@ card.menu {
 .card-info .icon {
     display: flex;
     align-items: center;
-    gap: 4px;
-    font-style: normal;
+    gap: 0.25rem;
 }
-
 
 /* Стиль кнопки выхода из акканута */
 .logout-container {
