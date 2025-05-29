@@ -2,16 +2,6 @@
 
 {% block content %}
 <h1 class="page-title">Главная</h1>
-
-<div>
-  <a href="{% url 'add_task' %}">Добавить задачу</a><br>
-  <a href="{% url 'tags' %}">Добавить теги</a><br>
-  <a href="{% url 'add_employee' %}">Добавить сотрудника</a><br>
-  <a href="{% url 'tasks' %}">Для теста задач</a><br>
-  <a href="{% url 'employees' %}">Сотрудники</a><br>
-  <a href="{% url 'projects' %}">Тест спика проектов</a>
-</div>
-
 <div class="dashboard">
 
 {% if manager_account %}

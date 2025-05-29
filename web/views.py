@@ -203,9 +203,11 @@ def delete_profile_view(request):
         {"action_message": "delete_profile"}
     )
 
+
 @login_required
 def employees_dashboard_view(request):
-    # TODO: Реализовать
+    completed_tasks = Task.objects.all().filter(employees__in=request.user.managed_projects.values('employees'),is_done=True).distinct()
+
     return render(request, 'web/employees_dashboard.html', {})
 
 @login_required
