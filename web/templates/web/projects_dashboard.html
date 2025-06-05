@@ -1,58 +1,67 @@
-<!-- комментарий -->
-<!--  -->
 {% extends 'web/base.html' %}
 {% block content %}
 <h1>Отчёт по проектам</h1>
-<form method="get" action=".">
-    <label for="project-select">Выберите проект:</label>
-    <select name="project_id" id="project-select" onchange="this.form.submit()">
-        <option value="all" {% if not selected_project %}selected{% endif %}>Все проекты</option>
-        {% for project in projects %}
-            <option value="{{ project.id }}" {% if selected_project and project.id == selected_project.id %}selected{% endif %}>
-                {{ project.title }}
-            </option>
-        {% endfor %}
-    </select>
-    <noscript><button type="submit">Показать</button></noscript>
-</form>
-<canvas id="tasksChart" width="400" height="150"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('tasksChart').getContext('2d');
-    const tasksChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['High', 'Medium', 'Low'],
-            datasets: [
-                {
-                    label: 'Выполненные задачи',
-                    data: [
-                        {{ completed_priority.High }},
-                        {{ completed_priority.Medium }},
-                        {{ completed_priority.Low }},
-                    ],
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+    <form method="get" action=".">
+        <label for="project-select">Выберите проект:</label>
+        <select name="project_id" id="project-select" onchange="this.form.submit()">
+            <option value="all" {% if not selected_project %}selected{% endif %}>Все проекты</option>
+            {% for project in projects %}
+                <option value="{{ project.id }}" {% if selected_project and project.id == selected_project.id %}selected{% endif %}>
+                    {{ project.title }}
+                </option>
+            {% endfor %}
+        </select>
+        <noscript><button type="submit">Показать</button></noscript>
+    </form>
+
+{% if projects %}
+
+        <canvas id="tasksChart" width="400" height="150"></canvas>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('tasksChart').getContext('2d');
+            const tasksChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['High', 'Medium', 'Low'],
+                    datasets: [
+                        {
+                            label: 'Выполненные задачи',
+                            data: [
+                                {{ completed_priority.High }},
+                                {{ completed_priority.Medium }},
+                                {{ completed_priority.Low }},
+                            ],
+                            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                        },
+                        {
+                            label: 'Невыполненные задачи',
+                            data: [
+                                {{ not_completed_priority.High }},
+                                {{ not_completed_priority.Medium }},
+                                {{ not_completed_priority.Low }},
+                            ],
+                            backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                        }
+                    ]
                 },
-                {
-                    label: 'Невыполненные задачи',
-                    data: [
-                        {{ not_completed_priority.High }},
-                        {{ not_completed_priority.Medium }},
-                        {{ not_completed_priority.Low }},
-                    ],
-                    backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
                 }
-            ]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 }
-                }
-            }
-        }
-    });
-</script>
+            });
+        </script>
+
+    {% else %}
+        <div class="no-data" style="margin-top: 30px; text-align: center; color: #777;">
+            <h4>Нет задач для отображения.</h4>
+            <p>В выбранном проекте пока нет задач или они не закреплены за вами.</p>
+        </div>
+    {% endif %}
 {% endblock %}

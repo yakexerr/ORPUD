@@ -29,6 +29,10 @@ import random
 import joblib, os
 from django.contrib import messages
 from django.core.management import call_command
+#-------------------------------------------
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
 
 User = get_user_model()
 
@@ -98,9 +102,43 @@ def action_message_view(request):
 
 @login_required
 def project_view(request, id=None):
-    project = get_object_or_404(Project, id=id) if id is not None else None
-    return render(request, 'web/project.html', {"project": project})
+    project = get_object_or_404(Project, id=id)
+    columns = project.get_columns()
 
+    # Словарь {column: [tasks]}
+    columns_with_tasks = []
+    for column in columns:
+        tasks = project.get_tasks_by_column(column)
+        columns_with_tasks.append((column, tasks))
+    print(f"Проект: {project}, Колонки: {columns}")
+
+    return render(request, 'web/project.html', {
+        "project": project,
+        "columns_with_tasks": columns_with_tasks,
+        "is_manager": request.user == project.manager,
+    })
+
+@csrf_exempt
+@login_required
+def move_task(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            task_id = data.get("task_id")
+            column_id = data.get("column_id")
+
+            task = Task.objects.get(id=task_id)
+            column = Column.objects.get(id=column_id)
+            project = Project.objects.get(tasks=task)
+
+            if request.user != project.manager:
+                return JsonResponse({"error": "Недостаточно прав"}, status=403)
+
+            ColumnTask.objects.update_or_create(task=task, defaults={'column': column})
+            return JsonResponse({"success": True})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Метод не разрешён"}, status=405)
 
 class first_project_redirect_view(View):
     permanent = False
@@ -157,8 +195,16 @@ def projects_view(request):
             "total_count": total_count
         })
     if request.user.role == 'employee':
-        project = Project.objects.all().filter(employees=request.user).first()
-        return redirect(reverse('current_project', args=[project.id]))
+        project = Project.objects.filter(employees=request.user).first()
+        if project:
+            return redirect(reverse('current_project', args=[project.id]))
+        else:
+            messages.warning(request, "Вы не прикреплены к проекту.")
+            return render(request, 'web/all_projects.html', {
+                "projects": [],
+                "filter_form": ProjectFilterForm(),
+                "total_count": 0
+            })
     return redirect('main')
 
 
@@ -167,6 +213,47 @@ def delete_project_view(request, id):
     project = get_object_or_404(Project, id=id)
     project.delete()
     return redirect('projects')
+
+@csrf_exempt
+@login_required
+def add_column(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        project = get_object_or_404(Project, id=data['project_id'])
+
+        if request.user != project.manager:
+            return JsonResponse({"error": "Нет прав"}, status=403)
+
+        column = Column.objects.create(name="Новая колонка")
+        ColumnProject.objects.create(column=column, project=project)
+        return JsonResponse({"success": True})
+
+
+@csrf_exempt
+@login_required
+def rename_column(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        column = get_object_or_404(Column, id=data['column_id'])
+        column.name = data['name']
+        column.save()
+        return JsonResponse({"success": True})
+
+
+@csrf_exempt
+@login_required
+def delete_column(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        column = get_object_or_404(Column, id=data['column_id'])
+
+        if ColumnTask.objects.filter(column=column).exists():
+            return JsonResponse({"error": "Колонка не пуста"}, status=400)
+
+        ColumnProject.objects.filter(column=column).delete()
+        column.delete()
+        return JsonResponse({"success": True})
+
 
 @login_required
 def profile_view(request, id=None):
@@ -202,9 +289,6 @@ def delete_profile_view(request):
     )
 
 # Отчёт по эффективности выполнения задач сотрудниками
-# Загружаем модель
-#model = joblib.load('task_model.pkl')
-
 @login_required
 def employees_dashboard_view(request):
     if request.method == 'POST' and 'train_model' in request.POST:
@@ -215,7 +299,6 @@ def employees_dashboard_view(request):
             messages.error(request, f"Ошибка при обучении модели прогноза: {e}")
         return redirect('employees_dashboard')
 
-    # Проверка наличия обученной модели
     model_path = os.path.join(settings.BASE_DIR, 'task_model.pkl')
     if not os.path.exists(model_path):
         messages.warning(request, "Модель ещё не обучена. Нажмите 'Обучить модель'.")
@@ -226,6 +309,7 @@ def employees_dashboard_view(request):
             'top_medium_data': [],
             'top_low_labels': [],
             'top_low_data': [],
+            'no_data': True,
         })
 
     model = joblib.load(model_path)
@@ -233,7 +317,7 @@ def employees_dashboard_view(request):
     stats = []
 
     for employee in employees:
-        for priority in [1, 2, 3]:  # Low, Medium, High
+        for priority in [1, 2, 3]:
             x = [[employee.id, priority]]
             try:
                 predicted = model.predict(x)[0]
@@ -242,10 +326,9 @@ def employees_dashboard_view(request):
                     'priority': priority,
                     'predicted_hours': round(predicted, 2)
                 })
-            except Exception as e:
-                continue  # На случай ошибок модели
+            except Exception:
+                continue
 
-    # Группировка по приоритетам и сортировка top-10
     def get_top(stats, priority):
         filtered = [s for s in stats if s['priority'] == priority]
         top = sorted(filtered, key=lambda s: s['predicted_hours'])[:10]
@@ -255,6 +338,9 @@ def employees_dashboard_view(request):
     top_medium_labels, top_medium_data = get_top(stats, 2)
     top_high_labels, top_high_data = get_top(stats, 3)
 
+    # Проверка, есть ли данные
+    no_data = not (top_high_data or top_medium_data or top_low_data)
+
     context = {
         'top_high_labels': json.dumps(top_high_labels, ensure_ascii=False),
         'top_high_data': json.dumps(top_high_data),
@@ -262,9 +348,11 @@ def employees_dashboard_view(request):
         'top_medium_data': json.dumps(top_medium_data),
         'top_low_labels': json.dumps(top_low_labels, ensure_ascii=False),
         'top_low_data': json.dumps(top_low_data),
+        'no_data': no_data,
     }
 
     return render(request, 'web/employees_dashboard.html', context)
+
 
 # Отчёт по выполненым задачам
 @login_required
@@ -337,7 +425,16 @@ def get_task_color(priority):
 
 @login_required
 def calendar_view(request):
-    projects = Project.objects.prefetch_related('tasks')
+    user = request.user
+
+    # Получаем только связанные с пользователем проекты
+    if user.role == 'manager':
+        projects = Project.objects.filter(manager=user).prefetch_related('tasks')
+    elif user.role == 'employee':
+        projects = Project.objects.filter(employees=user).prefetch_related('tasks')
+    else:
+        projects = Project.objects.none()  # На всякий случай
+
     data = []
     groups = []
 
@@ -365,7 +462,7 @@ def calendar_view(request):
                     'style': f'background-color: {get_task_color(task.priority)};'
                 })
     else:
-        # Добавим заглушку-группу и задачу, чтобы диаграмма всё равно отобразилась
+        # Если проектов нет вообще (например, новый сотрудник), отображаем заглушку
         groups.append({'id': 0, 'content': 'Нет проектов', 'style': 'background-color: #ccc;'})
         data.append({
             'id': 0,

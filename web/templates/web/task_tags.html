@@ -6,15 +6,31 @@
 <hr>
 <ul>
     {% for tag in tags %}
-        <li>{{tag}} <small><a href="{% url 'delete_tag' tag.id %}">удалить</a></small></li>
+        <li>
+            {% if edit_tag_id == tag.id %}
+                <form method="post">
+                    {% csrf_token %}
+                    {{ edit_form.as_p }}
+                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                    <button type="submit" name="edit_tag">Сохранить</button>
+                    <a href="{% url 'tags' %}">Отмена</a>
+                </form>
+            {% else %}
+                {{ tag }}
+                <small>
+                    <a href="?edit={{ tag.id }}">редактировать</a> |
+                    <a href="{% url 'delete_tag' tag.id %}">удалить</a>
+                </small>
+            {% endif %}
+        </li>
     {% endfor %}
 </ul>
 <hr>
 
 <h2>Добавить тег</h2>
-<form action="" method="post">
+<form method="post">
     {% csrf_token %}
-    {{form.as_p}}
-    <button>Добавить</button>
+    {{ form.as_p }}
+    <button type="submit" name="add_tag">Добавить</button>
 </form>
 {% endblock %}

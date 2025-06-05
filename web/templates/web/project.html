@@ -2,65 +2,240 @@
 {% block content %}
 
 {% if project %}
-    <h1>Проект "{{ project.title }}"</h1>
+<h1>Проект "{{ project.title }}"</h1>
 
-  <div class="task-info">
-  <p><strong>Дедлайн:</strong> {{ project.deadline }}</p>
-  <p><strong>Менеджер:</strong> {{ project.manager }}</p>
+<div class="task-info">
+    <p><strong>Дедлайн:</strong> {{ project.deadline }}</p>
+    <p><strong>Менеджер:</strong> {{ project.manager }}</p>
 
-  <p><strong>Сотрудники:</strong></p>
+    <p><strong>Сотрудники:</strong></p>
 
-  <div class="employees-list">
-    {% for emp in project.employees.all %}
-      <div class="employee-card">
-        {% if emp.image %}
-          <img src="{{ emp.image.url }}" alt="Аватар {{ emp.fio }}" class="employee-avatar">
-        {% else %}
-          <img src="/media/img/account_avatars/default_avatar.jpg" alt="Аватар по умолчанию" class="employee-avatar">
-        {% endif %}
-        <div class="employee-details">
-          <p><strong>ФИО:</strong> {{ emp.fio }}</p>
-          <p><strong>Email:</strong> {{ emp.email }}</p>
+    <div class="employees-list">
+        {% for emp in project.employees.all %}
+        <div class="employee-card">
+            {% if emp.image %}
+            <img src="{{ emp.image.url }}" alt="Аватар {{ emp.fio }}" class="employee-avatar">
+            {% else %}
+            <img src="/media/img/account_avatars/default_avatar.jpg" alt="Аватар по умолчанию" class="employee-avatar">
+            {% endif %}
+            <div class="employee-details">
+                <p><strong>ФИО:</strong> {{ emp.fio }}</p>
+                <p><strong>Email:</strong> {{ emp.email }}</p>
+            </div>
         </div>
-      </div>
-    {% endfor %}
-  </div>
+        {% endfor %}
+    </div>
 </div>
 
-  <div class="dashboard">
+<div class="dashboard">
     <div class="dashboard-section">
-      <div class="section-title">Задачи</div>
-      <div class="card-list">
-        {% for task in project.tasks.all %}
-          <div class="card task {% if task.is_done %}done{% endif %}" onclick="location.href='{% url 'current_task' task.id %}'">
-            <div class="card-title">{{ task.title }}</div>
-            <div class="card-info">
-              <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
-              <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
-              <span class="icon">👥</span>
-              {% for employee in task.employees.all %}
-                {{ employee.fio }}{% if not forloop.last %}, {% endif %}
-              {% endfor %}
+        <div class="section-title-with-button"
+             style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="section-title">Задачи</div>
+            {% if is_manager %}
+            <button onclick="addColumn()" class="add-column-btn">+ Колонка</button>
+            {% endif %}
+        </div>
+
+        <div class="columns-container" style="display:flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
+            {% for column, tasks in columns_with_tasks %}
+            <div class="column-card">
+                <div class="column-header">
+                    <span class="column-title" id="title-{{ column.id }}">{{ column.name }}</span>
+                    {% if is_manager %}
+                    <div class="column-actions">
+                        <button class="rename-btn" onclick="toggleRename({{ column.id }})">✏️</button>
+                        <button class="delete-btn" onclick="deleteColumn({{ column.id }})">🗑</button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if is_manager %}
+                <input type="text"
+                       id="input-{{ column.id }}"
+                       class="rename-input"
+                       value="{{ column.name }}"
+                       onblur="applyRename({{ column.id }})">
+                {% endif %}
+                <div class="card-list" data-column-id="{{ column.id }}">
+                    {% for task in tasks %}
+                    <div class="card task {% if task.is_done %}done{% endif %}"
+                         draggable="{{ is_manager|yesno:'true,false' }}"
+                         data-task-id="{{ task.id }}">
+                        <div class="card-title">{{ task.title }}</div>
+                        <div class="card-info">
+                            <span class="icon">📅</span>{{ task.date_added|date:"d/m/Y" }}
+                            <span class="icon">⏰</span>{{ task.deadline|date:"d/m/Y" }}
+                            <span class="icon">👥</span>
+                            {% for employee in task.employees.all %}
+                            {{ employee.fio }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
-          </div>
-        {% endfor %}
-      </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
+</div>
 
-  {% if project.is_done == False %}
-        {% if project.manager == user %}
-          <a href="{% url 'edit_project' project.id %}">Редактировать</a>
-          <a href="{% url 'delete_project' project.id %}">Удалить</a> |
-        {% endif %}
-        <a href="{% url 'complete_project' project.id %}">Выполнено</a>
-  {% else %}
-        <a href="{% url 'complete_project' project.id %}">Отменить</a>
-  {% endif %}
-
+{% if project.is_done == False %}
+{% if project.manager == user %}
+<a href="{% url 'edit_project' project.id %}">Редактировать</a>
+<a href="{% url 'delete_project' project.id %}">Удалить</a> |
+{% endif %}
+<a href="{% url 'complete_project' project.id %}">Выполнено</a>
 {% else %}
-  <h1>Проекты</h1>
-  <b>Проектов пока нет :)</b><br>
+<a href="{% url 'complete_project' project.id %}">Отменить</a>
 {% endif %}
 
+{% else %}
+<h1>Проекты</h1>
+<b>Проектов пока нет :)</b><br>
+{% endif %}
+
+{% if is_manager %}
+<script>
+    // Перетаскивание задач
+    document.querySelectorAll('.card.task').forEach(card => {
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('taskId', card.dataset.taskId);
+        });
+
+        // Переход по клику
+        card.addEventListener('click', () => {
+            const taskId = card.dataset.taskId;
+            window.location.href = `/task/${taskId}/`; // Замени на свой URL, если другой
+        });
+    });
+
+    document.querySelectorAll('.card-list').forEach(list => {
+        list.addEventListener('dragover', e => e.preventDefault());
+
+        list.addEventListener('drop', e => {
+            e.preventDefault();
+            const taskId = e.dataTransfer.getData('taskId');
+            const columnId = list.dataset.columnId;
+
+            fetch("{% url 'move_task' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({task_id: taskId, column_id: columnId})
+            }).then(res => {
+                if (res.ok) location.reload();
+            });
+        });
+    });
+
+    // ✅ Добавить колонку
+    function addColumn() {
+        fetch("{% url 'add_column' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ project_id: {{ project.id }} })
+        }).then(res => {
+            if (res.ok) location.reload();
+        });
+    }
+
+    // ✅ Показать/скрыть поле для переименования
+    function toggleRename(columnId) {
+        const input = document.getElementById(`input-${columnId}`);
+        const title = document.getElementById(`title-${columnId}`);
+        if (input.style.display === 'block') {
+            input.style.display = 'none';
+            title.style.display = 'block';
+        } else {
+            input.style.display = 'block';
+            input.focus();
+            title.style.display = 'none';
+        }
+    }
+
+    // ✅ Переименовать колонку
+    function applyRename(columnId) {
+        const input = document.getElementById(`input-${columnId}`);
+        const newName = input.value;
+
+        fetch("{% url 'rename_column' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ column_id: columnId, name: newName })
+        }).then(() => location.reload());
+    }
+
+    // ✅ Удалить колонку
+    function deleteColumn(columnId) {
+        if (!confirm("Вы уверены, что хотите удалить колонку?")) return;
+
+        fetch("{% url 'delete_column' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ column_id: columnId })
+        }).then(res => {
+            if (res.ok) location.reload();
+            else alert("Нельзя удалить колонку, пока в ней есть задачи.");
+        });
+    }
+    document.querySelectorAll('.card.task').forEach(card => {
+    card.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('taskId', card.dataset.taskId);
+        e.dataTransfer.effectAllowed = 'move';
+    });
+});
+
+document.querySelectorAll('.card-list').forEach(list => {
+    list.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    });
+
+    list.addEventListener('dragenter', () => {
+        list.classList.add('drag-over');
+    });
+
+    list.addEventListener('dragleave', () => {
+        list.classList.remove('drag-over');
+    });
+
+    list.addEventListener('drop', e => {
+        e.preventDefault();
+        list.classList.remove('drag-over');
+
+        const taskId = e.dataTransfer.getData('taskId');
+        const columnId = list.dataset.columnId;
+
+        fetch("{% url 'move_task' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ task_id: taskId, column_id: columnId })
+        }).then(res => {
+            if (res.ok) {
+                location.reload();
+            } else {
+                res.json().then(data => {
+                    alert(data.error || "Ошибка перемещения");
+                });
+            }
+        });
+    });
+});
+</script>
+
+{% endif %}
 {% endblock %}

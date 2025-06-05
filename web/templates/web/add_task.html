@@ -8,6 +8,7 @@
 <form action="" method="post">
     {% csrf_token %}
     {{form.as_p}}
+    <a href="{% url 'tags' %}">Изменить существующие теги теги</a><br>
     <button>Добавить</button>
 </form>
 {% endblock %}

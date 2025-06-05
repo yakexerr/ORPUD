@@ -92,14 +92,6 @@ class TaskEmployee(models.Model):
     class Meta:
         unique_together = ('task', 'employee')
 
-# TODO: Реализовать
-class TaskComment(models.Model):  # ← добавлен `models.Model`!
-    date_sent = models.DateTimeField(default=timezone.now)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    comment_text = models.CharField(max_length=256, null=False, blank=False, verbose_name="Комментарий")
-
-
 class Project(models.Model):
     title = models.CharField(max_length=256, verbose_name="Название", default='Без названия')
     description = models.CharField(max_length=512, default="", verbose_name="Описание")
@@ -121,6 +113,26 @@ class Project(models.Model):
         verbose_name="Работники"
     )
 
+    def get_columns(self):
+        columns = Column.objects.filter(columnproject__project=self)
+
+        if not columns.exists():
+            # Создаём или получаем колонку "Не распределено"
+            default_column, _ = Column.objects.get_or_create(name="Не распределено")
+            ColumnProject.objects.get_or_create(project=self, column=default_column)
+
+            # Привязываем все задачи проекта к этой колонке, если у них нет привязки
+            for task in self.tasks.all():
+                ColumnTask.objects.get_or_create(task=task, defaults={"column": default_column})
+
+            # Повторно загружаем колонки
+            columns = Column.objects.filter(columnproject__project=self)
+
+        return columns
+
+    def get_tasks_by_column(self, column):
+        return self.tasks.filter(columntask__column=column)
+
     def __str__(self):
         return f"{self.title}, owner: {self.manager}"
 
@@ -134,22 +146,15 @@ class FeedBack(models.Model):
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
 
     def __str__(self):
-        return self.name  # ← слишком много пробелов (8 вместо 4)
+        return self.name
 
-# TODO: Реализовать
-# работаем в отображение команд
 class Column(models.Model):
     name = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.name
-
-# TODO: Реализовать
 class ColumnProject(models.Model):
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)  # исправлено с Projects на Project
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
-# TODO: Реализовать
 class ColumnTask(models.Model):
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)

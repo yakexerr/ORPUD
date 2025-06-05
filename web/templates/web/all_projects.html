@@ -1,5 +1,10 @@
 {% extends 'web/base.html' %}
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
     <form action="">
         <b>Фильтры:</b><br>
         {% for field in filter_form %}
@@ -30,6 +35,8 @@
                             {% endfor %}
                         </div>
                     </div>
+                {% empty %}
+                    <div class="text-muted">Список пуст.</div>
                 {% endfor %}
             </div>
         </div>

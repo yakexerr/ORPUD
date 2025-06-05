@@ -108,9 +108,11 @@ body {
 }
 
 .card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  /* и убедись, что не перекрыта кнопками */
 }
 
 .card {
@@ -501,7 +503,6 @@ form button:focus {
 
   /* Информация о проекте */
 .task-info {
-  max-width: 400px;
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -690,3 +691,161 @@ form button:focus {
     display: block;
     margin-bottom: 30px;
 }
+/* Сообщение о том что сотрудник не прикреплён к проекту */
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+}
+/* Колонки */
+    .add-column-btn {
+        padding: 6px 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        height: fit-content;
+    }
+
+    .add-column-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .column-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .column-title {
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .rename-input {
+        display: none;
+        margin-top: 4px;
+        width: 100%;
+        padding: 4px;
+    }
+
+    .column-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .rename-btn,
+    .delete-btn {
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .delete-btn {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.add-column-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+.add-column-btn:hover {
+    background-color: #45a049;
+}
+
+.column-card {
+    background-color: #f5f7fa;
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
+    padding: 12px;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.column-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.rename-input {
+    display: none;
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 4px 6px;
+    font-size: 0.95rem;
+}
+
+.column-actions button {
+  pointer-events: auto; /* кнопки кликабельны, но не блокируют перетаскивание */
+  position: relative;
+  z-index: 10;
+}
+
+.rename-btn {
+    background-color: #2196F3;
+    color: white;
+}
+.rename-btn:hover {
+    background-color: #1976D2;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+.card.task {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    cursor: grab;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.card.task.done {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.card-list.drag-over {
+    background-color: #f0f8ff;
+    border: 2px dashed #888;
+}
+
+

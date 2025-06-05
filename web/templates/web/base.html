@@ -52,6 +52,8 @@
             <a href="{% url 'my_profile' %}">Профиль</a>
             {% endif %}
         </li>
+
+  {% if manager_account %}
         <li class="{% if request.path == '/employees_dashboard/' %}active{% endif %}">
             {% if request.path == '/employees_dashboard/' %}<span class="dash">—</span>{% endif %}
             <a href="/employees_dashboard/">Отчёт по сотрудникам</a>
@@ -60,6 +62,8 @@
             {% if request.path == '/projects_dashboard/' %}<span class="dash">—</span>{% endif %}
             <a href="/projects_dashboard/">Отчёт по проектам</a>
         </li>
+
+          {% endif %}
         <li class="{% if request.path == '/calendar/' %}active{% endif %}">
             {% if request.path == '/calendar/' %}<span class="dash">—</span>{% endif %}
             <a href="/calendar/">Календарный график</a>
