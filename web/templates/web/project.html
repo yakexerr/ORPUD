@@ -79,14 +79,14 @@
     </div>
 </div>
 
-{% if project.is_done == False %}
 {% if project.manager == user %}
-<a href="{% url 'edit_project' project.id %}">Редактировать</a>
-<a href="{% url 'delete_project' project.id %}">Удалить</a> |
-{% endif %}
-<a href="{% url 'complete_project' project.id %}">Выполнено</a>
+{% if project.is_done == False %}
+    <a href="{% url 'complete_project' project.id %}">Выполнено</a>
 {% else %}
-<a href="{% url 'complete_project' project.id %}">Отменить</a>
+    <a href="{% url 'complete_project' project.id %}">Отменить</a>
+{% endif %}
+        <a href="{% url 'edit_project' project.id %}">Редактировать</a>
+        <a href="{% url 'delete_project' project.id %}">Удалить</a> |
 {% endif %}
 
 {% else %}
@@ -94,18 +94,21 @@
 <b>Проектов пока нет :)</b><br>
 {% endif %}
 
+<script>
+    // Переход по клику
+    document.querySelectorAll('.card.task').forEach(card => {
+        card.addEventListener('click', () => {
+            const taskId = card.dataset.taskId;
+            window.location.href = `/task/${taskId}/`; // Замени на свой URL, если другой
+        });
+    });
+</script>
 {% if is_manager %}
 <script>
     // Перетаскивание задач
     document.querySelectorAll('.card.task').forEach(card => {
         card.addEventListener('dragstart', e => {
             e.dataTransfer.setData('taskId', card.dataset.taskId);
-        });
-
-        // Переход по клику
-        card.addEventListener('click', () => {
-            const taskId = card.dataset.taskId;
-            window.location.href = `/task/${taskId}/`; // Замени на свой URL, если другой
         });
     });
 
@@ -130,7 +133,7 @@
         });
     });
 
-    // ✅ Добавить колонку
+    // Добавить колонку
     function addColumn() {
         fetch("{% url 'add_column' %}", {
             method: "POST",
@@ -144,7 +147,7 @@
         });
     }
 
-    // ✅ Показать/скрыть поле для переименования
+    // Показать/скрыть поле для переименования
     function toggleRename(columnId) {
         const input = document.getElementById(`input-${columnId}`);
         const title = document.getElementById(`title-${columnId}`);
@@ -158,7 +161,7 @@
         }
     }
 
-    // ✅ Переименовать колонку
+    // Переименовать колонку
     function applyRename(columnId) {
         const input = document.getElementById(`input-${columnId}`);
         const newName = input.value;
@@ -169,11 +172,11 @@
                 "X-CSRFToken": "{{ csrf_token }}",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ column_id: columnId, name: newName })
+            body: JSON.stringify({column_id: columnId, name: newName})
         }).then(() => location.reload());
     }
 
-    // ✅ Удалить колонку
+    // Удалить колонку
     function deleteColumn(columnId) {
         if (!confirm("Вы уверены, что хотите удалить колонку?")) return;
 
@@ -183,58 +186,59 @@
                 "X-CSRFToken": "{{ csrf_token }}",
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ column_id: columnId })
+            body: JSON.stringify({column_id: columnId})
         }).then(res => {
             if (res.ok) location.reload();
             else alert("Нельзя удалить колонку, пока в ней есть задачи.");
         });
     }
+
     document.querySelectorAll('.card.task').forEach(card => {
-    card.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('taskId', card.dataset.taskId);
-        e.dataTransfer.effectAllowed = 'move';
-    });
-});
-
-document.querySelectorAll('.card-list').forEach(list => {
-    list.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-    });
-
-    list.addEventListener('dragenter', () => {
-        list.classList.add('drag-over');
-    });
-
-    list.addEventListener('dragleave', () => {
-        list.classList.remove('drag-over');
-    });
-
-    list.addEventListener('drop', e => {
-        e.preventDefault();
-        list.classList.remove('drag-over');
-
-        const taskId = e.dataTransfer.getData('taskId');
-        const columnId = list.dataset.columnId;
-
-        fetch("{% url 'move_task' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ task_id: taskId, column_id: columnId })
-        }).then(res => {
-            if (res.ok) {
-                location.reload();
-            } else {
-                res.json().then(data => {
-                    alert(data.error || "Ошибка перемещения");
-                });
-            }
+        card.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('taskId', card.dataset.taskId);
+            e.dataTransfer.effectAllowed = 'move';
         });
     });
-});
+
+    document.querySelectorAll('.card-list').forEach(list => {
+        list.addEventListener('dragover', e => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        list.addEventListener('dragenter', () => {
+            list.classList.add('drag-over');
+        });
+
+        list.addEventListener('dragleave', () => {
+            list.classList.remove('drag-over');
+        });
+
+        list.addEventListener('drop', e => {
+            e.preventDefault();
+            list.classList.remove('drag-over');
+
+            const taskId = e.dataTransfer.getData('taskId');
+            const columnId = list.dataset.columnId;
+
+            fetch("{% url 'move_task' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({task_id: taskId, column_id: columnId})
+            }).then(res => {
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    res.json().then(data => {
+                        alert(data.error || "Ошибка перемещения");
+                    });
+                }
+            });
+        });
+    });
 </script>
 
 {% endif %}

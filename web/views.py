@@ -51,8 +51,8 @@ def main_view(request):
     # Если пользователь - сотрудник
     elif user.role == 'employee':
         context['employee_account'] = user
-        context['employee_tasks'] = Task.objects.filter(employees=user)
-        context['employee_projects'] = Project.objects.filter(employees=user)
+        context['employee_tasks'] = Task.objects.filter(employees=user)   # Задачи сотрудника
+        context['employee_projects'] = Project.objects.filter(employees=user)  # Проекты сотрудника
 
     return render(request, 'web/main.html', context)
 
@@ -588,7 +588,7 @@ def complete_task_view(request, id):
     else:
         task.is_done = False
     task.save()
-    return redirect('tasks')
+    return redirect('/')
 
 
 @login_required
@@ -612,11 +612,32 @@ def task_view(request): #для теста редактирования\удал
         "total_count": total_count
     })
 
+
 @login_required
 def current_task_view(request, id=None):
-    task = get_object_or_404(Task, id=id) if id is not None else None
+    task = get_object_or_404(Task, id=id)
+
     return render(request, 'web/task.html', {"task": task})
 
+@login_required
+def take_task(request, id):
+    task = get_object_or_404(Task, id=id)
+
+    if request.user not in task.employees.all():
+        task.employees.add(request.user)
+
+    task.is_done = False
+    task.save()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@login_required
+def unassign_task(request, id):
+    task = get_object_or_404(Task, id=id)
+
+    if request.user in task.employees.all():
+        task.employees.remove(request.user)
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @login_required
 def completed_task_view(request):
