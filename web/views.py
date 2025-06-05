@@ -377,18 +377,17 @@ def projects_dashboard_view(request):
     else:
         selected_project = None  # значит все проекты
 
-    # Собираем задачи для выбранного проекта или для всех проектов менеджера
+    # Все задачи по проектам, где менеджер — текущий пользователь
     if selected_project:
         tasks = selected_project.tasks.all()
     else:
-        # Все задачи по всем проектам менеджера
         tasks = Task.objects.filter(project__in=projects).distinct()
 
-    # Статистика по выполненным и невыполненным задачам
-    completed_tasks = Task.objects.filter(is_done=True, user=request.user)
-    not_completed_tasks = Task.objects.filter(is_done=False, user=request.user)
+    # Не фильтруем по исполнителю — берём все задачи
+    completed_tasks = tasks.filter(is_done=True)
+    not_completed_tasks = tasks.filter(is_done=False)
 
-    # Считаем задачи по приоритетам
+    # Группировка по приоритетам
     completed_priority = {
         'High': completed_tasks.filter(priority=Task.HIGH).count(),
         'Medium': completed_tasks.filter(priority=Task.MEDIUM).count(),
