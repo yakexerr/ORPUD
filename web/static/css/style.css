@@ -14,9 +14,9 @@ body {
   height: 100vh; /* занимаем всю высоту окна */
 }
 
-main.main-content {
+main .main-content {
   flex-grow: 1;           /* занимает оставшееся место в flex-контейнере */
-  overflow-y: auto;       /* вертикальная прокрутка при переполнении */
+  overflow-y: inherit !important;       /* вертикальная прокрутка при переполнении */
   height: 0;              /* важно, чтобы flex-grow работал корректно */
   padding-top: 1rem;      /* по желанию, чтобы контент не прилипал */
   height: 100vh;
