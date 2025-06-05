@@ -3,42 +3,44 @@
 <h1>Отчёт по сотрудникам</h1>
 
 <!-- Кнопка обучения -->
-<form method="post">
+<form method="post" class="train-form">
     {% csrf_token %}
-    <button type="submit" name="train_model">Обучить модель</button>
+    <button type="submit" name="train_model" class="btn btn-sec">Обучить модель</button>
 </form>
 
 <!-- Сообщения -->
 {% if messages %}
-    <ul>
+    <ul class="messages-list">
         {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+            <li class="message {{ message.tags|default:'' }}">{{ message }}</li>
         {% endfor %}
     </ul>
 {% endif %}
 
 <!-- Таблица -->
-<table border="1">
-    <thead>
-        <tr>
-            <th>Сотрудник</th>
-            <th>Приоритет задачи</th>
-            <th>Ожидаемое время выполнения (часы)</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for stat in stats %}
+<div class="table-container">
+    <table class="styled-table">
+        <thead>
             <tr>
-                <td>{{ stat.employee.fio }}</td>
-                <td>
-                    {% if stat.priority == 3 %} High
-                    {% elif stat.priority == 2 %} Medium
-                    {% else %} Low
-                    {% endif %}
-                </td>
-                <td>{{ stat.predicted_hours }}</td>
+                <th>Сотрудник</th>
+                <th>Приоритет задачи</th>
+                <th>Ожидаемое время выполнения (часы)</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for stat in stats %}
+                <tr>
+                    <td>{{ stat.employee.fio }}</td>
+                    <td>
+                        {% if stat.priority == 3 %} High
+                        {% elif stat.priority == 2 %} Medium
+                        {% else %} Low
+                        {% endif %}
+                    </td>
+                    <td>{{ stat.predicted_hours }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

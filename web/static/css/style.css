@@ -349,63 +349,153 @@ form button:focus {
 
 /* Регистрация и авторизация */
 /* Контейнеры для регистрации и авторизации */
-  .registration-container,
-  .auth-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
+.registration-container,
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-  /* Формы внутри контейнеров */
-  .registration-form,
-  .auth-form {
-    display: flex;
-    flex-direction: column;
-  }
+/* Формы внутри контейнеров */
+.registration-form,
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
 
-  /* Общие стили для групп полей формы */
-  .form-group {
-    margin-bottom: 15px;
-  }
+/* Общие стили для групп полей формы */
+.form-group {
+  margin-bottom: 15px;
+}
 
-  /* Инпуты */
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+/* Инпуты */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 
-  /* Кнопки */
-  .btn {
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    text-align: center;
-  }
-
+/* Кнопки */
+.btn {
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: center;
+}
   /* Кнопка с тёмно-оранжевым фоном */
-  .btn.sec {
-    background-color: #b36b00;
-    color: white;
-    margin-top: 10px;
-  }
+.btn.sec {
+  background-color: #b36b00;
+  color: white;
+  margin-top: 10px;
+}
 
-  /* Ссылки под формой */
-  .auth-links,
-  .success-message {
-    text-align: center;
+/* Ссылки под формой */
+.auth-links,
+.success-message {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Отступ у кнопок внутри success-message */
+.success-message button {
+  margin-top: 10px;
+}
+
+/* Контейнер таблицы с прокруткой */
+  .table-container {
+    overflow-x: auto;
     margin-top: 20px;
   }
 
-  /* Отступ у кнопок внутри success-message */
-  .success-message button {
-    margin-top: 10px;
+  /* Красивая таблица */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+
+  .styled-table thead tr {
+    background-color: #ff922b; /* светлый оранжевый */
+    color: white;
+    text-align: left;
+  }
+
+  .styled-table th,
+  .styled-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+  }
+
+  /* Зебра-стрипы для строк */
+  .styled-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  /* Подсветка строки при наведении */
+  .styled-table tbody tr:hover {
+    background-color: #ffe6cc;
+  }
+
+  /* Кнопка "Обучить модель" */
+  .train-form {
+    margin-top: 20px;
+  }
+
+  .btn.btn-sec {
+    background-color: #b36b00; /* тёмно-оранжевый */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .btn.btn-sec:hover {
+    background-color: #e67600; /* светлее тёмно-оранжевого при наведении */
+  }
+
+  /* Стили для сообщений */
+  .messages-list {
+    margin-top: 15px;
+    list-style-type: none;
+    padding: 0;
+  }
+
+  .messages-list .message {
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  /* Пример для разных типов сообщений */
+  .messages-list .error {
+    background-color: #f8d7da;
+    color: #842029;
+  }
+
+  .messages-list .success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+
+  .messages-list .info {
+    background-color: #cff4fc;
+    color: #055160;
   }
