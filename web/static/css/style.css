@@ -14,10 +14,9 @@ body {
   padding: 40px 20px;
   border-right: 1px solid #ddd;
   height: 100vh;
-  box-sizing: border-box;  /* учитывает padding внутри height */
-  overflow: hidden;        /* прячет лишнее, если всё же что-то вылезет */
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
 }
-
 
 .logo {
   text-align: center;
@@ -26,53 +25,51 @@ body {
 
 .logo img {
   height: 100px;
-  width: 100%; /* или фиксированная ширина */
+  width: 200px; /* или фиксированная ширина */
   object-fit: cover; /* обрезает изображение, сохраняя пропорции */
   object-position: center 50%; /* если нужно обрезать снизу */
 }
 
-.menu {
-  list-style: none;
+.sidebar .dash {
+  margin-right: 8px;
+}
+
+.menu-toggle-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  font-size: 28px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 1100; /* выше сайдбара */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 0;
 }
 
-.menu li {
-  margin: 18px 0;
-  font-size: 16px;
-  font-weight: 400;
-  color: #000;
+/* Сайдбар по умолчанию */
+.sidebar {
+  width: 250px;
+  background-color: #f9f9fb;
+  padding: 40px 20px;
+  border-right: 1px solid #ddd;
+  height: 100vh;
+  box-sizing: border-box;
+  transition: transform 0.3s ease;
 }
 
-.menu li a {
-  text-decoration: none;
-  color: #000;
-  transition: 0.2s;
-}
-
-.menu li a:hover {
-  font-weight: 500;
-}
-
-.menu li.active {
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-}
-
-.menu li.active .dash {
-  margin-right: 8px;
-  font-size: 18px;
-  line-height: 0;
-}
+/* Мобильная адаптация */
 @media (max-width: 768px) {
   .sidebar {
-    position: absolute;
-    left: 0;
+    position: fixed;
     top: 0;
-    bottom: 0;
+    left: 0;
     transform: translateX(-100%);
-    z-index: 1000;
-    transition: transform 0.3s ease;
+    z-index: 1050;
   }
 
   .sidebar.active {

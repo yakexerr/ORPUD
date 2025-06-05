@@ -19,14 +19,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
-{% if not user.is_anonymous %}
+<div class="d-flex w-100">
+    {% if not user.is_anonymous %}
+    <button class="menu-toggle-btn d-md-none" id="toggleSidebarBtn" title="Меню">
+            ☰
+    </button>
 <nav class="sidebar bg-light p-3 border-end min-vh-100" id="sidebar">
-    <div class="logo mb-4 text-center">
+    <div class="logo mb-4 d-flex align-items-center justify-content-between">
         <a href="/">
             <img src="{% static 'img/logo.png' %}" alt="Task tracker" class="img-fluid" style="max-height: 60px;">
         </a>
     </div>
-    <ul class="nav flex-column">
+    <ul class="nav flex-column menu">
         <li class="{% if request.path == '/' %}active{% endif %}">
             {% if request.path == '/' %}<span class="dash">—</span>{% endif %}
             <a href="/">Главная</a>
@@ -85,7 +89,36 @@
 <main class="main-content container py-4">
     {% block content %}{% endblock %}
 </main>
+</div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('toggleSidebarBtn');
+    const sidebar = document.getElementById('sidebar');
+
+    function updateIcon() {
+        toggleBtn.textContent = sidebar.classList.contains('active') ? '✖' : '☰';
+    }
+
+    toggleBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('active');
+        updateIcon();
+    });
+
+    // Закрыть по клику вне сайдбара
+    document.addEventListener('click', function (e) {
+        const clickedInside = sidebar.contains(e.target);
+        const clickedButton = toggleBtn.contains(e.target);
+        if (!clickedInside && !clickedButton && sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+            updateIcon();
+        }
+    });
+
+    // Установить правильную иконку при загрузке
+    updateIcon();
+});
+</script>
 
 </body>
 
