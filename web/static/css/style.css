@@ -209,7 +209,7 @@ body {
     color: #cc7a00;
 }
 
-.logout-button {
+nav .logout-button {
     padding: 10px 20px;
     background-color: #ffa94d;
     color: white;
@@ -222,13 +222,12 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 
-.logout-button:hover {
-    background-color: #ff922b;
-    transform: scale(1.05);
-}
-
-.logout-button:active {
-    background-color: #e67600;
+nav .logout-button:hover {
+  padding: 10px 20px;
+  background-color: #e67600; /* более тёмный оранжевый */
+  box-shadow: 0 5px 12px rgba(230, 118, 0, 0.6);
+  outline: none;
+  color: white;
 }
 
 /* Стили блока контента */
@@ -237,3 +236,176 @@ body {
   flex: 1; /* занимает всё оставшееся пространство */
   padding: 20px;
 }
+
+/* UI */
+/* Для всех остальных ссылок a — стили кнопок */
+a:not(nav a),
+button { /* кроме nav */
+  display: inline-block;
+  padding: 0.5em 1.2em;
+  background-color: #ff922b; /* ярко-оранжевый */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 3px 6px rgba(255, 146, 43, 0.4);
+  cursor: pointer;
+  user-select: none;
+     text-decoration: none !important; /* принудительно убрать */
+}
+
+/* Эффект при наведении и фокусе */
+a:not(nav a):hover,
+a:not(nav a):focus,
+button:hover,
+button:focus {
+  background-color: #e67600; /* более тёмный оранжевый */
+  box-shadow: 0 5px 12px rgba(230, 118, 0, 0.6);
+  outline: none;
+     text-decoration: none !important; /* принудительно убрать */
+}
+
+/* Стили форм */
+form {
+  max-width: 600px; /* ширина формы */
+  margin: 20px auto;
+  padding: 20px;
+  background: #f9f9fb;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Отступы между полями */
+form p {
+  margin-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Лейблы */
+form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Текстовые поля, textarea, select */
+form input[type="text"],
+form input[type="datetime-local"],
+form select,
+form textarea {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* Состояние фокуса */
+form input[type="text"]:focus,
+form input[type="datetime-local"]:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #ff922b;
+  box-shadow: 0 0 8px rgba(255, 146, 43, 0.4);
+  outline: none;
+}
+
+/* Множественный выбор */
+form select[multiple] {
+  height: 120px;
+}
+
+/* Кнопка отправки */
+form button {
+  padding: 10px 20px;
+  background-color: #ff922b;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  user-select: none;
+  align-self: flex-start;
+}
+
+/* Наведение на кнопку */
+form button:hover,
+form button:focus {
+  background-color: #e67600;
+  box-shadow: 0 5px 12px rgba(230, 118, 0, 0.6);
+  outline: none;
+}
+
+/* Регистрация и авторизация */
+/* Контейнеры для регистрации и авторизации */
+  .registration-container,
+  .auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Формы внутри контейнеров */
+  .registration-form,
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Общие стили для групп полей формы */
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  /* Инпуты */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  /* Кнопки */
+  .btn {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* Кнопка с тёмно-оранжевым фоном */
+  .btn.sec {
+    background-color: #b36b00;
+    color: white;
+    margin-top: 10px;
+  }
+
+  /* Ссылки под формой */
+  .auth-links,
+  .success-message {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  /* Отступ у кнопок внутри success-message */
+  .success-message button {
+    margin-top: 10px;
+  }

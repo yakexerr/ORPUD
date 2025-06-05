@@ -7,73 +7,11 @@
             <div class="form-group">
                 {{ form.as_p }}
             </div>
-            <button type="submit" class="btn btn-primary">Войти</button>
+            <button type="submit">Войти</button>
         </form>
 
         <div class="auth-links">
-            <button class="btn btn-secondary" onclick="window.location.href='{% url 'registration' %}'">Зарегистрироваться</button>
+            <button class="sec" onclick="window.location.href='{% url 'registration' %}'">Зарегистрироваться</button>
         </div>
     </div>
-
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .btn {
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-            margin-top: 10px;
-        }
-
-        .auth-links {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .forgot-password-link {
-            display: block;
-            margin-top: 10px;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .forgot-password-link:hover {
-            text-decoration: underline;
-        }
-    </style>
 {% endblock %}
