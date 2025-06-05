@@ -109,7 +109,7 @@ class ProjectForm(forms.ModelForm):
     deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
     class Meta:
         model = Project
-        fields = ('title', 'description', 'deadline', 'tasks', 'manager', 'employees')
+        fields = ('title', 'description', 'deadline', 'tasks', 'employees')
 
 class TaskFilterForm(forms.Form):
     search = forms.CharField(
@@ -151,11 +151,6 @@ class ProjectFilterForm(forms.Form):
     ))),
         required=False
     )
-
-    manager = forms.ChoiceField(
-        choices=[('', 'Менеджер')] + [(user.id, str(user)) for user in User.objects.all() if user.role == 'manager'],
-        widget=forms.Select,
-        required=False)
 
     task = forms.ChoiceField(
         choices=[('', 'Задача')] + [(task.id, str(task)) for task in Task.objects.all()],

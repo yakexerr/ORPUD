@@ -22,9 +22,6 @@ def project_filter(projects_qs, filters: dict):
     if 'is_done' in filters and filters['is_done'] is not None:
         projects_qs = projects_qs.filter(is_done=filters['is_done'])
 
-    if filters['manager']:
-        projects_qs = projects_qs.filter(manager=filters['manager'])
-
     if filters['task']:
         projects_qs = projects_qs.filter(tasks=filters['task'])
 

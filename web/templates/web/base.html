@@ -62,16 +62,18 @@
                 {% if request.path == '/projects_dashboard/' %}<span class="dash">—</span>{% endif %}
                 <a href="/projects_dashboard/">Отчёт по проектам</a>
             </li>
-
             {% endif %}
             <li class="{% if request.path == '/calendar/' %}active{% endif %}">
                 {% if request.path == '/calendar/' %}<span class="dash">—</span>{% endif %}
                 <a href="/calendar/">Календарный график</a>
             </li>
+
+            {% if user.role == 'manager' %}
             <li class="{% if request.path == '/tasks/' %}active{% endif %}">
                 {% if request.path == '/tasks/' %}<span class="dash">—</span>{% endif %}
-                <a href="/tasks/">Задачи</a>
+                <a href="/tasks/">Поиск по задачам</a>
             </li>
+            {% endif %}
             <li class="{% if request.path == '/feedback/' %}active{% endif %}">
                 {% if request.path == '/feedback/' %}<span class="dash">—</span>{% endif %}
                 <a href="/feedback/">Обратная связь</a>
