@@ -4,26 +4,28 @@
 {% if project %}
     <h1>Проект "{{ project.title }}"</h1>
 
-  <div>
-    <p><b>Дедлайн:</b> {{ project.deadline }}</p>
-    <p><b>Менеджер:</b> {{ project.manager }}</p>
+  <div class="task-info">
+  <p><strong>Дедлайн:</strong> {{ project.deadline }}</p>
+  <p><strong>Менеджер:</strong> {{ project.manager }}</p>
 
-    <p><b>Сотрудники:</b></p>
+  <p><strong>Сотрудники:</strong></p>
+
+  <div class="employees-list">
     {% for emp in project.employees.all %}
-      <div>
-        <p>
-          {% if emp.image %}
-            <img src="{{ emp.image.url }}" width="50">
-          {% else %}
-            <img src="/media/img/account_avatars/default_avatar.jpg" width="50">
-          {% endif %}
-          <br>
-          <b>ФИО:</b> {{ emp.fio }}<br>
-          <b>Email:</b> {{ emp.email }}<br>
-        </p>
+      <div class="employee-card">
+        {% if emp.image %}
+          <img src="{{ emp.image.url }}" alt="Аватар {{ emp.fio }}" class="employee-avatar">
+        {% else %}
+          <img src="/media/img/account_avatars/default_avatar.jpg" alt="Аватар по умолчанию" class="employee-avatar">
+        {% endif %}
+        <div class="employee-details">
+          <p><strong>ФИО:</strong> {{ emp.fio }}</p>
+          <p><strong>Email:</strong> {{ emp.email }}</p>
+        </div>
       </div>
     {% endfor %}
   </div>
+</div>
 
   <div class="dashboard">
     <div class="dashboard-section">

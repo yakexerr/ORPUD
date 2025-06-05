@@ -1,27 +1,44 @@
 {% extends 'web/base.html' %}
 {% block content %}
-<h2>{{task.title}}</h2>
-    <hr>
-    <b>Добавлена: </b> {{ task.date_added }}
-    <p>
-        <b>Название: </b>{{task.title}}<br>
-        <b>Описание: </b>{{task.description}}<br>
-        <b>Дедлайн: </b>{{task.deadline}}<br>
-        <b>Приоритет: </b>{{task.get_priority_display }}<br>
-        {% if task.tags.all.count > 0 %}
-            <b>Теги: </b>
-            <small>
-                {% for tag in task.tags.all %}
-                    {{ tag.title }} {% if not forloop.last %}, {% endif %}
-                {% endfor %}
-            </small><br>
-        {% endif %}
-        <b>Над задачей работают: </b>
-        {% for emp in task.employees.all %}
-            {{ emp.fio }} {% if not forloop.last %}, {% endif %}
+<h1 class="page-title mb-4">Задача</h1>
+<div>
+  <div class="task-meta">
+    <span class="label">Добавлена:</span> <time datetime="{{ task.date_added|date:"c" }}">{{ task.date_added|date:"d M Y" }}</time>
+  </div>
+
+  <h3 class="task-title">{{ task.title }}</h3>
+
+  <div class="task-description-block">
+  <p class="task-desc">{{ task.description }}</p>
+  <div class="task-desc-caption">Описание задачи</div>
+</div>
+
+
+  <div class="task-info">
+    <div><span class="label">Дедлайн:</span> {{ task.deadline|date:"d M Y, H:i" }}</div>
+    <div><span class="label">Приоритет:</span> <span class="priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span></div>
+
+    {% if task.tags.all.count > 0 %}
+    <div><span class="label">Теги:</span>
+      <ul class="tags-list">
+        {% for tag in task.tags.all %}
+          <li>{{ tag.title }}</li>
         {% endfor %}
-        <br>
-    </p>
+      </ul>
+    </div>
+    {% endif %}
+
+    <div>
+      <span class="label">Над задачей работают:</span>
+      <ul class="employees-list">
+        {% for emp in task.employees.all %}
+          <li>{{ emp.fio }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+
     {% if task.is_done == False %}
         <a href="{% url 'complete_task' task.id %}">Выполнено</a>
         {% if user.role == 'manager' %}
