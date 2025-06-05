@@ -34,6 +34,20 @@ body {
   margin-right: 8px;
 }
 
+/* Сброс стилей ссылок в сайдбаре */
+.sidebar a {
+  color: #000;
+  text-decoration: none;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+  font-weight: 400;
+}
+
+/* Анимация выделения текста при наведении */
+.sidebar a:hover {
+  color: #111;          /* чуть темнее, чтобы было выделение */
+  font-weight: 600;
+}
+
 .menu-toggle-btn {
   position: absolute;
   top: 0;
@@ -42,6 +56,7 @@ body {
   height: 48px;
   font-size: 28px;
   background-color: transparent;
+  color: black;
   border: none;
   cursor: pointer;
   z-index: 1100; /* выше сайдбара */
