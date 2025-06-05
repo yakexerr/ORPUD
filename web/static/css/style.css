@@ -676,3 +676,17 @@ form button:focus {
   user-select: none;
 }
 
+/* Отчёт по сотрудникам */
+.charts-column canvas {
+    width: 100% !important; /* Растянуть на всю ширину контейнера */
+    height: 250px !important; /* Фиксированная высота, чтобы график не "съезжал" */
+    max-width: 700px; /* Максимальная ширина для удобочитаемости */
+    margin: 0 auto;
+    display: block;
+}
+.charts-column canvas {
+    width: 100% !important;
+    height: 300px !important; /* Можно подкорректировать высоту */
+    display: block;
+    margin-bottom: 30px;
+}

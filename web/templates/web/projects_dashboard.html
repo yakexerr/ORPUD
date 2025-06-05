@@ -3,7 +3,19 @@
 {% extends 'web/base.html' %}
 {% block content %}
 <h1>Отчёт по проектам</h1>
-<canvas id="tasksChart" width="400" height="200"></canvas>
+<form method="get" action=".">
+    <label for="project-select">Выберите проект:</label>
+    <select name="project_id" id="project-select" onchange="this.form.submit()">
+        <option value="all" {% if not selected_project %}selected{% endif %}>Все проекты</option>
+        {% for project in projects %}
+            <option value="{{ project.id }}" {% if selected_project and project.id == selected_project.id %}selected{% endif %}>
+                {{ project.title }}
+            </option>
+        {% endfor %}
+    </select>
+    <noscript><button type="submit">Показать</button></noscript>
+</form>
+<canvas id="tasksChart" width="400" height="150"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>

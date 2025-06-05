@@ -210,34 +210,91 @@ def employees_dashboard_view(request):
     if request.method == 'POST' and 'train_model' in request.POST:
         try:
             call_command('train_model')
-            messages.success(request, "Модель успешно обучена.")
+            messages.success(request, "Прогноз успешно сгенерирован.")
         except Exception as e:
-            messages.error(request, f"Ошибка при обучении модели: {e}")
-        return redirect('employees_dashboard')  # название должно соответствовать url имени
+            messages.error(request, f"Ошибка при обучении модели прогноза: {e}")
+        return redirect('employees_dashboard')
 
-    # Загружаем модель
-    if not os.path.exists('task_model.pkl'):
+    # Проверка наличия обученной модели
+    model_path = os.path.join(settings.BASE_DIR, 'task_model.pkl')
+    if not os.path.exists(model_path):
         messages.warning(request, "Модель ещё не обучена. Нажмите 'Обучить модель'.")
-        stats = []
-    else:
-        model = joblib.load('task_model.pkl')
-        employees = User.objects.filter(role='employee')
-        stats = []
-        for employee in employees:
-            for priority in [1, 2, 3]:  # LOW, MEDIUM, HIGH
-                x = [[employee.id, priority]]
+        return render(request, 'web/employees_dashboard.html', {
+            'top_high_labels': [],
+            'top_high_data': [],
+            'top_medium_labels': [],
+            'top_medium_data': [],
+            'top_low_labels': [],
+            'top_low_data': [],
+        })
+
+    model = joblib.load(model_path)
+    employees = User.objects.filter(role='employee')
+    stats = []
+
+    for employee in employees:
+        for priority in [1, 2, 3]:  # Low, Medium, High
+            x = [[employee.id, priority]]
+            try:
                 predicted = model.predict(x)[0]
                 stats.append({
                     'employee': employee,
                     'priority': priority,
                     'predicted_hours': round(predicted, 2)
                 })
+            except Exception as e:
+                continue  # На случай ошибок модели
 
-    return render(request, 'web/employees_dashboard.html', {'stats': stats})
+    # Группировка по приоритетам и сортировка top-10
+    def get_top(stats, priority):
+        filtered = [s for s in stats if s['priority'] == priority]
+        top = sorted(filtered, key=lambda s: s['predicted_hours'])[:10]
+        return [s['employee'].fio for s in top], [s['predicted_hours'] for s in top]
+
+    top_low_labels, top_low_data = get_top(stats, 1)
+    top_medium_labels, top_medium_data = get_top(stats, 2)
+    top_high_labels, top_high_data = get_top(stats, 3)
+
+    context = {
+        'top_high_labels': json.dumps(top_high_labels, ensure_ascii=False),
+        'top_high_data': json.dumps(top_high_data),
+        'top_medium_labels': json.dumps(top_medium_labels, ensure_ascii=False),
+        'top_medium_data': json.dumps(top_medium_data),
+        'top_low_labels': json.dumps(top_low_labels, ensure_ascii=False),
+        'top_low_data': json.dumps(top_low_data),
+    }
+
+    return render(request, 'web/employees_dashboard.html', context)
 
 # Отчёт по выполненым задачам
 @login_required
 def projects_dashboard_view(request):
+    user = request.user
+
+    # Получаем проекты менеджера
+    if user.role == 'manager':
+        projects = Project.objects.filter(manager=user)
+    else:
+        projects = Project.objects.none()
+
+    # Получаем ID выбранного проекта из GET (или None для всех)
+    project_id = request.GET.get('project_id')
+
+    # Фильтруем задачи по проекту или все проекты менеджера
+    if project_id and project_id != 'all':
+        try:
+            selected_project = projects.get(id=project_id)
+        except Project.DoesNotExist:
+            selected_project = None
+    else:
+        selected_project = None  # значит все проекты
+
+    # Собираем задачи для выбранного проекта или для всех проектов менеджера
+    if selected_project:
+        tasks = selected_project.tasks.all()
+    else:
+        # Все задачи по всем проектам менеджера
+        tasks = Task.objects.filter(project__in=projects).distinct()
 
     # Статистика по выполненным и невыполненным задачам
     completed_tasks = Task.objects.filter(is_done=True, user=request.user)
@@ -257,6 +314,8 @@ def projects_dashboard_view(request):
     }
 
     context = {
+        'projects': projects,
+        'selected_project': selected_project,
         'completed_priority': completed_priority,
         'not_completed_priority': not_completed_priority,
     }

@@ -2,10 +2,10 @@
 {% block content %}
 <h1>Отчёт по сотрудникам</h1>
 
-<!-- Кнопка обучения -->
+<!-- Кнопка прогноза -->
 <form method="post" class="train-form">
     {% csrf_token %}
-    <button type="submit" name="train_model" class="btn btn-sec">Обучить модель</button>
+    <button type="submit" name="train_model" class="btn btn-sec w-100">Генерация прогноза</button>
 </form>
 
 <!-- Сообщения -->
@@ -17,30 +17,73 @@
     </ul>
 {% endif %}
 
-<!-- Таблица -->
-<div class="table-container">
-    <table class="styled-table">
-        <thead>
-            <tr>
-                <th>Сотрудник</th>
-                <th>Приоритет задачи</th>
-                <th>Ожидаемое время выполнения (часы)</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stat in stats %}
-                <tr>
-                    <td>{{ stat.employee.fio }}</td>
-                    <td>
-                        {% if stat.priority == 3 %} High
-                        {% elif stat.priority == 2 %} Medium
-                        {% else %} Low
-                        {% endif %}
-                    </td>
-                    <td>{{ stat.predicted_hours }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Диаграммы -->
+<div class="charts-column" style="width: 100%; max-width: 700px; margin: 0 auto; margin-top: 20px;">
+
+  <div class="chart-block" style="margin-bottom: 30px;">
+    <h3>Топ 10 по задачам высокого приоритета</h3>
+    <canvas id="chartHigh"></canvas>
+  </div>
+
+  <div class="chart-block" style="margin-bottom: 30px;">
+    <h3>Топ 10 по задачам среднего приоритета</h3>
+    <canvas id="chartMedium"></canvas>
+  </div>
+
+  <div class="chart-block" style="margin-bottom: 30px;">
+    <h3>Топ 10 по задачам низкого приоритета</h3>
+    <canvas id="chartLow"></canvas>
+  </div>
+
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function createBarChart(canvasId, labels, data, color, label) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: label,
+                    data: data,
+                    backgroundColor: color
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Часы' }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 90,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Данные передаются из контекста Django
+    const topHighLabels = JSON.parse('{{ top_high_labels|escapejs }}');
+    const topHighData = JSON.parse('{{ top_high_data|escapejs }}');
+    const topMediumLabels = JSON.parse('{{ top_medium_labels|escapejs }}');
+    const topMediumData = JSON.parse('{{ top_medium_data|escapejs }}');
+    const topLowLabels = JSON.parse('{{ top_low_labels|escapejs }}');
+    const topLowData = JSON.parse('{{ top_low_data|escapejs }}');
+
+
+    createBarChart('chartHigh', topHighLabels, topHighData, 'rgba(255, 99, 132, 0.7)', 'High Priority');
+    createBarChart('chartMedium', topMediumLabels, topMediumData, 'rgba(255, 206, 86, 0.7)', 'Medium Priority');
+    createBarChart('chartLow', topLowLabels, topLowData, 'rgba(75, 192, 192, 0.7)', 'Low Priority');
+</script>
 {% endblock %}
