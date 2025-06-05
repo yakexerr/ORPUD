@@ -558,20 +558,6 @@ def delete_employee_view(request, id):
     task.delete()
     return redirect('employees')
 
-
-# Управление тегами задач
-@login_required
-def task_tags_view(request):
-    tags = TaskTag.objects.all() #Доступные теги
-    form = TaskTagForm()
-    if request.method == "POST":
-        form = TaskTagForm(data=request.POST, initial={"user": request.user})
-        if form.is_valid():
-            form.save()
-            return redirect('tags')
-    return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
-
-
 # Удаление тега задачи
 @login_required
 def delete_task_view(request, id):
@@ -656,16 +642,41 @@ def completed_task_view(request):
     })
 
 
+# Управление тегами задач
 @login_required
 def task_tags_view(request):
-    tags = TaskTag.objects.all() #Доступные теги
+    tags = TaskTag.objects.all()
     form = TaskTagForm()
+    edit_tag_id = None
+    edit_form = None
+
+    # Обработка GET параметра ?edit=
+    if 'edit' in request.GET:
+        edit_tag_id = int(request.GET.get('edit'))
+        edit_tag = get_object_or_404(TaskTag, id=edit_tag_id)
+        edit_form = TaskTagForm(instance=edit_tag)
+
     if request.method == "POST":
-        form = TaskTagForm(data=request.POST, initial={"user": request.user})
-        if form.is_valid():
-            form.save()
-            return redirect('tags')
-    return render(request, 'web/task_tags.html', {"tags": tags, "form": form})
+        if 'add_tag' in request.POST:
+            form = TaskTagForm(data=request.POST, initial={"user": request.user})
+            if form.is_valid():
+                form.save()
+                return redirect('tags')
+
+        elif 'edit_tag' in request.POST:
+            edit_tag_id = request.POST.get('tag_id')
+            edit_tag = get_object_or_404(TaskTag, id=edit_tag_id)
+            edit_form = TaskTagForm(data=request.POST, instance=edit_tag)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect('tags')
+
+    return render(request, 'web/task_tags.html', {
+        "tags": tags,
+        "form": form,
+        "edit_tag_id": edit_tag_id,
+        "edit_form": edit_form,
+    })
 
 @login_required
 def delete_task_tag_view(request, id):

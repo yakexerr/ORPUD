@@ -39,19 +39,20 @@
   </div>
 </div>
 
+
 {% if user in task.employees.all %}
     {% if not task.is_done %}
         <a href="{% url 'complete_task' task.id %}">Выполнено</a>
-        |
-        <a href="{% url 'unassign_task' task.id %}">Отменить участие</a>
     {% else %}
-        <a href="{% url 'complete_task' task.id %}">Отменить выполнение</a>
-        |
-        <a href="{% url 'unassign_task' task.id %}">Отменить участие</a>
+        <a href="{% url 'unassign_task' task.id %}">Отменить</a>
     {% endif %}
 {% else %}
     <a href="{% url 'take_task' task.id %}">Взять в работу</a>
 {% endif %}
-
+            |
+        {% if user.role == 'manager' %}
+            <a href="{% url 'edit_task' task.id %}">Редактировать</a>
+            <a href="{% url 'delete_task' task.id %}">Удалить</a>
+        {% endif %}
 
 {% endblock %}
