@@ -5,7 +5,7 @@
 <!-- Кнопка прогноза -->
 <form method="post" class="train-form">
     {% csrf_token %}
-    <button type="submit" name="train_model" class="btn btn-sec w-100">Генерация прогноза</button>
+    <button type="submit" name="train_model" class="btn btn-sec w-100" id="generateBtn">Генерация прогноза</button>
 </form>
 
 <!-- Сообщения -->
@@ -89,5 +89,22 @@
     createBarChart('chartHigh', topHighLabels, topHighData, 'rgba(255, 99, 132, 0.7)', 'High Priority');
     createBarChart('chartMedium', topMediumLabels, topMediumData, 'rgba(255, 206, 86, 0.7)', 'Medium Priority');
     createBarChart('chartLow', topLowLabels, topLowData, 'rgba(75, 192, 192, 0.7)', 'Low Priority');
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const loader = document.getElementById('loader');
+    const btn = document.getElementById('generateBtn');
+    const form = btn.closest('form');
+
+    btn.addEventListener('click', function() {
+      // Показать лоадер
+      loader.classList.remove('hidden');
+    });
+
+    // Чтобы на момент отправки форма не отправлялась дважды
+    form.addEventListener('submit', function() {
+      btn.disabled = true; // блокируем кнопку, чтобы избежать повторных кликов
+    });
+  });
 </script>
 {% endblock %}

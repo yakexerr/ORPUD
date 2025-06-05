@@ -5,6 +5,7 @@
 <html>
 <head>
     <title>Task tracker</title> <!-- это то что наверху в иконке пишется -->
+    <link rel="icon" type="image/x-icon" href="{% static 'img/icon.png' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/script.js' %}" defer></script>
     <!-- Библиотека для работы календаря -->
@@ -19,6 +20,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
 </head>
 <body>
+<!-- Загрузка -->
+<div id="loader" class="loader-wrapper">
+  <div class="loader-icon-container">
+    <img src="{% static 'img/icon.png' %}" alt="Загрузка" class="loader-icon">
+    <div class="loader-ring"></div>
+  </div>
+</div>
+
 <div class="d-flex w-100">
     {% if not user.is_anonymous %}
     <button class="menu-toggle-btn d-md-none" id="toggleSidebarBtn" title="Меню">
@@ -124,6 +133,12 @@
         // Установить правильную иконку при загрузке
         updateIcon();
     });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const loader = document.getElementById('loader');
+      loader.classList.add('hidden');
+  });
 </script>
 
 </body>

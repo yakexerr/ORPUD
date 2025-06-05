@@ -1,11 +1,25 @@
 html {
+  height: 100%;
   margin: 0;
   padding: 0;
 }
 body {
+  height: 100%;
   margin: 0;
   padding: 0;
   display: flex; /* позволяет расположить блоки в ряд */
+}
+
+.d-flex.w-100 {
+  height: 100vh; /* занимаем всю высоту окна */
+}
+
+main.main-content {
+  flex-grow: 1;           /* занимает оставшееся место в flex-контейнере */
+  overflow-y: auto;       /* вертикальная прокрутка при переполнении */
+  height: 0;              /* важно, чтобы flex-grow работал корректно */
+  padding-top: 1rem;      /* по желанию, чтобы контент не прилипал */
+  height: 100vh;
 }
 /* Стили навигации */
 .sidebar {
@@ -808,11 +822,11 @@ form button:focus {
 }
 
 .rename-btn {
-    background-color: #2196F3;
+    background-color: #ff922b;
     color: white;
 }
 .rename-btn:hover {
-    background-color: #1976D2;
+    background-color: #b1661f;
 }
 
 .delete-btn {
@@ -842,4 +856,60 @@ form button:focus {
     border: 2px dashed #888;
 }
 
+/* Страница загрузки */
+.loader-wrapper {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8); /* Мягкий белый полупрозрачный фон */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
 
+.loader-wrapper.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loader-icon-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.loader-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loader-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  border: 8px solid #e0e0e0;
+  border-top-color: #ff922b;
+  border-radius: 50%;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+}
