@@ -144,9 +144,9 @@ AUTH_USER_MODEL = 'web.CustomUser'
 
 # НЕОБХОДИМО ДЛЯ ОТПРАВКИ ЗАПРОСА НА ПОЧТУ
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mail.ru'  # Например, если используете маил
+EMAIL_HOST = 'smtp.mail.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'task_trackerorpud@mail.ru'  # Ваша почта
+EMAIL_HOST_USER = 'task_trackerorpud@mail.ru'
 EMAIL_HOST_PASSWORD = 'CqixxNvVDFCzripqYvyy'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

@@ -86,15 +86,6 @@ class TaskTagForm(forms.ModelForm):
         return super().save(commit)
 
     class Meta:
-        model = FeedBack
-        fields = ['name', 'last_name', 'email', 'phone', 'message']
-        widgets = {
-            'name': forms.TextInput(attrs={'placeholder': 'Введите Ваше имя'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Введите Вашу фамилию'}),
-            'email': forms.EmailInput(attrs={'placeholder': 'Введите Ваш email'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Введите Ваш телефон'}),
-            'message': forms.Textarea(attrs={'placeholder': 'Введите Ваше сообщение', 'rows': 4}),
-        }
         model = TaskTag
         fields = ("title", )
 
@@ -112,14 +103,13 @@ class ProjectForm(forms.ModelForm):
         fields = ('title', 'description', 'deadline', 'tasks', 'employees')
 
 class TaskFilterForm(forms.Form):
-    search = forms.CharField(
-        widget=forms.TextInput(attrs={'placeholder': "Поиск по слову"}),
+    tag = forms.ChoiceField(
+        choices=[('', 'Тег')],
+        widget=forms.Select,
         required=False
     )
-
-    tag = forms.ChoiceField(
-        choices=[('', 'Тег')] + [(tag.id, str(tag)) for tag in TaskTag.objects.all()],
-        widget=forms.Select,
+    search = forms.CharField(
+        widget=forms.TextInput(attrs={'placeholder': "Поиск по слову"}),
         required=False
     )
     priority = forms.ChoiceField(
@@ -128,14 +118,31 @@ class TaskFilterForm(forms.Form):
         required=False
     )
     employee = forms.ChoiceField(
-        choices=[('', 'Сотрудник')] + [(user.id, str(user)) for user in User.objects.all() if user.role == 'employee'],
+        choices=[],
         widget=forms.Select,
-        required=False)
+        required=False
+    )
     deadline = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"),
         required=False,
         label="Дедлайн"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Наполняем choices только если таблицы уже существуют
+        try:
+            self.fields['tag'].choices += [
+                (tag.id, str(tag)) for tag in TaskTag.objects.all()
+            ]
+            self.fields['employee'].choices = [('', 'Сотрудник')] + [
+                (user.id, str(user)) for user in User.objects.filter(role='employee')
+            ]
+        except Exception as e:
+            # Можно логировать или просто игнорировать при запуске миграций
+            pass
+
 
 
 class ProjectFilterForm(forms.Form):
@@ -143,23 +150,28 @@ class ProjectFilterForm(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': "Поиск по слову"}),
         required=False
     )
-
-    is_done = forms.NullBooleanField(widget=(forms.Select(choices=(
-        (None, 'Статус'),
-        (True, 'Выполненен'),
-        (False, 'Не выполнен')
-    ))),
+    is_done = forms.NullBooleanField(
+        widget=forms.Select(choices=[
+            (None, 'Статус'),
+            (True, 'Выполнен'),
+            (False, 'Не выполнен')
+        ]),
         required=False
     )
-
     task = forms.ChoiceField(
-        choices=[('', 'Задача')] + [(task.id, str(task)) for task in Task.objects.all()],
+        choices=[('', 'Задача')],
         widget=forms.Select,
         required=False
     )
-
     deadline = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"),
         required=False,
         label="Дедлайн"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.fields['task'].choices += [(task.id, str(task)) for task in Task.objects.all()]
+        except Exception:
+            pass  # игнорируем ошибку, если таблица Task не создана (например, при миграции)

@@ -66,6 +66,10 @@ docker-compose up -d
 docker exec -it orpud-web-1 python manage.py makemigrations
 docker exec -it orpud-web-1 python manage.py migrate
 ```
+(По желанию) Генерация данных: 
+```bash
+docker exec -it orpud-web-1 python manage.py fill_data
+```
 
 ### 4. (Опционально) Создание суперпользователя
 
