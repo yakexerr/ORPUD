@@ -69,10 +69,19 @@ class Command(BaseCommand):
     def create_users(self):
         managers = []
         employees = []
+        usernames = set()
+
+        def get_unique_username():
+            while True:
+                uname = fake.user_name()
+                if uname not in usernames:
+                    usernames.add(uname)
+                    return uname
+
         for _ in range(NUM_MANAGERS):
             user = CustomUser.objects.create_user(
-                username=fake.user_name(),
-                email=fake.email(),
+                username=get_unique_username(),
+                email=fake.unique.email(),
                 fio=fake.name(),
                 password='password',
                 role='manager'
@@ -81,13 +90,14 @@ class Command(BaseCommand):
 
         for _ in range(NUM_EMPLOYEES):
             user = CustomUser.objects.create_user(
-                username=fake.user_name(),
-                email=fake.email(),
+                username=get_unique_username(),
+                email=fake.unique.email(),
                 fio=fake.name(),
                 password='password',
                 role='employee'
             )
             employees.append(user)
+
         return managers, employees
 
     def create_tags(self, users):
@@ -104,23 +114,29 @@ class Command(BaseCommand):
         tasks = []
         for _ in range(NUM_TASKS):
             creator = random.choice(users)
+            is_done = random.choice([True, False])
+            deadline = timezone.now() + timedelta(days=random.randint(1, 30))
+
             task = Task.objects.create(
                 title=fake.sentence(nb_words=4),
                 description=fake.text(max_nb_chars=200),
                 priority=random.choice([1, 2, 3]),
-                deadline=timezone.now() + timedelta(days=random.randint(1, 30)),
+                deadline=deadline,
                 user=creator,
-                is_done=random.choice([True, False])
+                is_done=is_done
             )
+
             task.tags.set(random.sample(tags, k=random.randint(0, min(3, len(tags)))))
             assigned = random.sample(users, k=random.randint(1, 3))
+
             for emp in assigned:
                 TaskEmployee.objects.create(
                     task=task,
                     employee=emp,
                     date_task_take=timezone.now() - timedelta(days=random.randint(1, 5)),
-                    date_task_close=timezone.now() if task.is_done else None
+                    date_task_close=timezone.now() if is_done else None
                 )
+
             tasks.append(task)
         return tasks
 
@@ -133,13 +149,16 @@ class Command(BaseCommand):
                 manager=random.choice(managers),
                 is_done=random.choice([True, False])
             )
-            project_tasks = random.sample(tasks, k=random.randint(2, 6))
+
+            project_tasks = random.sample(tasks, k=min(len(tasks), random.randint(2, 6)))
             project.tasks.set(project_tasks)
-            project_emps = random.sample(employees, k=random.randint(2, 5))
+
+            project_emps = random.sample(employees, k=min(len(employees), random.randint(2, 5)))
             project.employees.set(project_emps)
 
-            column = Column.objects.get_or_create(name="Не распределено")[0]
+            column, _ = Column.objects.get_or_create(name="Не распределено")
             ColumnProject.objects.get_or_create(project=project, column=column)
+
             for task in project_tasks:
                 ColumnTask.objects.get_or_create(task=task, column=column)
 
@@ -148,7 +167,7 @@ class Command(BaseCommand):
             FeedBack.objects.create(
                 name=fake.first_name(),
                 last_name=fake.last_name(),
-                email=fake.email(),
+                email=fake.unique.email(),
                 phone=fake.phone_number(),
                 message=fake.text(max_nb_chars=300)
             )

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-ofik_52g(*1*)(6r1uwujh8dm$4z8v4!d0z^_+qw+4)va8vvfq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
